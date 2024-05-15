@@ -1,0 +1,161 @@
+import React, { useEffect, useRef, useState } from "react";
+import assets from "../../assets";
+import Footer from "../../components/Footer";
+import NavbarPenyediaLogin from "../../components/NavbarPenyediaLogin";
+import { Avatar, Card, CardBody, CardFooter, CardHeader, Divider, Image } from "@nextui-org/react";
+import Swal from "sweetalert2";
+import axios from "axios";
+
+const GambarPage = () => {
+
+    const [dataPenyedia, setDataPenyedia] = useState({});
+    const openImage = useRef(null);
+    const openUpdateImage = useRef(null);
+    const selectedGambarId = useRef(null);
+
+    const fetchData = async () => {
+        try {
+            const authToken = localStorage.getItem("authToken");
+            const response = await fetch("http://127.0.0.1:8000/api/penyedia", {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    Authorization: `Bearer ${authToken}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+
+            const result = await response.json();
+            setDataPenyedia(result.data);
+            console.log(result.data);
+        } catch (error) {
+            console.error("Error fetching data: ", error);
+        }
+    };
+
+    const handleOpen = () => {
+        if (dataPenyedia.gambar_porto && dataPenyedia.gambar_porto.length < 6) {
+            openImage.current.click();
+        } else {
+            Swal.fire({
+                icon: 'info',
+                title: 'Limit Reached',
+                text: 'Anda sudah mencapai batas maksimal unggah gambar.',
+            });
+        }
+    };
+
+    const storeImage = async (e) => {
+        const formData = new FormData();
+        formData.append('gambar', e.target.files[0]);
+
+        console.log(formData.values());
+
+        const authToken = localStorage.getItem("authToken");
+
+        axios.post('http://127.0.0.1:8000/api/gambar', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                Authorization: `Bearer ${authToken}`,
+            }
+        }).then((response) => {
+            fetchData();
+            openImage.current.value = null;
+            console.log(response);
+        }).catch((error) => {
+            console.log(error);
+        });
+    };
+    
+    const updateImage = async (e) => {
+        const formData = new FormData();
+        formData.append('gambar', e.target.files[0]);
+    
+        const authToken = localStorage.getItem("authToken");
+        const gambarId = selectedGambarId.current;
+    
+        axios.post(`http://127.0.0.1:8000/api/gambar/${gambarId}`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                Authorization: `Bearer ${authToken}`,
+            }
+        }).then((response) => {
+            fetchData();
+            openUpdateImage.current.value = null;
+            console.log(response);
+        }).catch((error) => {
+            console.log(error);
+        });
+    };
+    
+
+    const handleCardClick = (gambarId) => {
+        selectedGambarId.current = gambarId;
+        openUpdateImage.current.click();
+    };
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    return (
+        <>
+            <div className="min-h-screen bg-[#FFF3E2]">
+                <NavbarPenyediaLogin></NavbarPenyediaLogin>
+                <div className="flex justify-center items-center py-[6%]">
+                    <Card className="w-[60%] bg-white">
+
+                        <CardHeader className="flex gap-3 justify-between">
+                            <div className="flex">
+                                <Avatar
+                                    className="w-20 h-20 text-large"
+                                    src={dataPenyedia.gambar_penyedia ? "http://localhost:8000/storage/gambar/" + dataPenyedia.gambar_penyedia : assets.profile}
+                                />
+                                <div className="flex flex-col items-start justify-center ml-5">
+                                    <p className="text-md">{dataPenyedia.nama_penyedia}</p>
+                                    <p className="text-small text-default-500">{dataPenyedia.nama_role}</p>
+                                </div>
+                            </div>
+                            <div className="mr-10">
+                                <button className="bg-[#FA9884] text-white rounded-lg px-3 py-1" onClick={handleOpen}>Unggah</button>
+                                <input ref={openImage} type="file" className="hidden" onChange={storeImage} />
+                                <input ref={openUpdateImage} type="file" className="hidden" onChange={updateImage} />
+                            </div>
+                        </CardHeader>
+                        <Divider className="my-5" />
+                        <CardBody className="mb-10 mt-5">
+                            <div className="grid grid-cols-3 gap-4">
+                                {dataPenyedia && dataPenyedia.gambar_porto && dataPenyedia.gambar_porto.map((penyedia, index) => (
+                                    <Card key={index} className="" isPressable onClick={() => handleCardClick(penyedia.id_porto)}>
+                                        <CardBody className="overflow-visible p-0">
+                                            <Image
+                                                shadow="sm"
+                                                radius="lg"
+                                                width="100%"
+                                                alt={assets.ppland1}
+                                                className="w-full object-cover h-[300px]"
+                                                src={"http://localhost:8000/storage/gambar/" + penyedia.gambar}
+                                            />
+                                        </CardBody>
+                                        <CardFooter className="flex justify-center">
+                                            <p className="text-default-600 font-bold">Gambar</p>
+                                        </CardFooter>
+                                    </Card>
+                                ))}
+                            </div>
+                        </CardBody>
+
+                    </Card>
+
+                </div>
+            </div>
+            <Footer />
+        </>
+
+    )
+};
+
+export default GambarPage;
