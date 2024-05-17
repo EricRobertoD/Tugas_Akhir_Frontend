@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import assets from "../../assets";
 import Footer from "../../components/Footer";
 import NavbarPenyediaLogin from "../../components/NavbarPenyediaLogin";
-import { Avatar, Card, CardBody, CardFooter, CardHeader, Divider, Image, Input } from "@nextui-org/react";
+import { Avatar, Card, CardBody, CardFooter, CardHeader, Divider, Image, Input, Textarea } from "@nextui-org/react";
 import Swal from "sweetalert2";
 import axios from "axios";
 
@@ -72,6 +72,7 @@ const ProfilePagePenyedia = () => {
             nomor_telepon_penyedia: dataPenyedia.nomor_telepon_penyedia,
             nomor_whatsapp_penyedia: dataPenyedia.nomor_whatsapp_penyedia,
             alamat_penyedia: dataPenyedia.alamat_penyedia,
+            deskripsi_penyedia: dataPenyedia.deskripsi_penyedia,
         };
 
         fetch('http://127.0.0.1:8000/api/penyedia', {
@@ -217,6 +218,16 @@ const ProfilePagePenyedia = () => {
                                     value={dataPenyedia.alamat_penyedia}
                                     disabled={!isUpdateMode}
                                     onChange={(e) => setDataPenyedia({ ...dataPenyedia, alamat_penyedia: e.target.value })}
+                                />
+                                <Textarea
+                                    label="Deskripsi"
+                                    placeholder="Deskripsi Anda akan membantu pelanggan mengetahui lebih banyak tentang pengalaman Anda"
+                                    type="text"
+                                    id="alamat"
+                                    className="w-full px-3 py-2 font-bold"
+                                    value={dataPenyedia.deskripsi_penyedia}
+                                    disabled={!isUpdateMode}
+                                    onChange={(e) => setDataPenyedia({ ...dataPenyedia, deskripsi_penyedia: e.target.value })}
                                 />
                             </div>
                         </CardBody>

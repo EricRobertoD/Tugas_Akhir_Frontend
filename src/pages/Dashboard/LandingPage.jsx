@@ -49,7 +49,7 @@ const LandingPage = () => {
                                 />
                                 <div className="flex flex-col">
                                     <p className="text-md">Alex</p>
-                                    <p className="text-small text-default-500">nextui.org</p>
+                                    <p className="text-small text-default-500">Pengguna</p>
                                 </div>
                             </CardHeader>
                             <Divider />
@@ -67,7 +67,7 @@ const LandingPage = () => {
                                 />
                                 <div className="flex flex-col">
                                     <p className="text-md">Diana</p>
-                                    <p className="text-small text-default-500">nextui.org</p>
+                                    <p className="text-small text-default-500">Pengguna</p>
                                 </div>
                             </CardHeader>
                             <Divider />
@@ -87,7 +87,7 @@ const LandingPage = () => {
                                 />
                                 <div className="flex flex-col">
                                     <p className="text-md">Bernard</p>
-                                    <p className="text-small text-default-500">nextui.org</p>
+                                    <p className="text-small text-default-500">Pengguna</p>
                                 </div>
                             </CardHeader>
                             <Divider />

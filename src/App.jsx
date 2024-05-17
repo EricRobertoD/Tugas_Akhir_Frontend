@@ -11,6 +11,9 @@ import ProfilePagePenyedia from "./pages/Penyedia/ProfilePagePenyedia.jsx";
 import PesananPagePenyedia from "./pages/Penyedia/PesananPagePenyedia.jsx";
 import UlasanPagePenyedia from "./pages/Penyedia/UlasanPagePenyedia.jsx";
 import JadwalPagePenyedia from "./pages/Penyedia/JadwalPagePenyedia.jsx";
+import LiburPagePenyedia from "./pages/Penyedia/LiburPagePenyedia.jsx";
+import PaketPagePenyedia from "./pages/Penyedia/PaketPagePenyedia.jsx";
+import DashboardPage from "./pages/Dashboard/DashboardPage.jsx";
 
 const App = () => {
   return (
@@ -27,6 +30,9 @@ const App = () => {
           <Route path="/PesananPagePenyedia" element={<PesananPagePenyedia />}></Route>
           <Route path="/UlasanPagePenyedia" element={<UlasanPagePenyedia />}></Route>
           <Route path="/JadwalPagePenyedia" element={<JadwalPagePenyedia />}></Route>
+          <Route path="/LiburPagePenyedia" element={<LiburPagePenyedia />}></Route>
+          <Route path="/PaketPagePenyedia" element={<PaketPagePenyedia />}></Route>
+          <Route path="/DashboardPage" element={<DashboardPage />}></Route>
 
         </Routes>
       </BrowserRouter>

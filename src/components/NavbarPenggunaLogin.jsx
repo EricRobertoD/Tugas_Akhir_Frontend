@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from "react";
 import { useIdleTimer } from "react-idle-timer";
 
-export default function NavbarPenyediaLogin() {
+export default function NavbarPenggunaLogin() {
   const [dataPenyedia, setDataPenyedia] = useState({});
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
@@ -13,7 +13,7 @@ export default function NavbarPenyediaLogin() {
   const fetchData = async () => {
     try {
       const authToken = localStorage.getItem("authToken");
-      const response = await fetch("http://127.0.0.1:8000/api/penyedia", {
+      const response = await fetch("http://127.0.0.1:8000/api/pengguna", {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
@@ -68,24 +68,6 @@ export default function NavbarPenyediaLogin() {
     timeout: 180 * 60 * 1000,
   });
 
-  const menuItems = [{
-    title: "Tampilan",
-    link: "/GambarPage",
-  }, {
-    title: "Pesanan",
-    link: "/PesananPagePenyedia",
-  }, {
-    title: "Paket",
-    link: "/PaketPagePenyedia",
-  }, {
-    title: "Jadwal",
-    link: "/JadwalPagePenyedia",
-  }, {
-    title: "Libur",
-    link: "/LiburPagePenyedia",
-  }
-  ];
-
   return (
     <Navbar isBordered onMenuOpenChange={setIsMenuOpen} className="bg-white py-5" maxWidth="full">
       <NavbarContent className="hidden sm:flex gap-2">
@@ -99,15 +81,6 @@ export default function NavbarPenyediaLogin() {
         aria-label={isMenuOpen ? "Close menu" : "Open menu"}
         className="sm:hidden"
       />
-      <NavbarContent className="hidden sm:flex" justify="center">
-        {menuItems.map((item, index) => (
-          <NavbarItem key={index} isActive>
-            <Link to={item.link} style={{ cursor: "pointer", fontSize: "1.2rem" }}>
-              {item.title}
-            </Link>
-          </NavbarItem>
-        ))}
-      </NavbarContent>
       <NavbarContent justify="end">
         <Popover isOpen={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
           <PopoverTrigger>
@@ -137,22 +110,6 @@ export default function NavbarPenyediaLogin() {
         </Button>
       </NavbarContent>
 
-      <NavbarMenu className="mt-10">
-        {menuItems.map((item, index) => (
-          <NavbarMenuItem key={`${item}-${index}`}>
-            <Link
-              color={
-                index === 2 ? "primary" : index === menuItems.length - 1 ? "danger" : "foreground"
-              }
-              className="w-full"
-              to={item.link}
-              size="lg"
-            >
-              {item.title}
-            </Link>
-          </NavbarMenuItem>
-        ))}
-      </NavbarMenu>
     </Navbar>
   );
 }
