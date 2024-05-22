@@ -1,13 +1,19 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import assets from "../../assets";
 import Footer from "../../components/Footer";
-import { Button, Card, CardBody, CardHeader, Divider, Image, Input } from "@nextui-org/react";
+import { Button, Card, CardBody, CardHeader, DatePicker, Divider, Image, Input, TimeInput } from "@nextui-org/react";
 import NavbarPenggunaLogin from "../../components/NavbarPenggunaLogin";
+import { Time } from "@internationalized/date";
 
 const DashboardPage = () => {
     const [startBudget, setStartBudget] = useState("");
+    const [jamBuka, setJamBuka] = useState(new Time(9));
+    const [jamTutup, setJamTutup] = useState(new Time(18));
     const [endBudget, setEndBudget] = useState("");
-    const [dateTime, setDateTime] = useState("");
+    const [dateTime, setDateTime] = useState(null);
+
+    const navigate = useNavigate();
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -15,24 +21,12 @@ const DashboardPage = () => {
         const filterData = {
             start_budget: startBudget,
             end_budget: endBudget,
-            date_time: dateTime,
+            date_time: `${dateTime.year}-${dateTime.month.toString().padStart(2, '0')}-${dateTime.day.toString().padStart(2, '0')}`,
+            start_time: `${jamBuka.hour}:${jamBuka.minute}`,
+            end_time: `${jamTutup.hour}:${jamTutup.minute}`,
         };
-
-        // Here you can make an API request to your backend
-        // fetch('/api/filter', {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //     },
-        //     body: JSON.stringify(filterData),
-        // })
-        // .then(response => response.json())
-        // .then(data => {
-        //     console.log(data);
-        // })
-        // .catch(error => {
-        //     console.error('Error:', error);
-        // });
+        console.log(filterData);
+        navigate("/MainPagePengguna", { state: { filterData } });
     };
 
     return (
@@ -42,41 +36,70 @@ const DashboardPage = () => {
                 <div className="relative">
                     <img src={assets.landingImage1} alt="" className="w-full" />
                     <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
-                        <Card className="w-[70%] h-[50%]">
-                            <div className="mb-4">
-                                <Input
-                                    type="date"
-                                    id="dateTime"
-                                    value={dateTime}
-                                    onChange={(e) => setDateTime(e.target.value)}
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <Input
-                                    type="number"
-                                    id="startBudget"
-                                    placeholder="Minimum Budget"
-                                    value={startBudget}
-                                    onChange={(e) => setStartBudget(e.target.value)}
-                                />
-                            </div>
-                            <div className="mb-4">
-                                <Input
-                                    type="number"
-                                    id="endBudget"
-                                    placeholder="Maximum Budget"
-                                    value={endBudget}
-                                    onChange={(e) => setEndBudget(e.target.value)}
-                                />
-                            </div>
-                            <div className="flex items-center justify-between">
-                                <Button
-                                    type="submit"
-                                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                                >
-                                    Pencarian
-                                </Button>
-                            </div>
+                        <Card className="w-[70%] h-[40%] bg-[#d9d9d9] p-10">
+                            <form onSubmit={handleSubmit}>
+                                <div className="mb-4">
+                                    <DatePicker
+                                        label="Tanggal Acara"
+                                        type="date"
+                                        id="dateTime"
+                                        value={dateTime}
+                                        onChange={(newDate) => setDateTime(newDate)}
+                                    />
+                                </div>
+                                <label className="block text-sm font-medium text-gray-700">Budget Range</label>
+                                <div className="flex gap-4">
+                                    <div className="mb-4 w-full">
+                                        <Input
+                                            label="Minimum Budget"
+                                            type="number"
+                                            id="startBudget"
+                                            placeholder="Enter minimum budget"
+                                            value={startBudget}
+                                            onChange={(e) => setStartBudget(e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="mb-4 w-full">
+                                        <Input
+                                            label="Maximum Budget"
+                                            type="number"
+                                            id="endBudget"
+                                            placeholder="Enter maximum budget"
+                                            value={endBudget}
+                                            onChange={(e) => setEndBudget(e.target.value)}
+                                        />
+                                    </div>
+                                </div>
+                                <label className="block text-sm font-medium text-gray-700">Jam Acara</label>
+                                <div className="flex gap-4">
+                                    <div className="mb-4 w-full">
+                                        <TimeInput
+                                            label="Jam Buka"
+                                            placeholderValue={new Time(9)}
+                                            hourCycle={24}
+                                            value={jamBuka}
+                                            onChange={setJamBuka}
+                                        />
+                                    </div>
+                                    <div className="mb-4 w-full">
+                                        <TimeInput
+                                            label="Jam Tutup"
+                                            placeholderValue={new Time(18)}
+                                            hourCycle={24}
+                                            value={jamTutup}
+                                            onChange={setJamTutup}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="w-full">
+                                    <Button
+                                        type="submit"
+                                        className="bg-[#FA9884] hover:bg-red-700 text-white w-full"
+                                    >
+                                        Pencarian
+                                    </Button>
+                                </div>
+                            </form>
                         </Card>
                     </div>
                 </div>

@@ -1,19 +1,20 @@
-import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Button, Badge, Avatar, NavbarMenuToggle, NavbarMenu, NavbarMenuItem, Popover, PopoverTrigger, PopoverContent } from "@nextui-org/react";
+import { Navbar, NavbarBrand, NavbarContent, Button, Avatar, NavbarMenuToggle, Popover, PopoverTrigger, PopoverContent } from "@nextui-org/react";
 import assets from "../assets";
 import { Link } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from "react";
 import { useIdleTimer } from "react-idle-timer";
+import BASE_URL from "../../apiConfig";
 
 export default function NavbarPenggunaLogin() {
-  const [dataPenyedia, setDataPenyedia] = useState({});
+  const [dataPengguna, setDataPengguna] = useState({});
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
   const fetchData = async () => {
     try {
       const authToken = localStorage.getItem("authToken");
-      const response = await fetch("http://127.0.0.1:8000/api/pengguna", {
+      const response = await fetch(`${BASE_URL}/api/pengguna`, {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
@@ -26,7 +27,7 @@ export default function NavbarPenggunaLogin() {
       }
 
       const result = await response.json();
-      setDataPenyedia(result.data);
+      setDataPengguna(result.data);
       console.log(result.data);
     } catch (error) {
       console.error("Error fetching data: ", error);
@@ -54,7 +55,7 @@ export default function NavbarPenggunaLogin() {
   }
 
   const profile = () => {
-    navigate('/profilePagePenyedia')
+    navigate('/profilePagePengguna')
   }
 
   const onIdle = () => {
@@ -72,7 +73,7 @@ export default function NavbarPenggunaLogin() {
     <Navbar isBordered onMenuOpenChange={setIsMenuOpen} className="bg-white py-5" maxWidth="full">
       <NavbarContent className="hidden sm:flex gap-2">
         <NavbarBrand >
-          <Link to="/DashboardPagePenyedia">
+          <Link to="/DashboardPage">
             <img src={assets.logoRencara} alt="Logo" style={logoStyle} />
           </Link>
         </NavbarBrand>
@@ -82,12 +83,18 @@ export default function NavbarPenggunaLogin() {
         className="sm:hidden"
       />
       <NavbarContent justify="end">
+            <Avatar
+              size="xl"
+              style={{ cursor: "pointer" }}
+              src={assets.shopping}
+              onClick={() => navigate('/KeranjangPagePengguna')}
+            />
         <Popover isOpen={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
           <PopoverTrigger>
             <Avatar
               size="xl"
               style={{ cursor: "pointer" }}
-              src={dataPenyedia.gambar_penyedia ? "http://localhost:8000/storage/gambar/" + dataPenyedia.gambar_penyedia : assets.profile}
+              src={dataPengguna.gambar_pengguna ? "https://tugas-akhir-backend-4aexnrp6vq-uc.a.run.app/storage/gambar/" + dataPengguna.gambar_pengguna : assets.profile}
             />
           </PopoverTrigger>
           <PopoverContent>
@@ -99,8 +106,8 @@ export default function NavbarPenggunaLogin() {
               <Button onClick={profile} className="my-2">
                 Profil
               </Button>
-              <Button onClick={() => navigate('/UlasanPagePenyedia')} className="my-2">
-                Ulasan
+              <Button onClick={() => navigate('/PesananPagePengguna')} className="my-2">
+                Pemesanan
               </Button>
             </div>
           </PopoverContent>

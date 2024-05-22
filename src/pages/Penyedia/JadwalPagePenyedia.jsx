@@ -5,6 +5,7 @@ import NavbarPenyediaLogin from "../../components/NavbarPenyediaLogin";
 import { Avatar, Card, CardHeader, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Select, SelectItem, TimeInput } from "@nextui-org/react";
 import Swal from "sweetalert2";
 import { Time } from "@internationalized/date";
+import BASE_URL from "../../../apiConfig";
 
 const JadwalPagePenyedia = () => {
     const [dataPenyedia, setDataPenyedia] = useState({});
@@ -21,7 +22,7 @@ const JadwalPagePenyedia = () => {
     const fetchData = async () => {
         try {
             const authToken = localStorage.getItem("authToken");
-            const response = await fetch("http://127.0.0.1:8000/api/penyedia", {
+            const response = await fetch(`${BASE_URL}//api/penyedia`, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
@@ -44,7 +45,7 @@ const JadwalPagePenyedia = () => {
     const fetchDataJadwal = async () => {
         try {
             const authToken = localStorage.getItem("authToken");
-            const response = await fetch("http://127.0.0.1:8000/api/jadwal", {
+            const response = await fetch(`${BASE_URL}//api/jadwal`, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
@@ -82,7 +83,7 @@ const JadwalPagePenyedia = () => {
             cancelButtonText: 'Batal'
         }).then((result) => {
             if (result.isConfirmed) {
-                fetch(`http://127.0.0.1:8000/api/jadwal/${id}`, {
+                fetch(`${BASE_URL}//api/jadwal/${id}`, {
                     method: 'DELETE',
                     headers: {
                         Authorization: `Bearer ${authToken}`,
@@ -108,7 +109,7 @@ const JadwalPagePenyedia = () => {
     const handleAddJadwal = async () => {
         try {
             const authToken = localStorage.getItem("authToken");
-            const response = await fetch("http://127.0.0.1:8000/api/jadwal", {
+            const response = await fetch(`${BASE_URL}//api/jadwal`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -149,7 +150,7 @@ const JadwalPagePenyedia = () => {
     const handleEditJadwal = async () => {
         try {
             const authToken = localStorage.getItem("authToken");
-            const response = await fetch(`http://127.0.0.1:8000/api/jadwal/${editId}`, {
+            const response = await fetch(`${BASE_URL}//api/jadwal/${editId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -220,11 +221,11 @@ const JadwalPagePenyedia = () => {
                 <div className="flex justify-center items-center py-[2%]">
                     <Card className="w-[70%] h-[180px] bg-white">
                         <CardHeader className="flex lg:justify-between gap-3 max-lg:flex-col mt-2 pt-10">
-                            <div className="flex">
+                            <div className="flex px-5">
                                 <div className="flex flex-col">
                                     <Avatar
                                         className="w-20 h-20 text-large"
-                                        src={dataPenyedia.gambar_penyedia ? "http://localhost:8000/storage/gambar/" + dataPenyedia.gambar_penyedia : assets.profile}
+                                        src={dataPenyedia.gambar_penyedia ? "https://tugas-akhir-backend-4aexnrp6vq-uc.a.run.app/storage/gambar/" + dataPenyedia.gambar_penyedia : assets.profile}
                                     />
                                 </div>
                                 <div className="flex flex-col items-start justify-center ml-5">
@@ -232,7 +233,7 @@ const JadwalPagePenyedia = () => {
                                     <p className="text-xl">Kelola informasi jadwal buka Anda</p>
                                 </div>
                             </div>
-                            <div className="mr-10 flex justify-start">
+                            <div className=" px-5 flex justify-start">
                                 <Button className="bg-[#FA9884] text-white rounded-lg px-3 py-1 text-lg" onPress={onOpen}>
                                     Tambah Jadwal
                                 </Button>

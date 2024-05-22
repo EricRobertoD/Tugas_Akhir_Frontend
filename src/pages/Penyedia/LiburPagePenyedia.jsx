@@ -5,6 +5,7 @@ import NavbarPenyediaLogin from "../../components/NavbarPenyediaLogin";
 import { Avatar, Card, CardHeader, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, DateRangePicker } from "@nextui-org/react";
 import Swal from "sweetalert2";
 import { parseDate } from "@internationalized/date";
+import BASE_URL from "../../../apiConfig";
 
 const LiburPagePenyedia = () => {
     const [dataPenyedia, setDataPenyedia] = useState({});
@@ -17,7 +18,7 @@ const LiburPagePenyedia = () => {
     const fetchData = async () => {
         try {
             const authToken = localStorage.getItem("authToken");
-            const response = await fetch("http://127.0.0.1:8000/api/penyedia", {
+            const response = await fetch(`${BASE_URL}//api/penyedia`, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
@@ -40,7 +41,7 @@ const LiburPagePenyedia = () => {
     const fetchDataLibur = async () => {
         try {
             const authToken = localStorage.getItem("authToken");
-            const response = await fetch("http://127.0.0.1:8000/api/tanggalLibur", {
+            const response = await fetch(`${BASE_URL}//api/tanggalLibur`, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
@@ -78,7 +79,7 @@ const LiburPagePenyedia = () => {
             cancelButtonText: 'Batal'
         }).then((result) => {
             if (result.isConfirmed) {
-                fetch(`http://127.0.0.1:8000/api/tanggalLibur/${id}`, {
+                fetch(`${BASE_URL}//api/tanggalLibur/${id}`, {
                     method: 'DELETE',
                     headers: {
                         Authorization: `Bearer ${authToken}`,
@@ -104,7 +105,7 @@ const LiburPagePenyedia = () => {
     const handleAddLibur = async () => {
         try {
             const authToken = localStorage.getItem("authToken");
-            const response = await fetch("http://127.0.0.1:8000/api/tanggalLibur", {
+            const response = await fetch(`${BASE_URL}//api/tanggalLibur`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -144,7 +145,7 @@ const LiburPagePenyedia = () => {
     const handleEditLibur = async () => {
         try {
             const authToken = localStorage.getItem("authToken");
-            const response = await fetch(`http://127.0.0.1:8000/api/tanggalLibur/${editId}`, {
+            const response = await fetch(`${BASE_URL}//api/tanggalLibur/${editId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -201,12 +202,12 @@ const LiburPagePenyedia = () => {
                 <NavbarPenyediaLogin />
                 <div className="flex justify-center items-center py-[2%]">
                     <Card className="w-[70%] h-[180px] bg-white">
-                        <CardHeader className="flex lg:justify-between gap-3 max-lg:flex-col mt-2 pt-10">
-                            <div className="flex">
+                        <CardHeader className="flex lg:justify-between max-lg:flex-col mt-2 pt-10">
+                            <div className="flex px-5">
                                 <div className="flex flex-col">
                                     <Avatar
                                         className="w-20 h-20 text-large"
-                                        src={dataPenyedia.gambar_penyedia ? "http://localhost:8000/storage/gambar/" + dataPenyedia.gambar_penyedia : assets.profile}
+                                        src={dataPenyedia.gambar_penyedia ? "https://tugas-akhir-backend-4aexnrp6vq-uc.a.run.app/storage/gambar/" + dataPenyedia.gambar_penyedia : assets.profile}
                                     />
                                 </div>
                                 <div className="flex flex-col items-start justify-center ml-5">
@@ -214,7 +215,7 @@ const LiburPagePenyedia = () => {
                                     <p className="text-xl">Kelola informasi tanggal libur Anda</p>
                                 </div>
                             </div>
-                            <div className="mr-10 flex justify-start">
+                            <div className="flex justify-start px-5">
                                 <Button className="bg-[#FA9884] text-white rounded-lg px-3 py-1 text-lg" onPress={onOpen}>
                                     Tambah Tanggal Libur
                                 </Button>

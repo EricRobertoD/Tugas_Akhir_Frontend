@@ -7,6 +7,7 @@ import ppland2 from './ppland2.jpg'
 import ppland3 from './ppland3.jpg'
 import registerImage from './registerImage.png'
 import profile from './profile.png'
+import shopping from './shopping.png'
 
 export default {
     logoRencara : logoRencara,
@@ -17,6 +18,7 @@ export default {
     ppland2 : ppland2,
     ppland3 : ppland3,
     registerImage : registerImage,
-    profile : profile
+    profile : profile,
+    shopping : shopping
 
 }

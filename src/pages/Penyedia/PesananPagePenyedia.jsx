@@ -4,6 +4,7 @@ import Footer from "../../components/Footer";
 import NavbarPenyediaLogin from "../../components/NavbarPenyediaLogin";
 import { Avatar, Card, CardBody, CardHeader, Divider } from "@nextui-org/react";
 import Swal from "sweetalert2";
+import BASE_URL from "../../../apiConfig";
 
 const PesananPagePenyedia = () => {
     const [dataPenyedia, setDataPenyedia] = useState([]);
@@ -12,7 +13,7 @@ const PesananPagePenyedia = () => {
     const fetchData = async () => {
         try {
             const authToken = localStorage.getItem("authToken");
-            const response = await fetch("http://127.0.0.1:8000/api/detailTransaksi", {
+            const response = await fetch(`${BASE_URL}//api/detailTransaksi`, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
@@ -52,7 +53,7 @@ const PesananPagePenyedia = () => {
                     status_penyedia_jasa: newStatus,
                 };
 
-                fetch(`http://127.0.0.1:8000/api/updateStatusDetailTransaksi/${id}`, {
+                fetch(`${BASE_URL}/api/updateStatusDetailTransaksi/${id}`, {
                     method: 'PUT',
                     headers: {
                         'Accept': 'application/json',
@@ -145,7 +146,7 @@ const PesananPagePenyedia = () => {
                                     <div className="flex flex-row items-center max-lg:flex-col max-lg:text-center">
                                         <Avatar
                                             className="w-16 h-16 text-large"
-                                            src={detailTransaksi.transaksi.pengguna.gambar_pengguna ? `http://localhost:8000/storage/gambar/${detailTransaksi.transaksi.pengguna.gambar_pengguna}` : assets.profile}
+                                            src={detailTransaksi.transaksi.pengguna.gambar_pengguna ? `https://tugas-akhir-backend-4aexnrp6vq-uc.a.run.app/storage/gambar/${detailTransaksi.transaksi.pengguna.gambar_pengguna}` : assets.profile}
                                         />
                                         <p className="ml-5">{detailTransaksi.status_penyedia_jasa}</p>
                                     </div>
@@ -169,7 +170,7 @@ const PesananPagePenyedia = () => {
                                         {detailTransaksi.status_penyedia_jasa === "Sedang bekerja sama dengan pelanggan" && (
                                             <button
                                                 className="bg-[#FA9884] text-white rounded-lg px-3 py-1 text-md ml-2"
-                                                onClick={() => handleUpdateStatus(detailTransaksi.id_detail_transaksi, "Selesai")}
+                                                onClick={() => handleUpdateStatus(detailTransaksi.id_detail_transaksi, "Dikonfirmasi Penyedia Jasa")}
                                             >
                                                 Selesai
                                             </button>

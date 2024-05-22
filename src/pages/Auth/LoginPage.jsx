@@ -5,6 +5,7 @@ import Footer from "../../components/Footer";
 import assets from "../../assets";
 import { Input } from "@nextui-org/react";
 import { useNavigate } from 'react-router-dom';
+import BASE_URL from "../../../apiConfig";
 
 const LoginPage = () => {
     const navigate = useNavigate();
@@ -21,7 +22,7 @@ const LoginPage = () => {
             password: LoginPengguna.password,
         };
 
-        fetch('http://127.0.0.1:8000/api/login', {
+        fetch(`${BASE_URL}/api/login`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

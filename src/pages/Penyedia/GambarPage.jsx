@@ -5,6 +5,7 @@ import NavbarPenyediaLogin from "../../components/NavbarPenyediaLogin";
 import { Avatar, Card, CardBody, CardFooter, CardHeader, Divider, Image } from "@nextui-org/react";
 import Swal from "sweetalert2";
 import axios from "axios";
+import BASE_URL from "../../../apiConfig";
 
 const GambarPage = () => {
 
@@ -16,7 +17,7 @@ const GambarPage = () => {
     const fetchData = async () => {
         try {
             const authToken = localStorage.getItem("authToken");
-            const response = await fetch("http://127.0.0.1:8000/api/penyedia", {
+            const response = await fetch(`${BASE_URL}//api/penyedia`, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
@@ -56,7 +57,7 @@ const GambarPage = () => {
 
         const authToken = localStorage.getItem("authToken");
 
-        axios.post('http://127.0.0.1:8000/api/gambar', formData, {
+        axios.post(`${BASE_URL}//api/gambar`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
                 Authorization: `Bearer ${authToken}`,
@@ -77,7 +78,7 @@ const GambarPage = () => {
         const authToken = localStorage.getItem("authToken");
         const gambarId = selectedGambarId.current;
     
-        axios.post(`http://127.0.0.1:8000/api/gambar/${gambarId}`, formData, {
+        axios.post(`${BASE_URL}//api/gambar/${gambarId}`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
                 Authorization: `Bearer ${authToken}`,
@@ -107,12 +108,11 @@ const GambarPage = () => {
                 <NavbarPenyediaLogin></NavbarPenyediaLogin>
                 <div className="flex justify-center items-center py-[6%]">
                     <Card className="w-[60%] bg-white">
-
                         <CardHeader className="flex gap-3 justify-between">
                             <div className="flex">
                                 <Avatar
                                     className="w-20 h-20 text-large"
-                                    src={dataPenyedia.gambar_penyedia ? "http://localhost:8000/storage/gambar/" + dataPenyedia.gambar_penyedia : assets.profile}
+                                    src={dataPenyedia.gambar_penyedia ? "https://tugas-akhir-backend-4aexnrp6vq-uc.a.run.app/storage/gambar/" + dataPenyedia.gambar_penyedia : assets.profile}
                                 />
                                 <div className="flex flex-col items-start justify-center ml-5">
                                     <p className="text-md">{dataPenyedia.nama_penyedia}</p>
@@ -137,7 +137,7 @@ const GambarPage = () => {
                                                 width="100%"
                                                 alt={assets.ppland1}
                                                 className="w-full object-cover h-[300px]"
-                                                src={"http://localhost:8000/storage/gambar/" + penyedia.gambar}
+                                                src={"https://tugas-akhir-backend-4aexnrp6vq-uc.a.run.app/storage/gambar/" + penyedia.gambar}
                                             />
                                         </CardBody>
                                         <CardFooter className="flex justify-center">

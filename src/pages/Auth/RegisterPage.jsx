@@ -4,6 +4,7 @@ import NavbarPengguna from "../../components/NavbarPengguna";
 import Footer from "../../components/Footer";
 import assets from "../../assets";
 import { Input, Select, SelectItem, Tab, Tabs, } from "@nextui-org/react";
+import BASE_URL from "../../../apiConfig";
 
 const RegisterPage = () => {
     const [RegisterPengguna, setRegisterPengguna] = useState({
@@ -38,7 +39,7 @@ const RegisterPage = () => {
 
         };
 
-        fetch('http://127.0.0.1:8000/api/register', {
+        fetch(`${BASE_URL}/api/register`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -104,7 +105,7 @@ const RegisterPage = () => {
 
         };
 
-        fetch('http://127.0.0.1:8000/api/registerPenyedia', {
+        fetch(`${BASE_URL}/api/registerPenyedia`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

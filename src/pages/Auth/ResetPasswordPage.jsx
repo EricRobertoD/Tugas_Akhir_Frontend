@@ -4,20 +4,20 @@ import NavbarPengguna from "../../components/NavbarPengguna";
 import Footer from "../../components/Footer";
 import assets from "../../assets";
 import { Input, } from "@nextui-org/react";
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import BASE_URL from "../../../apiConfig";
 
 const ForgotPasswordPage = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [token, setToken] = useState('');
-
+    const location = useLocation();
     
     useEffect(() => {
         const searchParams = new URLSearchParams(location.search);
         const tokenParam = searchParams.get('token');
         setToken(tokenParam);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [location.search]);
 
     const handleResetPassword = () => {
@@ -30,7 +30,7 @@ const ForgotPasswordPage = () => {
             
         };
     
-        fetch('http://127.0.0.1:8000/api/resetPassword', {
+        fetch(`${BASE_URL}/api/resetPassword`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 import assets from "../../assets";
 import Footer from "../../components/Footer";
 import NavbarPenyediaLogin from "../../components/NavbarPenyediaLogin";
+import BASE_URL from "../../../apiConfig";
 
 const PaketPagePenyedia = () => {
     const [dataPenyedia, setDataPenyedia] = useState({});
@@ -20,7 +21,7 @@ const PaketPagePenyedia = () => {
     const fetchData = async () => {
         try {
             const authToken = localStorage.getItem("authToken");
-            const response = await fetch("http://127.0.0.1:8000/api/penyedia", {
+            const response = await fetch(`${BASE_URL}//api/penyedia`, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
@@ -42,7 +43,7 @@ const PaketPagePenyedia = () => {
     const fetchDataPaket = async () => {
         try {
             const authToken = localStorage.getItem("authToken");
-            const response = await fetch("http://127.0.0.1:8000/api/paket", {
+            const response = await fetch(`${BASE_URL}//api/paket`, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
@@ -79,7 +80,7 @@ const PaketPagePenyedia = () => {
             cancelButtonText: 'Batal'
         }).then((result) => {
             if (result.isConfirmed) {
-                fetch(`http://127.0.0.1:8000/api/paket/${id}`, {
+                fetch(`${BASE_URL}//api/paket/${id}`, {
                     method: 'DELETE',
                     headers: {
                         Authorization: `Bearer ${authToken}`,
@@ -105,7 +106,7 @@ const PaketPagePenyedia = () => {
     const handleAddPaket = async () => {
         try {
             const authToken = localStorage.getItem("authToken");
-            const response = await fetch("http://127.0.0.1:8000/api/paket", {
+            const response = await fetch(`${BASE_URL}//api/paket`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -142,7 +143,7 @@ const PaketPagePenyedia = () => {
     const handleEditPaket = async () => {
         try {
             const authToken = localStorage.getItem("authToken");
-            const response = await fetch(`http://127.0.0.1:8000/api/paket/${editId}`, {
+            const response = await fetch(`${BASE_URL}//api/paket/${editId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -207,10 +208,10 @@ const PaketPagePenyedia = () => {
                     <Card className="w-[70%] h-[180px] bg-white">
                         <CardHeader className="flex lg:justify-between gap-3 max-lg:flex-col mt-2 pt-10">
                             <div className="flex">
-                                <div className="flex flex-col">
+                                <div className="flex flex-col px-5">
                                     <Avatar
                                         className="w-20 h-20 text-large"
-                                        src={dataPenyedia.gambar_penyedia ? "http://localhost:8000/storage/gambar/" + dataPenyedia.gambar_penyedia : assets.profile}
+                                        src={dataPenyedia.gambar_penyedia ? "https://tugas-akhir-backend-4aexnrp6vq-uc.a.run.app/storage/gambar/" + dataPenyedia.gambar_penyedia : assets.profile}
                                     />
                                 </div>
                                 <div className="flex flex-col items-start justify-center ml-5">
@@ -218,7 +219,7 @@ const PaketPagePenyedia = () => {
                                     <p className="text-xl">Kelola informasi paket Anda</p>
                                 </div>
                             </div>
-                            <div className="mr-10 flex justify-start">
+                            <div className=" px-5 flex justify-start">
                                 <Button className="bg-[#FA9884] text-white rounded-lg px-3 py-1 text-lg" onPress={onOpen}>
                                     Tambah Paket
                                 </Button>

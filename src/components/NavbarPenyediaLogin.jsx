@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from "react";
 import { useIdleTimer } from "react-idle-timer";
+import BASE_URL from "../../apiConfig";
 
 export default function NavbarPenyediaLogin() {
   const [dataPenyedia, setDataPenyedia] = useState({});
@@ -13,7 +14,7 @@ export default function NavbarPenyediaLogin() {
   const fetchData = async () => {
     try {
       const authToken = localStorage.getItem("authToken");
-      const response = await fetch("http://127.0.0.1:8000/api/penyedia", {
+      const response = await fetch(`${BASE_URL}/api/penyedia`, {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
@@ -114,7 +115,7 @@ export default function NavbarPenyediaLogin() {
             <Avatar
               size="xl"
               style={{ cursor: "pointer" }}
-              src={dataPenyedia.gambar_penyedia ? "http://localhost:8000/storage/gambar/" + dataPenyedia.gambar_penyedia : assets.profile}
+              src={dataPenyedia.gambar_penyedia ? "https://tugas-akhir-backend-4aexnrp6vq-uc.a.run.app/storage/gambar/" + dataPenyedia.gambar_penyedia : assets.profile}
             />
           </PopoverTrigger>
           <PopoverContent>

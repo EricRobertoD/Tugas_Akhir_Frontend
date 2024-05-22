@@ -5,6 +5,7 @@ import Footer from "../../components/Footer";
 import assets from "../../assets";
 import { Input, } from "@nextui-org/react";
 import { useNavigate } from 'react-router-dom';
+import BASE_URL from "../../../apiConfig";
 
 const ForgotPasswordPage = () => {
     const navigate = useNavigate();
@@ -17,7 +18,7 @@ const ForgotPasswordPage = () => {
             email_pengguna: email,
         };
     
-        fetch('http://127.0.0.1:8000/api/forgotPassword', {
+        fetch(`${BASE_URL}/api/forgotPassword`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

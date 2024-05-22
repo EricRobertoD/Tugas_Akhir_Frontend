@@ -3,6 +3,7 @@ import Footer from "../../components/Footer";
 import NavbarPenyediaLogin from "../../components/NavbarPenyediaLogin";
 import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react";
 import Swal from "sweetalert2";
+import BASE_URL from "../../../apiConfig";
 
 const UlasanPagePenyedia = () => {
     const [dataPenyedia, setDataPenyedia] = useState([]);
@@ -11,7 +12,7 @@ const UlasanPagePenyedia = () => {
     const fetchData = async () => {
         try {
             const authToken = localStorage.getItem("authToken");
-            const response = await fetch("http://127.0.0.1:8000/api/ulasan", {
+            const response = await fetch(`${BASE_URL}//api/ulasan`, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',

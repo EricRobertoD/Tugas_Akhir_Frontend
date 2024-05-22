@@ -1,14 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import assets from "../../assets";
 import Footer from "../../components/Footer";
-import NavbarPenyediaLogin from "../../components/NavbarPenyediaLogin";
 import { Avatar, Card, CardBody, CardFooter, CardHeader, Divider, Image, Input, Textarea } from "@nextui-org/react";
 import Swal from "sweetalert2";
 import axios from "axios";
+import NavbarPenggunaLogin from "../../components/NavbarPenggunaLogin";
 import BASE_URL from "../../../apiConfig";
 
-const ProfilePagePenyedia = () => {
-    const [dataPenyedia, setDataPenyedia] = useState({});
+const ProfilePagePengguna = () => {
+    const [dataPengguna, setDataPengguna] = useState({});
     const [isUpdateMode, setIsUpdateMode] = useState(false);
 
     const openUpdateImage = useRef(null);
@@ -16,7 +16,8 @@ const ProfilePagePenyedia = () => {
     const fetchData = async () => {
         try {
             const authToken = localStorage.getItem("authToken");
-            const response = await fetch(`${BASE_URL}/api/penyedia`, {
+            const response = await fetch(`
+            ${BASE_URL}//api/pengguna`, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
@@ -29,7 +30,7 @@ const ProfilePagePenyedia = () => {
             }
 
             const result = await response.json();
-            setDataPenyedia(result.data);
+            setDataPengguna(result.data);
             console.log(result.data);
         } catch (error) {
             console.error("Error fetching data: ", error);
@@ -43,12 +44,12 @@ const ProfilePagePenyedia = () => {
 
     const updateImage = async (e) => {
         const formData = new FormData();
-        formData.append('gambar_penyedia', e.target.files[0]);
+        formData.append('gambar_pengguna', e.target.files[0]);
         console.log(e.target.files[0])
 
         const authToken = localStorage.getItem("authToken");
 
-        axios.post(`${BASE_URL}//api/updatePenyediaGambar`, formData, {
+        axios.post(`${BASE_URL}//api/updatePenggunaGambar`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
                 Authorization: `Bearer ${authToken}`,
@@ -68,15 +69,15 @@ const ProfilePagePenyedia = () => {
         Swal.showLoading();
 
         const updateData = {
-            nama_penyedia: dataPenyedia.nama_penyedia,
-            email_penyedia: dataPenyedia.email_penyedia,
-            nomor_telepon_penyedia: dataPenyedia.nomor_telepon_penyedia,
-            nomor_whatsapp_penyedia: dataPenyedia.nomor_whatsapp_penyedia,
-            alamat_penyedia: dataPenyedia.alamat_penyedia,
-            deskripsi_penyedia: dataPenyedia.deskripsi_penyedia,
+            nama_pengguna: dataPengguna.nama_pengguna,
+            email_pengguna: dataPengguna.email_pengguna,
+            nomor_telepon_pengguna: dataPengguna.nomor_telepon_pengguna,
+            nomor_whatsapp_pengguna: dataPengguna.nomor_whatsapp_pengguna,
+            alamat_pengguna: dataPengguna.alamat_pengguna,
+            deskripsi_pengguna: dataPengguna.deskripsi_pengguna,
         };
 
-        fetch(`${BASE_URL}//api/penyedia`, {
+        fetch(`${BASE_URL}//api/pengguna`, {
             method: 'PUT',
             headers: {
                 'Accept': 'application/json',
@@ -131,19 +132,19 @@ const ProfilePagePenyedia = () => {
     return (
         <>
             <div className="min-h-screen bg-[#FFF3E2]">
-                <NavbarPenyediaLogin />
+                <NavbarPenggunaLogin />
                 <div className="flex justify-center items-center py-[6%]">
                     <Card className="w-[60%] bg-white">
 
                         <CardHeader className="flex lg:justify-between gap-3 max-lg:flex-col">
                             <div className="flex py-5">
-                                <div className="flex flex-col px-5">
+                                <div className="flex flex-col px-5 pt-10">
                                     <Avatar
                                         className="w-20 h-20 text-large"
-                                        src={dataPenyedia.gambar_penyedia ? "https://tugas-akhir-backend-4aexnrp6vq-uc.a.run.app/storage/gambar/" + dataPenyedia.gambar_penyedia : assets.profile}
+                                        src={dataPengguna.gambar_pengguna ? "https://tugas-akhir-backend-4aexnrp6vq-uc.a.run.app/storage/gambar/" + dataPengguna.gambar_pengguna : assets.profile}
                                     />
                                     <input ref={openUpdateImage} type="file" className="hidden" onChange={updateImage} />
-                                    <button className="bg-[#FA9884] text-white rounded-lg px-3" onClick={handleOpen}>Profil</button>
+                                    <button className="bg-[#FA9884] text-white rounded-lg px-3 my-2" onClick={handleOpen}>Profil</button>
                                 </div>
                                 <div className="flex flex-col items-start justify-center px-2">
                                     <p className="font-semibold text-2xl">Profil Saya</p>
@@ -176,9 +177,9 @@ const ProfilePagePenyedia = () => {
                                     type="text"
                                     id="nama"
                                     className="w-full px-3 py-2 font-bold"
-                                    value={dataPenyedia.nama_penyedia}
+                                    value={dataPengguna.nama_pengguna}
                                     disabled={!isUpdateMode}
-                                    onChange={(e) => setDataPenyedia({ ...dataPenyedia, nama_penyedia: e.target.value })}
+                                    onChange={(e) => setDataPengguna({ ...dataPengguna, nama_pengguna: e.target.value })}
                                 />
                                 <Input
                                     label="Email"
@@ -186,9 +187,9 @@ const ProfilePagePenyedia = () => {
                                     type="text"
                                     id="email"
                                     className="w-full px-3 py-2 font-bold"
-                                    value={dataPenyedia.email_penyedia}
+                                    value={dataPengguna.email_pengguna}
                                     disabled={!isUpdateMode}
-                                    onChange={(e) => setDataPenyedia({ ...dataPenyedia, email_penyedia: e.target.value })}
+                                    onChange={(e) => setDataPengguna({ ...dataPengguna, email_pengguna: e.target.value })}
                                 />
                                 <Input
                                     label="Nomor Handphone"
@@ -196,9 +197,9 @@ const ProfilePagePenyedia = () => {
                                     type="number"
                                     id="nomor_handphone"
                                     className="w-full px-3 py-2 font-bold"
-                                    value={dataPenyedia.nomor_telepon_penyedia}
+                                    value={dataPengguna.nomor_telepon_pengguna}
                                     disabled={!isUpdateMode}
-                                    onChange={(e) => setDataPenyedia({ ...dataPenyedia, nomor_telepon_penyedia: e.target.value })}
+                                    onChange={(e) => setDataPengguna({ ...dataPengguna, nomor_telepon_pengguna: e.target.value })}
                                 />
                                 <Input
                                     label="Nomor Whatsapp"
@@ -206,9 +207,9 @@ const ProfilePagePenyedia = () => {
                                     type="number"
                                     id="nomor_whatsapp"
                                     className="w-full px-3 py-2 font-bold"
-                                    value={dataPenyedia.nomor_whatsapp_penyedia}
+                                    value={dataPengguna.nomor_whatsapp_pengguna}
                                     disabled={!isUpdateMode}
-                                    onChange={(e) => setDataPenyedia({ ...dataPenyedia, nomor_whatsapp_penyedia: e.target.value })}
+                                    onChange={(e) => setDataPengguna({ ...dataPengguna, nomor_whatsapp_pengguna: e.target.value })}
                                 />
                                 <Input
                                     label="Alamat"
@@ -216,19 +217,9 @@ const ProfilePagePenyedia = () => {
                                     type="text"
                                     id="alamat"
                                     className="w-full px-3 py-2 font-bold"
-                                    value={dataPenyedia.alamat_penyedia}
+                                    value={dataPengguna.alamat_pengguna}
                                     disabled={!isUpdateMode}
-                                    onChange={(e) => setDataPenyedia({ ...dataPenyedia, alamat_penyedia: e.target.value })}
-                                />
-                                <Textarea
-                                    label="Deskripsi"
-                                    placeholder="Deskripsi Anda akan membantu pelanggan mengetahui lebih banyak tentang pengalaman Anda"
-                                    type="text"
-                                    id="alamat"
-                                    className="w-full px-3 py-2 font-bold"
-                                    value={dataPenyedia.deskripsi_penyedia}
-                                    disabled={!isUpdateMode}
-                                    onChange={(e) => setDataPenyedia({ ...dataPenyedia, deskripsi_penyedia: e.target.value })}
+                                    onChange={(e) => setDataPengguna({ ...dataPengguna, alamat_pengguna: e.target.value })}
                                 />
                             </div>
                         </CardBody>
@@ -240,4 +231,4 @@ const ProfilePagePenyedia = () => {
     )
 };
 
-export default ProfilePagePenyedia;
+export default ProfilePagePengguna;
