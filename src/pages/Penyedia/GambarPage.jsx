@@ -6,6 +6,7 @@ import { Avatar, Card, CardBody, CardFooter, CardHeader, Divider, Image } from "
 import Swal from "sweetalert2";
 import axios from "axios";
 import BASE_URL from "../../../apiConfig";
+import ChatPenyediaPage from "../../components/ChatPenyedia";
 
 const GambarPage = () => {
 
@@ -17,7 +18,7 @@ const GambarPage = () => {
     const fetchData = async () => {
         try {
             const authToken = localStorage.getItem("authToken");
-            const response = await fetch(`${BASE_URL}//api/penyedia`, {
+            const response = await fetch(`${BASE_URL}/api/penyedia`, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
@@ -153,6 +154,7 @@ const GambarPage = () => {
                 </div>
             </div>
             <Footer />
+            <ChatPenyediaPage />
         </>
 
     )

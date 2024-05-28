@@ -4,6 +4,7 @@ import NavbarPenyediaLogin from "../../components/NavbarPenyediaLogin";
 import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react";
 import Swal from "sweetalert2";
 import BASE_URL from "../../../apiConfig";
+import ChatPenyediaPage from "../../components/ChatPenyedia";
 
 const UlasanPagePenyedia = () => {
     const [dataPenyedia, setDataPenyedia] = useState([]);
@@ -74,6 +75,7 @@ const UlasanPagePenyedia = () => {
                 </Table>
             </div>
             <Footer />
+            <ChatPenyediaPage />
         </>
     );
 };

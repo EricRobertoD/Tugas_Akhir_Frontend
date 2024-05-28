@@ -2,16 +2,31 @@ import React, { useEffect, useRef, useState } from "react";
 import assets from "../../assets";
 import Footer from "../../components/Footer";
 import NavbarPenyediaLogin from "../../components/NavbarPenyediaLogin";
-import { Avatar, Card, CardBody, CardFooter, CardHeader, Divider, Image, Input, Textarea } from "@nextui-org/react";
+import { Avatar, Card, CardBody, CardFooter, CardHeader, Divider, Input, Textarea, Select, Button, SelectItem } from "@nextui-org/react";
 import Swal from "sweetalert2";
 import axios from "axios";
 import BASE_URL from "../../../apiConfig";
+import ChatPenyediaPage from "../../components/ChatPenyedia";
+
+const provinces = [
+    "Aceh", "Bali", "Banten", "Bengkulu", "Gorontalo", "Jakarta", "Jambi",
+    "Jawa Barat", "Jawa Tengah", "Jawa Timur", "Kalimantan Barat", "Kalimantan Selatan",
+    "Kalimantan Tengah", "Kalimantan Timur", "Kalimantan Utara", "Kepulauan Bangka Belitung",
+    "Kepulauan Riau", "Lampung", "Maluku", "Maluku Utara", "Nusa Tenggara Barat",
+    "Nusa Tenggara Timur", "Papua", "Papua Barat", "Riau", "Sulawesi Barat", "Sulawesi Selatan",
+    "Sulawesi Tengah", "Sulawesi Tenggara", "Sulawesi Utara", "Sumatera Barat", "Sumatera Selatan",
+    "Sumatera Utara", "Daerah Istimewa Yogyakarta"
+];
 
 const ProfilePagePenyedia = () => {
     const [dataPenyedia, setDataPenyedia] = useState({});
     const [isUpdateMode, setIsUpdateMode] = useState(false);
-
     const openUpdateImage = useRef(null);
+    const [dataProvinsi_penyedia, setDataProvinsi_penyedia] = useState([]);
+
+    useEffect(() => {
+        fetchData();
+    }, []);
 
     const fetchData = async () => {
         try {
@@ -30,12 +45,12 @@ const ProfilePagePenyedia = () => {
 
             const result = await response.json();
             setDataPenyedia(result.data);
+            setDataProvinsi_penyedia([result.data.provinsi_penyedia]);
             console.log(result.data);
         } catch (error) {
             console.error("Error fetching data: ", error);
         }
     };
-
 
     const handleOpen = () => {
         openUpdateImage.current.click();
@@ -48,7 +63,7 @@ const ProfilePagePenyedia = () => {
 
         const authToken = localStorage.getItem("authToken");
 
-        axios.post(`${BASE_URL}//api/updatePenyediaGambar`, formData, {
+        axios.post(`${BASE_URL}/api/updatePenyediaGambar`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
                 Authorization: `Bearer ${authToken}`,
@@ -62,7 +77,6 @@ const ProfilePagePenyedia = () => {
         });
     };
 
-    
     const handleUpdate = () => {
         const authToken = localStorage.getItem("authToken");
         Swal.showLoading();
@@ -74,9 +88,10 @@ const ProfilePagePenyedia = () => {
             nomor_whatsapp_penyedia: dataPenyedia.nomor_whatsapp_penyedia,
             alamat_penyedia: dataPenyedia.alamat_penyedia,
             deskripsi_penyedia: dataPenyedia.deskripsi_penyedia,
+            provinsi_penyedia: dataPenyedia.provinsi_penyedia,
         };
 
-        fetch(`${BASE_URL}//api/penyedia`, {
+        fetch(`${BASE_URL}/api/penyedia`, {
             method: 'PUT',
             headers: {
                 'Accept': 'application/json',
@@ -95,24 +110,24 @@ const ProfilePagePenyedia = () => {
                         title: 'Berhasil ganti profil',
                         text: 'Anda telah berhasil melakukan ganti profil.',
                     });
-                    console.log('Registration successful');
+                    console.log('Update successful');
                     fetchData();
                     setIsUpdateMode(false);
                 } else {
-                    console.log('Registration failed');
+                    console.log('Update failed');
 
                     if (data.errors) {
                         const errorMessages = Object.values(data.errors).join('\n');
                         Swal.fire({
                             icon: 'error',
-                            title: 'Registrasi Gagal',
+                            title: 'Update Gagal',
                             text: errorMessages,
                         });
                     } else {
                         Swal.fire({
                             icon: 'error',
-                            title: 'Registrasi Gagal',
-                            text: 'Please check the registration details.',
+                            title: 'Update Gagal',
+                            text: 'Please check the update details.',
                         });
                     }
                 }
@@ -123,10 +138,59 @@ const ProfilePagePenyedia = () => {
             });
     };
 
+    const getCurrentPosition = () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Geolocation Error',
+                text: 'Geolocation is not supported by this browser.',
+            });
+        }
+    };
 
-    useEffect(() => {
-        fetchData();
-    }, []);
+    const successCallback = async (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        try {
+            const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyBf8Al8Z_C2kJLnYU5DYeRFsGlBlFoDbcA`);
+            const addressComponents = response.data.results[0].address_components;
+            const provinceComponent = addressComponents.find(component => component.types.includes('administrative_area_level_1'));
+            if (provinceComponent) {
+                setDataPenyedia(prevState => ({
+                    ...prevState,
+                    provinsi_penyedia: provinceComponent.long_name
+                }));
+                setDataProvinsi_penyedia([provinceComponent.long_name]);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Location Retrieved',
+                    text: `Your location: ${provinceComponent.long_name}`,
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Could not determine your province from your location.',
+                });
+            }
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Error retrieving your location.',
+            });
+        }
+    };
+
+    const errorCallback = (error) => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Geolocation Error',
+            text: `Error occurred while retrieving your location: ${error.message}`,
+        });
+    };
 
     return (
         <>
@@ -220,6 +284,33 @@ const ProfilePagePenyedia = () => {
                                     disabled={!isUpdateMode}
                                     onChange={(e) => setDataPenyedia({ ...dataPenyedia, alamat_penyedia: e.target.value })}
                                 />
+                                <div className="flex gap-3 max-lg:flex-col">
+                                    <Select
+                                        label="Provinsi"
+                                        placeholder="Pilih Provinsi"
+                                        className="w-full px-3 py-2 font-bold"
+                                        selectedKeys={dataProvinsi_penyedia}
+                                        isDisabled={!isUpdateMode}
+                                        onSelectionChange={(selected) => setDataPenyedia(prevState => ({
+                                            ...prevState,
+                                            provinsi_penyedia: Array.from(selected)[0]
+                                        }))}
+                                    >
+                                        {provinces.map((province) => (
+                                            <SelectItem key={province} value={province}>
+                                                {province}
+                                            </SelectItem>
+                                        ))}
+                                    </Select>
+                                    <div className="flex flex-col justify-center">
+                                    <Button
+                                        className="bg-[#FA9884] hover:bg-red-700 text-white rounded-lg"
+                                        onClick={getCurrentPosition}
+                                        disabled={!isUpdateMode}
+                                    >
+                                        Get Current Position
+                                    </Button></div>
+                                </div>
                                 <Textarea
                                     label="Deskripsi"
                                     placeholder="Deskripsi Anda akan membantu pelanggan mengetahui lebih banyak tentang pengalaman Anda"
@@ -236,8 +327,9 @@ const ProfilePagePenyedia = () => {
                 </div>
             </div>
             <Footer />
+            <ChatPenyediaPage />
         </>
-    )
+    );
 };
 
 export default ProfilePagePenyedia;

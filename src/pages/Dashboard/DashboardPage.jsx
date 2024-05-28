@@ -2,9 +2,22 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import assets from "../../assets";
 import Footer from "../../components/Footer";
-import { Button, Card, CardBody, CardHeader, DatePicker, Divider, Image, Input, TimeInput } from "@nextui-org/react";
+import { Button, Card, CardBody, CardHeader, DatePicker, Divider, Image, Input, TimeInput, Select, SelectItem } from "@nextui-org/react";
 import NavbarPenggunaLogin from "../../components/NavbarPenggunaLogin";
 import { Time } from "@internationalized/date";
+import ChatPenggunaPage from "../../components/ChatPengguna";
+import axios from 'axios';
+import Swal from "sweetalert2";
+
+const provinces = [
+    "Aceh", "Bali", "Banten", "Bengkulu", "Gorontalo", "Jakarta", "Jambi",
+    "Jawa Barat", "Jawa Tengah", "Jawa Timur", "Kalimantan Barat", "Kalimantan Selatan",
+    "Kalimantan Tengah", "Kalimantan Timur", "Kalimantan Utara", "Kepulauan Bangka Belitung",
+    "Kepulauan Riau", "Lampung", "Maluku", "Maluku Utara", "Nusa Tenggara Barat",
+    "Nusa Tenggara Timur", "Papua", "Papua Barat", "Riau", "Sulawesi Barat", "Sulawesi Selatan",
+    "Sulawesi Tengah", "Sulawesi Tenggara", "Sulawesi Utara", "Sumatera Barat", "Sumatera Selatan",
+    "Sumatera Utara", "Daerah Istimewa Yogyakarta"
+];
 
 const DashboardPage = () => {
     const [startBudget, setStartBudget] = useState("");
@@ -12,6 +25,9 @@ const DashboardPage = () => {
     const [jamTutup, setJamTutup] = useState(new Time(18));
     const [endBudget, setEndBudget] = useState("");
     const [dateTime, setDateTime] = useState(null);
+    const [provinsiPenyedia, setProvinsiPenyedia] = useState("Semua");
+    const [isChatOpen, setIsChatOpen] = useState(false);
+    const [selectedProvinsi, setSelectedProvinsi] =  useState(["Semua"]);
 
     const navigate = useNavigate();
 
@@ -21,12 +37,64 @@ const DashboardPage = () => {
         const filterData = {
             start_budget: startBudget,
             end_budget: endBudget,
-            date_time: `${dateTime.year}-${dateTime.month.toString().padStart(2, '0')}-${dateTime.day.toString().padStart(2, '0')}`,
+            date_time: dateTime ? `${dateTime.year}-${dateTime.month.toString().padStart(2, '0')}-${dateTime.day.toString().padStart(2, '0')}` : "",
             start_time: `${jamBuka.hour}:${jamBuka.minute}`,
             end_time: `${jamTutup.hour}:${jamTutup.minute}`,
+            provinsi_penyedia: selectedProvinsi,
         };
         console.log(filterData);
         navigate("/MainPagePengguna", { state: { filterData } });
+    };
+
+    const getCurrentPosition = () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Geolocation Error',
+                text: 'Geolocation is not supported by this browser.',
+            });
+        }
+    };
+
+    const successCallback = async (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        try {
+            const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyBf8Al8Z_C2kJLnYU5DYeRFsGlBlFoDbcA`);
+            const addressComponents = response.data.results[0].address_components;
+            const provinceComponent = addressComponents.find(component => component.types.includes('administrative_area_level_1'));
+            if (provinceComponent) {
+                setProvinsiPenyedia(provinceComponent.long_name);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Location Retrieved',
+                    text: `Your location: ${provinceComponent.long_name}`,
+                });
+                setSelectedProvinsi([provinceComponent.long_name]);
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Could not determine your province from your location.',
+                });
+            }
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Error retrieving your location.',
+            });
+        }
+    };
+
+    const errorCallback = (error) => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Geolocation Error',
+            text: `Error occurred while retrieving your location: ${error.message}`,
+        });
     };
 
     return (
@@ -90,6 +158,29 @@ const DashboardPage = () => {
                                             onChange={setJamTutup}
                                         />
                                     </div>
+                                </div>
+                                <label className="block text-sm font-medium text-gray-700">Provinsi Penyedia</label>
+                                <div className="flex gap-4 mb-4">
+                                    <Select
+                                        label="Provinsi"
+                                        id="provinsi_penyedia"
+                                        value={provinsiPenyedia}
+                                        selectedKeys={selectedProvinsi}
+                                        onSelectionChange={setSelectedProvinsi}
+                                    >
+                                        <SelectItem value="Semua">Semua</SelectItem>
+                                        {provinces.map((province) => (
+                                            <SelectItem key={province} value={province}>
+                                                {province}
+                                            </SelectItem>
+                                        ))}
+                                    </Select>
+                                    <Button
+                                        className="bg-[#FA9884] hover:bg-red-700 text-white rounded-lg"
+                                        onClick={getCurrentPosition}
+                                    >
+                                        Get Current Position
+                                    </Button>
                                 </div>
                                 <div className="w-full">
                                     <Button
@@ -164,6 +255,10 @@ const DashboardPage = () => {
                 </section>
             </div>
             <Footer />
+            <ChatPenggunaPage 
+                isChatOpen={isChatOpen} 
+                setIsChatOpen={setIsChatOpen}
+            />
         </>
     );
 };

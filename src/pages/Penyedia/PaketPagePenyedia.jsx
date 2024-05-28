@@ -5,6 +5,7 @@ import assets from "../../assets";
 import Footer from "../../components/Footer";
 import NavbarPenyediaLogin from "../../components/NavbarPenyediaLogin";
 import BASE_URL from "../../../apiConfig";
+import ChatPenyediaPage from "../../components/ChatPenyedia";
 
 const PaketPagePenyedia = () => {
     const [dataPenyedia, setDataPenyedia] = useState({});
@@ -269,6 +270,7 @@ const PaketPagePenyedia = () => {
                 </div>
             </div>
             <Footer />
+            <ChatPenyediaPage />
 
             <Modal 
                 backdrop="opaque" 

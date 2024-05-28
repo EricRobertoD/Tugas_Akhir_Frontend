@@ -5,6 +5,7 @@ import NavbarPenyediaLogin from "../../components/NavbarPenyediaLogin";
 import { Avatar, Card, CardBody, CardHeader, Divider } from "@nextui-org/react";
 import Swal from "sweetalert2";
 import BASE_URL from "../../../apiConfig";
+import ChatPenyediaPage from "../../components/ChatPenyedia";
 
 const PesananPagePenyedia = () => {
     const [dataPenyedia, setDataPenyedia] = useState([]);
@@ -13,7 +14,7 @@ const PesananPagePenyedia = () => {
     const fetchData = async () => {
         try {
             const authToken = localStorage.getItem("authToken");
-            const response = await fetch(`${BASE_URL}//api/detailTransaksi`, {
+            const response = await fetch(`${BASE_URL}/api/detailTransaksi`, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
@@ -183,6 +184,7 @@ const PesananPagePenyedia = () => {
                 </div>
             </div>
             <Footer />
+            <ChatPenyediaPage />
         </>
     );
 };

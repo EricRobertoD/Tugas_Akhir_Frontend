@@ -6,6 +6,7 @@ import { Avatar, Card, CardHeader, Table, TableBody, TableCell, TableColumn, Tab
 import Swal from "sweetalert2";
 import { Time } from "@internationalized/date";
 import BASE_URL from "../../../apiConfig";
+import ChatPenyediaPage from "../../components/ChatPenyedia";
 
 const JadwalPagePenyedia = () => {
     const [dataPenyedia, setDataPenyedia] = useState({});
@@ -283,6 +284,7 @@ const JadwalPagePenyedia = () => {
                 </div>
             </div>
             <Footer />
+            <ChatPenyediaPage />
 
             <Modal 
                 backdrop="opaque" 

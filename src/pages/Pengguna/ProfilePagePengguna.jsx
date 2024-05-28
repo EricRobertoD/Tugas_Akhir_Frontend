@@ -6,10 +6,12 @@ import Swal from "sweetalert2";
 import axios from "axios";
 import NavbarPenggunaLogin from "../../components/NavbarPenggunaLogin";
 import BASE_URL from "../../../apiConfig";
+import ChatPenggunaPage from "../../components/ChatPengguna";
 
 const ProfilePagePengguna = () => {
     const [dataPengguna, setDataPengguna] = useState({});
     const [isUpdateMode, setIsUpdateMode] = useState(false);
+    const [isChatOpen, setIsChatOpen] = useState(false);
 
     const openUpdateImage = useRef(null);
 
@@ -49,7 +51,7 @@ const ProfilePagePengguna = () => {
 
         const authToken = localStorage.getItem("authToken");
 
-        axios.post(`${BASE_URL}//api/updatePenggunaGambar`, formData, {
+        axios.post(`${BASE_URL}/api/updatePenggunaGambar`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
                 Authorization: `Bearer ${authToken}`,
@@ -63,7 +65,7 @@ const ProfilePagePengguna = () => {
         });
     };
 
-    
+
     const handleUpdate = () => {
         const authToken = localStorage.getItem("authToken");
         Swal.showLoading();
@@ -227,6 +229,10 @@ const ProfilePagePengguna = () => {
                 </div>
             </div>
             <Footer />
+            <ChatPenggunaPage 
+                isChatOpen={isChatOpen} 
+                setIsChatOpen={setIsChatOpen}
+            />
         </>
     )
 };

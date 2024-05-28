@@ -6,6 +6,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Navigation } from 'swiper/modules';
 import { Card, CardBody, CardHeader, Divider, Image } from "@nextui-org/react";
 import NavbarPenyediaLogin from "../../components/NavbarPenyediaLogin";
+import ChatPenyediaPage from "../../components/ChatPenyedia";
 
 const DashboardPagePenyedia = () => {
     return (
@@ -100,6 +101,7 @@ const DashboardPagePenyedia = () => {
 
             </div>
             <Footer />
+            <ChatPenyediaPage />
         </>
 
     )

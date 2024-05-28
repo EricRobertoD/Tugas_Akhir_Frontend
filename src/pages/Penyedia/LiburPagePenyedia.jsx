@@ -6,6 +6,7 @@ import { Avatar, Card, CardHeader, Table, TableBody, TableCell, TableColumn, Tab
 import Swal from "sweetalert2";
 import { parseDate } from "@internationalized/date";
 import BASE_URL from "../../../apiConfig";
+import ChatPenyediaPage from "../../components/ChatPenyedia";
 
 const LiburPagePenyedia = () => {
     const [dataPenyedia, setDataPenyedia] = useState({});
@@ -262,6 +263,7 @@ const LiburPagePenyedia = () => {
                 </div>
             </div>
             <Footer />
+            <ChatPenyediaPage />
 
             <Modal 
                 backdrop="opaque" 

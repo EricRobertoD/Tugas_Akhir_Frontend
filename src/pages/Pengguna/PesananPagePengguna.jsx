@@ -6,6 +6,7 @@ import Swal from "sweetalert2";
 import NavbarPenggunaLogin from "../../components/NavbarPenggunaLogin";
 import BASE_URL from "../../../apiConfig";
 import ReactStars from "react-stars";
+import ChatPenggunaPage from "../../components/ChatPengguna";
 
 const PesananPagePengguna = () => {
     const [dataPenyedia, setDataPenyedia] = useState([]);
@@ -16,6 +17,7 @@ const PesananPagePengguna = () => {
     const [review, setReview] = useState("");
     const { isOpen, onOpen, onClose } = useDisclosure();
     const { isOpen: isReviewOpen, onOpen: onReviewOpen, onClose: onReviewClose } = useDisclosure();
+    const [isChatOpen, setIsChatOpen] = useState(false);
 
     const fetchData = async () => {
         try {
@@ -121,9 +123,9 @@ const PesananPagePengguna = () => {
         const authToken = localStorage.getItem("authToken");
 
         const reviewData = {
-            rate_ulasan : rating,
-            isi_ulasan : review,
-            id_detail_transaksi : reviewModalData.id_detail_transaksi,
+            rate_ulasan: rating,
+            isi_ulasan: review,
+            id_detail_transaksi: reviewModalData.id_detail_transaksi,
         };
 
         fetch(`${BASE_URL}/api/ulasan`, {
@@ -318,6 +320,10 @@ const PesananPagePengguna = () => {
                 </Modal>
             </div>
             <Footer />
+            <ChatPenggunaPage 
+                isChatOpen={isChatOpen} 
+                setIsChatOpen={setIsChatOpen}
+            />
         </>
     );
 };

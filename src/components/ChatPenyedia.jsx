@@ -8,92 +8,79 @@ import { Button } from "@nextui-org/react";
 import assets from "../assets";
 import Pusher from 'pusher-js';
 
-const ChatPenggunaPage = ({ isChatOpen, setIsChatOpen }) => {
-    const [penyediaList, setPenyediaList] = useState([]);
+const ChatPenyediaPage = () => {
+    const [isChatOpen, setIsChatOpen] = useState(false);
+    const [penggunaList, setPenggunaList] = useState([]);
+    const [selectedPengguna, setSelectedPengguna] = useState(null);
     const [chatMessages, setChatMessages] = useState([]);
-    const [idPengguna, setIdPengguna] = useState(null);
-    const [selectedPenyedia, setSelectedPenyedia] = useState(null);
+    const [idPenyedia, setIdPenyedia] = useState(null);
 
     useEffect(() => {
-        fetchIdPengguna();
-    }, []);
-
-    useEffect(() => {
-        if (isChatOpen) {
-            fetchPenyediaList();
-        }
-    }, [isChatOpen]);
-
-    useEffect(() => {
+        fetchIdPenyedia();
         const pusher = new Pusher('e21838f78ffab644f9fa', {
             cluster: 'ap1'
         });
 
-        const channel = pusher.subscribe('channel-' + idPengguna);
+        const channel = pusher.subscribe('channel-' + idPenyedia);
         channel.bind('NotifyyFrontend', function (data) {
-            if (selectedPenyedia) {
-                fetchChatMessages(selectedPenyedia.id_penyedia);
-            }
+            fetchChatMessages(selectedPengguna.id_pengguna);
         });
 
         return () => {
             channel.unbind_all();
             channel.unsubscribe();
         };
-    }, [idPengguna, selectedPenyedia]);
+    }, [idPenyedia, selectedPengguna]);
 
-    const fetchIdPengguna = async () => {
+    const fetchIdPenyedia = async () => {
         const authToken = localStorage.getItem('authToken');
         if (authToken) {
-            try {
-                const response = await axios.get(`${BASE_URL}/api/pengguna`, {
-                    headers: {
-                        'Authorization': `Bearer ${authToken}`
-                    }
-                });
-                setIdPengguna(response.data.data.id_pengguna);
-                console.log("User ID fetched:", response.data.data.id_pengguna);
-            } catch (error) {
+            axios.get(`${BASE_URL}/api/penyedia`, {
+                headers: {
+                    'Authorization': `Bearer ${authToken}`
+                }
+            }).then(response => {
+                setIdPenyedia(response.data.data.id_penyedia);
+                console.log(response.data);
+            }).catch(error => {
                 console.error('Error fetching current user:', error);
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
                     text: 'Failed to fetch current user.',
                 });
-            }
+            });
         }
     };
 
-    const fetchPenyediaList = async () => {
+    const fetchPenggunaList = async () => {
         try {
             const authToken = localStorage.getItem('authToken');
-            const response = await axios.get(`${BASE_URL}/api/listChatPengguna`, {
+            const response = await axios.get(`${BASE_URL}/api/listChatPenyedia`, {
                 headers: {
                     'Authorization': `Bearer ${authToken}`
                 }
             });
-            setPenyediaList(response.data.data);
-            console.log("Penyedia list fetched:", response.data.data);
+            setPenggunaList(response.data.data);
         } catch (error) {
-            console.error('Error fetching penyedia list:', error);
+            console.error('Error fetching pengguna list:', error);
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
-                text: 'Failed to fetch penyedia list.',
+                text: 'Failed to fetch pengguna list.',
             });
         }
     };
 
-    const fetchChatMessages = async (id_penyedia) => {
+    const fetchChatMessages = async (id_pengguna) => {
         try {
             const authToken = localStorage.getItem('authToken');
-            const response = await axios.post(`${BASE_URL}/api/isiChatPengguna`, { id_penyedia }, {
+            const response = await axios.post(`${BASE_URL}/api/isiChatPenyedia`, { id_pengguna }, {
                 headers: {
                     'Authorization': `Bearer ${authToken}`
                 }
             });
             setChatMessages(response.data.data);
-            console.log("Chat messages fetched:", response.data.data);
         } catch (error) {
             console.error('Error fetching chat messages:', error);
             Swal.fire({
@@ -105,21 +92,12 @@ const ChatPenggunaPage = ({ isChatOpen, setIsChatOpen }) => {
     };
 
     const handleSendMessage = async (message) => {
-        if (!selectedPenyedia) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'No Penyedia Selected',
-                text: 'Please select a penyedia to start chatting.',
-            });
-            return;
-        }
-
         try {
             const authToken = localStorage.getItem('authToken');
-            const response = await axios.post(`${BASE_URL}/api/chatPengguna`, {
+            const response = await axios.post(`${BASE_URL}/api/chatPenyedia`, {
                 isi_chat: message,
-                id_penyedia: selectedPenyedia.id_penyedia,
-                uid_sender: idPengguna
+                id_pengguna: selectedPengguna.id_pengguna,
+                uid_sender: idPenyedia
             }, {
                 headers: {
                     'Authorization': `Bearer ${authToken}`
@@ -137,6 +115,9 @@ const ChatPenggunaPage = ({ isChatOpen, setIsChatOpen }) => {
     };
 
     const toggleChat = () => {
+        if (!isChatOpen) {
+            fetchPenggunaList();
+        }
         setIsChatOpen(!isChatOpen);
     };
 
@@ -144,9 +125,9 @@ const ChatPenggunaPage = ({ isChatOpen, setIsChatOpen }) => {
         setIsChatOpen(false);
     };
 
-    const selectPenyedia = (penyedia) => {
-        setSelectedPenyedia(penyedia);
-        fetchChatMessages(penyedia.id_penyedia);
+    const selectPengguna = (pengguna) => {
+        setSelectedPengguna(pengguna);
+        fetchChatMessages(pengguna.id_pengguna);
     };
 
     return (
@@ -162,9 +143,9 @@ const ChatPenggunaPage = ({ isChatOpen, setIsChatOpen }) => {
                     <MainContainer>
                         <Sidebar position="left" scrollable>
                             <ConversationList>
-                                {penyediaList.map(penyedia => (
-                                    <Conversation key={penyedia.id_penyedia} name={penyedia.nama_penyedia} onClick={() => selectPenyedia(penyedia)}>
-                                        <Avatar src={penyedia.gambar_penyedia ? "https://tugas-akhir-backend-4aexnrp6vq-uc.a.run.app/storage/gambar/" + penyedia.gambar_penyedia : assets.profile} />
+                                {penggunaList.map(pengguna => (
+                                    <Conversation key={pengguna.id_pengguna} name={pengguna.nama_pengguna} onClick={() => selectPengguna(pengguna)}>
+                                        <Avatar src={pengguna.gambar_pengguna ? "https://tugas-akhir-backend-4aexnrp6vq-uc.a.run.app/storage/gambar/" + pengguna.gambar_pengguna : assets.profile} />
                                     </Conversation>
                                 ))}
                             </ConversationList>
@@ -178,16 +159,14 @@ const ChatPenggunaPage = ({ isChatOpen, setIsChatOpen }) => {
                                             key={index}
                                             model={{
                                                 message: message.isi_chat,
-                                                direction: message.uid_sender === idPengguna ? "outgoing" : "incoming",
+                                                direction: message.uid_sender === idPenyedia ? "outgoing" : "incoming",
                                             }}
                                         />
                                     ))}
                             </MessageList>
-                            <MessageInput 
-                                placeholder={selectedPenyedia ? "Type message here" : "Select a penyedia to start chatting"}
-                                onSend={handleSendMessage}
-                                disabled={!selectedPenyedia}
-                            />
+                            {selectedPengguna && (
+                                <MessageInput placeholder="Type message here" onSend={handleSendMessage} />
+                            )}
                         </ChatContainer>
                     </MainContainer>
                 </div>
@@ -203,4 +182,4 @@ const ChatPenggunaPage = ({ isChatOpen, setIsChatOpen }) => {
     );
 };
 
-export default ChatPenggunaPage;
+export default ChatPenyediaPage;
