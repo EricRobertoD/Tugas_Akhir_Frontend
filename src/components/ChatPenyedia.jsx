@@ -11,45 +11,78 @@ import Pusher from 'pusher-js';
 const ChatPenyediaPage = () => {
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [penggunaList, setPenggunaList] = useState([]);
-    const [selectedPengguna, setSelectedPengguna] = useState(null);
     const [chatMessages, setChatMessages] = useState([]);
     const [idPenyedia, setIdPenyedia] = useState(null);
+    const [selectedPengguna, setSelectedPengguna] = useState(null);
 
     useEffect(() => {
         fetchIdPenyedia();
-        const pusher = new Pusher('e21838f78ffab644f9fa', {
-            cluster: 'ap1'
-        });
+    }, []);
 
-        const channel = pusher.subscribe('channel-' + idPenyedia);
-        channel.bind('NotifyyFrontend', function (data) {
+    useEffect(() => {
+        if (isChatOpen) {
+            fetchPenggunaList();
+        }
+    }, [isChatOpen]);
+
+    useEffect(() => {
+        if (selectedPengguna) {
             fetchChatMessages(selectedPengguna.id_pengguna);
-        });
+        }
+    }, [selectedPengguna]);
 
-        return () => {
-            channel.unbind_all();
-            channel.unsubscribe();
-        };
-    }, [idPenyedia, selectedPengguna]);
+    useEffect(() => {
+        if (idPenyedia) {
+            const pusher = new Pusher('e21838f78ffab644f9fa', {
+                cluster: 'ap1',
+                encrypted: true
+            });
+
+            const channel = pusher.subscribe('channel-' + idPenyedia);
+            console.log('Attempting to subscribe to channel: ', 'channel-' + idPenyedia);
+
+            channel.bind('NotifyyFrontend', function (data) {
+                console.log('Received data: ', data);
+                if (selectedPengguna && data.id_pengguna === selectedPengguna.id_pengguna) {
+                    fetchChatMessages(selectedPengguna.id_pengguna);
+                }
+            });
+
+            channel.bind('pusher:subscription_succeeded', () => {
+                console.log('Successfully subscribed to channel: ', 'channel-' + idPenyedia);
+            });
+
+            channel.bind('pusher:subscription_error', (status) => {
+                console.error('Subscription error: ', status);
+            });
+
+            return () => {
+                channel.unbind_all();
+                channel.unsubscribe();
+                console.log('Unsubscribed from channel: ', 'channel-' + idPenyedia);
+            };
+        }
+    }, [idPenyedia]);
 
     const fetchIdPenyedia = async () => {
         const authToken = localStorage.getItem('authToken');
         if (authToken) {
-            axios.get(`${BASE_URL}/api/penyedia`, {
-                headers: {
-                    'Authorization': `Bearer ${authToken}`
-                }
-            }).then(response => {
+            try {
+                const response = await axios.get(`${BASE_URL}/api/penyedia`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
                 setIdPenyedia(response.data.data.id_penyedia);
-                console.log(response.data);
-            }).catch(error => {
+                console.log("Penyedia ID fetched:", response.data.data.id_penyedia);
+            } catch (error) {
                 console.error('Error fetching current user:', error);
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
                     text: 'Failed to fetch current user.',
                 });
-            });
+            }
         }
     };
 
@@ -62,6 +95,7 @@ const ChatPenyediaPage = () => {
                 }
             });
             setPenggunaList(response.data.data);
+            console.log("Pengguna list fetched:", response.data.data);
         } catch (error) {
             console.error('Error fetching pengguna list:', error);
             Swal.fire({
@@ -81,6 +115,7 @@ const ChatPenyediaPage = () => {
                 }
             });
             setChatMessages(response.data.data);
+            console.log("Chat messages fetched:", response.data.data);
         } catch (error) {
             console.error('Error fetching chat messages:', error);
             Swal.fire({
@@ -92,6 +127,15 @@ const ChatPenyediaPage = () => {
     };
 
     const handleSendMessage = async (message) => {
+        if (!selectedPengguna) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'No Pengguna Selected',
+                text: 'Please select a pengguna to start chatting.',
+            });
+            return;
+        }
+
         try {
             const authToken = localStorage.getItem('authToken');
             const response = await axios.post(`${BASE_URL}/api/chatPenyedia`, {
@@ -115,9 +159,6 @@ const ChatPenyediaPage = () => {
     };
 
     const toggleChat = () => {
-        if (!isChatOpen) {
-            fetchPenggunaList();
-        }
         setIsChatOpen(!isChatOpen);
     };
 
@@ -147,8 +188,8 @@ const ChatPenyediaPage = () => {
                                     <Conversation
                                         key={pengguna.id_pengguna}
                                         name={pengguna.nama_pengguna}
-                                        className={selectedPengguna?.id_pengguna === pengguna.id_pengguna ? "bg-blue-100" : ""}
                                         onClick={() => selectPengguna(pengguna)}
+                                        className={selectedPengguna?.id_pengguna === pengguna.id_pengguna ? "bg-blue-100" : ""}
                                     >
                                         <Avatar src={pengguna.gambar_pengguna ? "https://tugas-akhir-backend-4aexnrp6vq-uc.a.run.app/storage/gambar/" + pengguna.gambar_pengguna : assets.profile} />
                                     </Conversation>
