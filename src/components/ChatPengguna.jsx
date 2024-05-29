@@ -42,8 +42,8 @@ const ChatPenggunaPage = ({ isChatOpen, setIsChatOpen, initialSelectedPenyedia }
             
             channel.bind('App\\Events\\NotifyyFrontend', function (data) {
                 console.log('Received data: ', data);
-                if (selectedPenyedia && data.id_penyedia === selectedPenyedia.id_penyedia) {
-                    setChatMessages(prevMessages => [...prevMessages, data]);
+                if (selectedPenyedia && data.message.id_penyedia === selectedPenyedia.id_penyedia) {
+                    setChatMessages(prevMessages => [...prevMessages, data.message]);
                 }
             });
     

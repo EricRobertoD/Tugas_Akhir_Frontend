@@ -43,8 +43,8 @@ const ChatPenyediaPage = () => {
 
             channel.bind('App\\Events\\NotifyyFrontend', function (data) {
                 console.log('Received data: ', data);
-                if (selectedPengguna && data.id_pengguna === selectedPengguna.id_pengguna) {
-                    setChatMessages(prevMessages => [...prevMessages, data]);
+                if (selectedPengguna && data.message.id_pengguna === selectedPengguna.id_pengguna) {
+                    setChatMessages(prevMessages => [...prevMessages, data.message]);
                 }
             });
 
@@ -62,7 +62,7 @@ const ChatPenyediaPage = () => {
                 console.log('Unsubscribed from channel: ', 'channel-' + idPenyedia);
             };
         }
-    }, [idPenyedia]);
+    }, [idPenyedia, selectedPengguna]);
 
     const fetchIdPenyedia = async () => {
         const authToken = localStorage.getItem('authToken');
