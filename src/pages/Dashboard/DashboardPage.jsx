@@ -10,7 +10,7 @@ import axios from 'axios';
 import Swal from "sweetalert2";
 
 const provinces = [
-    "Aceh", "Bali", "Banten", "Bengkulu", "Gorontalo", "Jakarta", "Jambi",
+    "Semua", "Aceh", "Bali", "Banten", "Bengkulu", "Gorontalo", "Jakarta", "Jambi",
     "Jawa Barat", "Jawa Tengah", "Jawa Timur", "Kalimantan Barat", "Kalimantan Selatan",
     "Kalimantan Tengah", "Kalimantan Timur", "Kalimantan Utara", "Kepulauan Bangka Belitung",
     "Kepulauan Riau", "Lampung", "Maluku", "Maluku Utara", "Nusa Tenggara Barat",
@@ -27,7 +27,7 @@ const DashboardPage = () => {
     const [dateTime, setDateTime] = useState(null);
     const [provinsiPenyedia, setProvinsiPenyedia] = useState("Semua");
     const [isChatOpen, setIsChatOpen] = useState(false);
-    const [selectedProvinsi, setSelectedProvinsi] =  useState(["Semua"]);
+    const [selectedProvinsi, setSelectedProvinsi] = useState(new Set(["Semua"]));
 
     const navigate = useNavigate();
 
@@ -40,7 +40,7 @@ const DashboardPage = () => {
             date_time: dateTime ? `${dateTime.year}-${dateTime.month.toString().padStart(2, '0')}-${dateTime.day.toString().padStart(2, '0')}` : "",
             start_time: `${jamBuka.hour}:${jamBuka.minute}`,
             end_time: `${jamTutup.hour}:${jamTutup.minute}`,
-            provinsi_penyedia: selectedProvinsi,
+            provinsi_penyedia: Array.from(selectedProvinsi)[0],
         };
         console.log(filterData);
         navigate("/MainPagePengguna", { state: { filterData } });
@@ -72,7 +72,7 @@ const DashboardPage = () => {
                     title: 'Location Retrieved',
                     text: `Your location: ${provinceComponent.long_name}`,
                 });
-                setSelectedProvinsi([provinceComponent.long_name]);
+                setSelectedProvinsi(new Set([provinceComponent.long_name]));
             } else {
                 Swal.fire({
                     icon: 'error',
@@ -99,12 +99,11 @@ const DashboardPage = () => {
 
     return (
         <>
-            <div className="min-h-screen bg-[#FFF3E2] w-full relative">
+            <div className="min-h-screen bg-[#FFF3E2] w-full">
                 <NavbarPenggunaLogin />
-                <div className="relative">
                     <img src={assets.landingImage1} alt="" className="w-full" />
                     <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
-                        <Card className="w-[70%] h-[40%] bg-[#d9d9d9] p-10">
+                        <Card className="w-[80%] bg-[#d9d9d9] p-10">
                             <form onSubmit={handleSubmit}>
                                 <div className="mb-4">
                                     <DatePicker
@@ -166,21 +165,22 @@ const DashboardPage = () => {
                                         id="provinsi_penyedia"
                                         value={provinsiPenyedia}
                                         selectedKeys={selectedProvinsi}
-                                        onSelectionChange={setSelectedProvinsi}
+                                        onSelectionChange={(keys) => setSelectedProvinsi(new Set(keys))}
                                     >
-                                        <SelectItem value="Semua">Semua</SelectItem>
                                         {provinces.map((province) => (
                                             <SelectItem key={province} value={province}>
                                                 {province}
                                             </SelectItem>
                                         ))}
                                     </Select>
-                                    <Button
-                                        className="bg-[#FA9884] hover:bg-red-700 text-white rounded-lg"
-                                        onClick={getCurrentPosition}
-                                    >
-                                        Get Current Position
-                                    </Button>
+                                    <div className="flex flex-col justify-center">
+                                        <Button
+                                            className="bg-[#FA9884] hover:bg-red-700 text-white rounded-lg"
+                                            onClick={getCurrentPosition}
+                                        >
+                                            Get Current Position
+                                        </Button>
+                                    </div>
                                 </div>
                                 <div className="w-full">
                                     <Button
@@ -193,7 +193,6 @@ const DashboardPage = () => {
                             </form>
                         </Card>
                     </div>
-                </div>
                 <section id="partner" className="flex flex-col items-center justify-center py-unit-4xl mx-unit-2xl">
                     <span className="mb-5 text-5xl font-bold">Testimoni Pengguna</span>
                     <div className="flex flex-col gap-10 md:flex-row mb-[100px] mt-[100px]">
@@ -255,8 +254,8 @@ const DashboardPage = () => {
                 </section>
             </div>
             <Footer />
-            <ChatPenggunaPage 
-                isChatOpen={isChatOpen} 
+            <ChatPenggunaPage
+                isChatOpen={isChatOpen}
                 setIsChatOpen={setIsChatOpen}
             />
         </>

@@ -1,17 +1,37 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import assets from "../../assets";
 import Footer from "../../components/Footer";
-import { Avatar, Button, Card, CardBody, CardFooter, CardHeader, DatePicker, Divider, TimeInput, Select, SelectItem, Input } from "@nextui-org/react";
+import {
+    Avatar,
+    Button,
+    Card,
+    CardBody,
+    CardFooter,
+    CardHeader,
+    DatePicker,
+    Divider,
+    TimeInput,
+    Select,
+    SelectItem,
+    Input,
+    Modal,
+    ModalContent,
+    ModalFooter,
+    ModalHeader,
+    ModalBody,
+    useDisclosure
+} from "@nextui-org/react";
 import NavbarPenggunaLogin from "../../components/NavbarPenggunaLogin";
 import { Time } from "@internationalized/date";
 import BASE_URL from "../../../apiConfig";
 import ChatPenggunaPage from "../../components/ChatPengguna";
 import axios from 'axios';
+import { parseDate } from "@internationalized/date";
 import Swal from 'sweetalert2';
 
 const provinces = [
-    "Aceh", "Bali", "Banten", "Bengkulu", "Gorontalo", "Jakarta", "Jambi",
+    "Semua", "Aceh", "Bali", "Banten", "Bengkulu", "Gorontalo", "Jakarta", "Jambi",
     "Jawa Barat", "Jawa Tengah", "Jawa Timur", "Kalimantan Barat", "Kalimantan Selatan",
     "Kalimantan Tengah", "Kalimantan Timur", "Kalimantan Utara", "Kepulauan Bangka Belitung",
     "Kepulauan Riau", "Lampung", "Maluku", "Maluku Utara", "Nusa Tenggara Barat",
@@ -27,22 +47,23 @@ const MainPagePengguna = () => {
     const [formData, setFormData] = useState({
         start_budget: filterData?.start_budget || "",
         end_budget: filterData?.end_budget || "",
-        date_time: null,
+        date_time: filterData?.date_time ? parseDate(filterData.date_time) : null,
         start_time: filterData?.start_time ? new Time(...filterData.start_time.split(":")) : new Time(9),
         end_time: filterData?.end_time ? new Time(...filterData.end_time.split(":")) : new Time(18),
-        provinsi_penyedia: filterData?.provinsi_penyedia || ["Semua"],
+        provinsi_penyedia: filterData?.provinsi_penyedia || "Semua",
     });
     const [dataPenyedia, setDataPenyedia] = useState([]);
     const [selectedPenyedia, setSelectedPenyedia] = useState(null);
-    const [idPengguna, setIdPengguna] = useState(null);
     const [isChatOpen, setIsChatOpen] = useState(false);
+    const { isOpen, onOpenChange } = useDisclosure();
+    const [selectedPaket, setSelectedPaket] = useState(null);
+    const [paketOptions, setPaketOptions] = useState([]);
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchFilteredData = async () => {
             try {
                 const authToken = localStorage.getItem("authToken");
-                console.log("Filter data being sent to API:", filterData);
 
                 const response = await fetch(`${BASE_URL}/api/filter`, {
                     method: 'POST',
@@ -59,7 +80,6 @@ const MainPagePengguna = () => {
                 }
 
                 const result = await response.json();
-                console.log("API response:", result);
 
                 if (Array.isArray(result)) {
                     setDataPenyedia(result);
@@ -67,7 +87,6 @@ const MainPagePengguna = () => {
                     setDataPenyedia(result.data || []);
                 }
 
-                console.log("Data penyedia:", dataPenyedia);
             } catch (error) {
                 console.error("Error fetching data: ", error);
                 setDataPenyedia([]);
@@ -79,39 +98,12 @@ const MainPagePengguna = () => {
         }
     }, [filterData]);
 
-    useEffect(() => {
-        const fetchIdPengguna = async () => {
-            try {
-                const authToken = localStorage.getItem('authToken');
-                const response = await axios.get(`${BASE_URL}/api/pengguna`, {
-                    headers: {
-                        'Authorization': `Bearer ${authToken}`
-                    }
-                });
-                setIdPengguna(response.data.data.id_pengguna);
-            } catch (error) {
-                console.error('Error fetching user ID:', error);
-            }
-        };
-
-        fetchIdPengguna();
-    }, []);
 
     const handleFirstChat = async (penyedia) => {
-        if (!idPengguna) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'User not authenticated.',
-            });
-            return;
-        }
-
         try {
             const authToken = localStorage.getItem('authToken');
             const response = await axios.post(`${BASE_URL}/api/chatPenggunaFirst`, {
                 id_penyedia: penyedia.id_penyedia,
-                uid_sender: idPengguna
             }, {
                 headers: {
                     'Authorization': `Bearer ${authToken}`
@@ -141,20 +133,176 @@ const MainPagePengguna = () => {
                 },
                 body: JSON.stringify({ id_penyedia })
             });
-
+    
             if (!response.ok) {
                 throw new Error("Network response was not ok");
             }
-
+    
             const result = await response.json();
             const penyedia = result.data;
-            navigate("/DetailPagePengguna", { state: { penyedia } });
+    
+            const formattedDate = `${formData.date_time.year}-${formData.date_time.month.toString().padStart(2, '0')}-${formData.date_time.day.toString().padStart(2, '0')}`;
+            const formattedStartTime = `${formData.start_time.hour.toString().padStart(2, '0')}:${formData.start_time.minute.toString().padStart(2, '0')}:00`;
+            const formattedEndTime = `${formData.end_time.hour.toString().padStart(2, '0')}:${formData.end_time.minute.toString().padStart(2, '0')}:00`;
+    
+            navigate("/DetailPagePengguna", { 
+                state: { 
+                    penyedia,
+                    tanggal_pelaksanaan: formattedDate,
+                    jam_mulai: formattedStartTime,
+                    jam_selesai: formattedEndTime
+                } 
+            });
         } catch (error) {
             console.error("Error fetching penyedia details:", error);
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
                 text: 'Failed to fetch penyedia details.',
+            });
+        }
+    };
+    
+
+    const fetchPaketOptions = async (penyediaId) => {
+        try {
+            const authToken = localStorage.getItem('authToken');
+            const response = await axios.get(`${BASE_URL}/api/penyedia/${penyediaId}/paket`, {
+                headers: {
+                    'Authorization': `Bearer ${authToken}`
+                }
+            });
+            setPaketOptions(response.data.data);
+        } catch (error) {
+            console.error('Error fetching paket options:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to fetch paket options.',
+            });
+        }
+    };
+
+    const handleTambahKeranjang = async () => {
+        try {
+            const authToken = localStorage.getItem('authToken');
+            const selectedPaketDetail = paketOptions.find(paket => paket.id_paket === parseInt(selectedPaket));
+
+            const formattedDate = `${formData.date_time.year}-${formData.date_time.month.toString().padStart(2, '0')}-${formData.date_time.day.toString().padStart(2, '0')}`;
+            const formattedStartTime = `${formData.start_time.hour.toString().padStart(2, '0')}:${formData.start_time.minute.toString().padStart(2, '0')}:00`;
+            const formattedEndTime = `${formData.end_time.hour.toString().padStart(2, '0')}:${formData.end_time.minute.toString().padStart(2, '0')}:00`;
+
+            console.log(selectedPaketDetail);
+
+            const response = await axios.post(`${BASE_URL}/api/tambahKeranjang`, {
+                id_paket: selectedPaket,
+                subtotal: selectedPaketDetail?.harga_paket,
+                tanggal_pelaksanaan: formattedDate,
+                jam_mulai: formattedStartTime,
+                jam_selesai: formattedEndTime,
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${authToken}`
+                }
+            });
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: 'Added to cart successfully.',
+            });
+            onOpenChange(false);
+        } catch (error) {
+            console.error('Error adding to cart:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to add to cart.',
+            });
+        }
+    };
+
+
+    const openModal = async (penyediaId) => {
+        await fetchPaketOptions(penyediaId);
+        onOpenChange(true);
+    };
+
+    const handleModalClose = () => {
+        onOpenChange(false);
+    };
+
+    const handleInputChange = (event) => {
+        const { id, value } = event.target;
+        setFormData((prevData) => ({
+            ...prevData,
+            [id]: value,
+        }));
+    };
+
+    const handleDateChange = (newDate) => {
+        setFormData((prevData) => ({
+            ...prevData,
+            date_time: newDate,
+        }));
+    };
+
+    const handleTimeChange = (id, newTime) => {
+        setFormData((prevData) => ({
+            ...prevData,
+            [id]: newTime,
+        }));
+    };
+
+    const handleProvinsiChange = (selectedKeys) => {
+        const selectedKey = Array.from(selectedKeys)[0];
+        setFormData((prevData) => ({
+            ...prevData,
+            provinsi_penyedia: selectedKey,
+        }));
+    };
+
+    const getCurrentPosition = () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Geolocation Error',
+                text: 'Geolocation is not supported by this browser.',
+            });
+        }
+    };
+
+    const successCallback = async (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        try {
+            const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyBf8Al8Z_C2kJLnYU5DYeRFsGlBlFoDbcA`);
+            const addressComponents = response.data.results[0].address_components;
+            const provinceComponent = addressComponents.find(component => component.types.includes('administrative_area_level_1'));
+            if (provinceComponent) {
+                setFormData((prevData) => ({
+                    ...prevData,
+                    provinsi_penyedia: provinceComponent.long_name,
+                }));
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Location Retrieved',
+                    text: `Your location: ${provinceComponent.long_name}`,
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Could not determine your province from your location.',
+                });
+            }
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Error retrieving your location.',
             });
         }
     };
@@ -189,7 +337,6 @@ const MainPagePengguna = () => {
             }
 
             const result = await response.json();
-            console.log("API response:", result);
 
             if (Array.isArray(result)) {
                 setDataPenyedia(result);
@@ -197,85 +344,9 @@ const MainPagePengguna = () => {
                 setDataPenyedia(result.data || []);
             }
 
-            console.log("Data penyedia:", dataPenyedia);
         } catch (error) {
             console.error("Error fetching data: ", error);
             setDataPenyedia([]);
-        }
-    };
-
-    const handleInputChange = (event) => {
-        const { id, value } = event.target;
-        setFormData((prevData) => ({
-            ...prevData,
-            [id]: value,
-        }));
-    };
-
-    const handleDateChange = (newDate) => {
-        setFormData((prevData) => ({
-            ...prevData,
-            date_time: newDate,
-        }));
-    };
-
-    const handleTimeChange = (id, newTime) => {
-        setFormData((prevData) => ({
-            ...prevData,
-            [id]: newTime,
-        }));
-    };
-
-    const handleProvinsiChange = (event) => {
-        const { value } = event.target;
-        setFormData((prevData) => ({
-            ...prevData,
-            provinsi_penyedia: value,
-        }));
-    };
-
-    const getCurrentPosition = () => {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
-        } else {
-            Swal.fire({
-                icon: 'error',
-                title: 'Geolocation Error',
-                text: 'Geolocation is not supported by this browser.',
-            });
-        }
-    };
-
-    const successCallback = async (position) => {
-        const lat = position.coords.latitude;
-        const lng = position.coords.longitude;
-        try {
-            const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=YOUR_API_KEY`);
-            const addressComponents = response.data.results[0].address_components;
-            const provinceComponent = addressComponents.find(component => component.types.includes('administrative_area_level_1'));
-            if (provinceComponent) {
-                setFormData((prevData) => ({
-                    ...prevData,
-                    provinsi_penyedia: provinceComponent.long_name,
-                }));
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Location Retrieved',
-                    text: `Your location: ${provinceComponent.long_name}`,
-                });
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Could not determine your province from your location.',
-                });
-            }
-        } catch (error) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Error retrieving your location.',
-            });
         }
     };
 
@@ -352,10 +423,9 @@ const MainPagePengguna = () => {
                                 label="Provinsi"
                                 id="provinsi_penyedia"
                                 value={formData.provinsi_penyedia}
-                                selectedKeys={formData.provinsi_penyedia}
+                                selectedKeys={new Set([formData.provinsi_penyedia])}
                                 onSelectionChange={handleProvinsiChange}
                             >
-                                <SelectItem value="Semua">Semua</SelectItem>
                                 {provinces.map((province) => (
                                     <SelectItem key={province} value={province}>
                                         {province}
@@ -402,14 +472,14 @@ const MainPagePengguna = () => {
                                 </CardBody>
                                 <Divider />
                                 <CardFooter className="flex justify-center py-4">
-                                    <p className="font-bold size-15 cursor-pointer"> Tambah Keranjang</p>
+                                    <p className="font-bold size-15 cursor-pointer" onClick={() => openModal(penyedia.id_penyedia)}>Tambah Keranjang</p>
                                 </CardFooter>
+
                             </Card>
                         ))
                     ) : (
                         <p>No data available.</p>
                     )}
-
                 </div>
             </div>
             <Footer />
@@ -418,6 +488,49 @@ const MainPagePengguna = () => {
                 setIsChatOpen={setIsChatOpen}
                 selectedPenyedia={selectedPenyedia}
             />
+
+            <Modal
+                backdrop="opaque"
+                isOpen={isOpen}
+                onOpenChange={handleModalClose}
+                classNames={{
+                    backdrop: "bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20"
+                }}
+            >
+                <ModalContent>
+                    {(onClose) => (
+                        <>
+                            <ModalHeader>
+                                <p>Select a Package</p>
+                            </ModalHeader>
+                            <ModalBody>
+                                <Select
+                                    label="Paket"
+                                    placeholder="Select a Paket"
+                                    value={selectedPaket}
+                                    selectedKeys={selectedPaket ? new Set([selectedPaket]) : new Set()}
+                                    onSelectionChange={(selectedKeys) => setSelectedPaket(Array.from(selectedKeys)[0])}
+                                >
+                                    {paketOptions.map(paket => (
+                                        <SelectItem key={paket.id_paket} textValue={`${paket.nama_paket} - ${paket.harga_paket}`} value={paket.id_paket.toString()}>
+                                            {paket.nama_paket} - {paket.harga_paket}
+                                        </SelectItem>
+                                    ))}
+                                </Select>
+
+                            </ModalBody>
+                            <ModalFooter>
+                                <Button auto flat onClick={handleModalClose}>
+                                    Cancel
+                                </Button>
+                                <Button auto onClick={handleTambahKeranjang}>
+                                    Add to Cart
+                                </Button>
+                            </ModalFooter>
+                        </>
+                    )}
+                </ModalContent>
+            </Modal>
         </>
     );
 };

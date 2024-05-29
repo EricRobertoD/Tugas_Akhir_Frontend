@@ -10,6 +10,8 @@ import ChatPenyediaPage from "../../components/ChatPenyedia";
 const PesananPagePenyedia = () => {
     const [dataPenyedia, setDataPenyedia] = useState([]);
     const [filter, setFilter] = useState("Semua");
+    
+    
 
     const fetchData = async () => {
         try {
@@ -121,11 +123,8 @@ const PesananPagePenyedia = () => {
                     <div onClick={() => setFilter("Semua")} className={`min-w-max cursor-pointer ${filter === "Semua" ? "underline" : ""}`}>
                         <p>Semua</p>
                     </div>
-                    <div onClick={() => setFilter("Belum Bayar")} className={`min-w-max cursor-pointer ${filter === "Belum Bayar" ? "underline" : ""}`}>
-                        <p>Belum Bayar</p>
-                    </div>
-                    <div onClick={() => setFilter("Sudah Bayar")} className={`min-w-max cursor-pointer ${filter === "Sudah Bayar" ? "underline" : ""}`}>
-                        <p>Sudah Bayar</p>
+                    <div onClick={() => setFilter("Sedang Menghubungkan")} className={`min-w-max cursor-pointer ${filter === "Sedang Menghubungkan" ? "underline" : ""}`}>
+                        <p>Sedang Menghubungkan</p>
                     </div>
                     <div onClick={() => setFilter("Sedang bekerja sama dengan pelanggan")} className={`min-w-max cursor-pointer ${filter === "Sedang bekerja sama dengan pelanggan" ? "underline" : ""}`}>
                         <p>Sedang Bekerja Sama</p>
@@ -152,7 +151,7 @@ const PesananPagePenyedia = () => {
                                         <p className="ml-5">{detailTransaksi.status_penyedia_jasa}</p>
                                     </div>
                                     <div>
-                                        {detailTransaksi.status_penyedia_jasa === "Sudah Bayar" && (
+                                        {detailTransaksi.status_penyedia_jasa === "Sedang Menghubungkan" && (
                                             <>
                                                 <button
                                                     className="bg-[#00A7E1] text-white rounded-lg px-3 py-1 text-md"
@@ -171,7 +170,7 @@ const PesananPagePenyedia = () => {
                                         {detailTransaksi.status_penyedia_jasa === "Sedang bekerja sama dengan pelanggan" && (
                                             <button
                                                 className="bg-[#FA9884] text-white rounded-lg px-3 py-1 text-md ml-2"
-                                                onClick={() => handleUpdateStatus(detailTransaksi.id_detail_transaksi, "Dikonfirmasi Penyedia Jasa")}
+                                                onClick={() => handleUpdateStatus(detailTransaksi.id_detail_transaksi, "Selesai")}
                                             >
                                                 Selesai
                                             </button>

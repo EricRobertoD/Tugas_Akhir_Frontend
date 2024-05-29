@@ -7,6 +7,7 @@ import NavbarPenggunaLogin from "../../components/NavbarPenggunaLogin";
 import BASE_URL from "../../../apiConfig";
 import ReactStars from "react-stars";
 import ChatPenggunaPage from "../../components/ChatPengguna";
+import axios from "axios";
 
 const PesananPagePengguna = () => {
     const [dataPenyedia, setDataPenyedia] = useState([]);
@@ -18,6 +19,7 @@ const PesananPagePengguna = () => {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const { isOpen: isReviewOpen, onOpen: onReviewOpen, onClose: onReviewClose } = useDisclosure();
     const [isChatOpen, setIsChatOpen] = useState(false);
+    const [selectedPenyedia, setSelectedPenyedia] = useState(null);
 
     const fetchData = async () => {
         try {
@@ -42,73 +44,6 @@ const PesananPagePengguna = () => {
         }
     };
 
-    const handleUpdateStatus = (id, newStatus) => {
-        const authToken = localStorage.getItem("authToken");
-
-        Swal.fire({
-            title: 'Apakah Anda yakin?',
-            text: `Apakah Anda yakin untuk melanjutkan pemesanan ini?`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Ya!',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.showLoading();
-
-                const updateData = {
-                    status_penyedia_jasa: newStatus,
-                };
-
-                fetch(`${BASE_URL}/api/updateStatusDetailTransaksi/${id}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${authToken}`,
-                    },
-                    body: JSON.stringify(updateData),
-                })
-                    .then((response) => response.json())
-                    .then((data) => {
-                        Swal.close();
-
-                        if (data.status === 'success') {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Status Updated',
-                                text: 'Selamat Anda telah menyelesaikan pesanan Anda.',
-                            });
-                            fetchData();
-                        } else {
-                            console.log('Update status failed');
-
-                            if (data.errors) {
-                                const errorMessages = Object.values(data.errors).join('\n');
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Update Status Failed',
-                                    text: errorMessages,
-                                });
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Update Status Failed',
-                                    text: 'Please check the status details.',
-                                });
-                            }
-                        }
-                    })
-                    .catch((error) => {
-                        Swal.close();
-                        console.error('Error:', error);
-                    });
-            }
-        });
-    };
-
     const handleKontakClick = (detailTransaksi) => {
         setModalData(detailTransaksi);
         onOpen();
@@ -119,7 +54,7 @@ const PesananPagePengguna = () => {
         onReviewOpen();
     };
 
-    const handleReviewSubmit = () => {
+    const handleReviewSubmit = async () => {
         const authToken = localStorage.getItem("authToken");
 
         const reviewData = {
@@ -128,18 +63,33 @@ const PesananPagePengguna = () => {
             id_detail_transaksi: reviewModalData.id_detail_transaksi,
         };
 
-        fetch(`${BASE_URL}/api/ulasan`, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${authToken}`,
-            },
-            body: JSON.stringify(reviewData),
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                if (data.status === 'success') {
+        try {
+            const reviewResponse = await fetch(`${BASE_URL}/api/ulasan`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${authToken}`,
+                },
+                body: JSON.stringify(reviewData),
+            });
+
+            const reviewResult = await reviewResponse.json();
+
+            if (reviewResult.status === 'success') {
+                const updateStatusResponse = await fetch(`${BASE_URL}/api/updateBerlangsung/${reviewModalData.id_detail_transaksi}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${authToken}`,
+                    },
+                    body: JSON.stringify({ status_berlangsung: "Sudah Beri Ulasan" }),
+                });
+
+                const updateStatusResult = await updateStatusResponse.json();
+
+                if (updateStatusResult.status === 'success') {
                     Swal.fire({
                         icon: 'success',
                         title: 'Ulasan Submitted',
@@ -147,29 +97,43 @@ const PesananPagePengguna = () => {
                     });
                     onReviewClose();
                     fetchData();
-                    handleUpdateStatus(reviewModalData.id_detail_transaksi, "Selesai");
                 } else {
-                    console.log('Review submission failed');
-
-                    if (data.errors) {
-                        const errorMessages = Object.values(data.errors).join('\n');
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Review Submission Failed',
-                            text: errorMessages,
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Review Submission Failed',
-                            text: 'Please check the review details.',
-                        });
-                    }
+                    throw new Error(updateStatusResult.message || 'Failed to update status');
                 }
-            })
-            .catch((error) => {
-                console.error('Error:', error);
+            } else {
+                throw new Error(reviewResult.message || 'Review submission failed');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Review Submission Failed',
+                text: 'Please check the review details.',
             });
+        }
+    };
+
+    const handleFirstChat = async (penyedia) => {
+        console.log(penyedia);
+        try {
+            const authToken = localStorage.getItem('authToken');
+            const response = await axios.post(`${BASE_URL}/api/chatPenggunaFirst`, {
+                id_penyedia: penyedia.id_penyedia,
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${authToken}`
+                }
+            });
+            setSelectedPenyedia(penyedia);
+            setIsChatOpen(true);
+        } catch (error) {
+            console.error('Error initiating chat:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to initiate chat.',
+            });
+        }
     };
 
     useEffect(() => {
@@ -222,28 +186,23 @@ const PesananPagePengguna = () => {
                                     <div>
                                         {detailTransaksi.status_penyedia_jasa === "Sedang bekerja sama dengan pelanggan" && (
                                             <>
-                                                <button
-                                                    className="bg-[#00A7E1] text-white rounded-lg px-3 py-1 text-md"
+                                                <Button
+                                                    className="font-bold bg-[#00A7E1] text-white text-md"
                                                     onClick={() => handleKontakClick(detailTransaksi)}
                                                 >
                                                     Kontak
-                                                </button>
-                                                <button
-                                                    className="bg-[#FA9884] text-white rounded-lg px-3 py-1 text-md ml-2"
-                                                    onClick={() => handleUpdateStatus(detailTransaksi.id_detail_transaksi, "Selesai")}
-                                                >
-                                                    Selesai
-                                                </button>
+                                                </Button>
+                                                <Button className="mx-5 font-bold bg-[#FA9884] hover:bg-red-700 text-white" onClick={() => handleFirstChat(detailTransaksi.paket.penyedia_jasa)}>Chat</Button>
                                             </>
                                         )}
-                                        {detailTransaksi.status_penyedia_jasa === "Selesai" && (
+                                        {detailTransaksi.status_penyedia_jasa === "Selesai" && detailTransaksi.status_berlangsung !== "Sudah Beri Ulasan" && (
                                             <>
-                                                <button
-                                                    className="bg-[#FA9884] text-white rounded-lg px-3 py-1 text-md ml-2"
+                                                <Button
+                                                    className="font-bold bg-[#FA9884] hover:bg-red-700 text-white"
                                                     onClick={() => handleReviewClick(detailTransaksi)}
                                                 >
                                                     Ulasan
-                                                </button>
+                                                </Button>
                                             </>
                                         )}
                                     </div>
@@ -320,9 +279,10 @@ const PesananPagePengguna = () => {
                 </Modal>
             </div>
             <Footer />
-            <ChatPenggunaPage 
-                isChatOpen={isChatOpen} 
+            <ChatPenggunaPage
+                isChatOpen={isChatOpen}
                 setIsChatOpen={setIsChatOpen}
+                initialSelectedPenyedia={selectedPenyedia}
             />
         </>
     );

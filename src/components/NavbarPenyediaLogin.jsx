@@ -73,9 +73,6 @@ export default function NavbarPenyediaLogin() {
     title: "Tampilan",
     link: "/GambarPage",
   }, {
-    title: "Pesanan",
-    link: "/PesananPagePenyedia",
-  }, {
     title: "Paket",
     link: "/PaketPagePenyedia",
   }, {
@@ -129,6 +126,9 @@ export default function NavbarPenyediaLogin() {
               </Button>
               <Button onClick={() => navigate('/UlasanPagePenyedia')} className="my-2">
                 Ulasan
+              </Button>
+              <Button onClick={() => navigate('/PesananPagePenyedia')} className="my-2">
+                Pesanan
               </Button>
             </div>
           </PopoverContent>

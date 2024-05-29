@@ -18,6 +18,7 @@ import MainPagePengguna from "./pages/Pengguna/MainPagePengguna.jsx";
 import ProfilePagePengguna from "./pages/Pengguna/ProfilePagePengguna.jsx";
 import PesananPagePengguna from "./pages/Pengguna/PesananPagePengguna.jsx";
 import DetailPagePengguna from "./pages/Pengguna/DetailPagePengguna.jsx";
+import KeranjangPagePengguna from "./pages/Pengguna/KeranjangPagePengguna.jsx";
 
 const App = () => {
   return (
@@ -41,6 +42,7 @@ const App = () => {
           <Route path="/ProfilePagePengguna" element={<ProfilePagePengguna />}></Route>
           <Route path="/PesananPagePengguna" element={<PesananPagePengguna />}></Route>
           <Route path="/DetailPagePengguna" element={<DetailPagePengguna />}></Route>
+          <Route path="/KeranjangPagePengguna" element={<KeranjangPagePengguna />}></Route>
 
         </Routes>
       </BrowserRouter>

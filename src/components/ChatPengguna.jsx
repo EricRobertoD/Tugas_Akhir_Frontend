@@ -3,16 +3,16 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import { MainContainer, ChatContainer, MessageList, Message, MessageInput, Sidebar, ConversationList, Conversation, Avatar } from "@chatscope/chat-ui-kit-react";
 import "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
-import BASE_URL from "../../apiConfig";  // Ensure this path is correct
+import BASE_URL from "../../apiConfig";
 import { Button } from "@nextui-org/react";
 import assets from "../assets";
 import Pusher from 'pusher-js';
 
-const ChatPenggunaPage = ({ isChatOpen, setIsChatOpen }) => {
+const ChatPenggunaPage = ({ isChatOpen, setIsChatOpen, initialSelectedPenyedia }) => {
     const [penyediaList, setPenyediaList] = useState([]);
     const [chatMessages, setChatMessages] = useState([]);
     const [idPengguna, setIdPengguna] = useState(null);
-    const [selectedPenyedia, setSelectedPenyedia] = useState(null);
+    const [selectedPenyedia, setSelectedPenyedia] = useState(initialSelectedPenyedia);
 
     useEffect(() => {
         fetchIdPengguna();
@@ -23,6 +23,12 @@ const ChatPenggunaPage = ({ isChatOpen, setIsChatOpen }) => {
             fetchPenyediaList();
         }
     }, [isChatOpen]);
+
+    useEffect(() => {
+        if (selectedPenyedia) {
+            fetchChatMessages(selectedPenyedia.id_penyedia);
+        }
+    }, [selectedPenyedia]);
 
     useEffect(() => {
         const pusher = new Pusher('e21838f78ffab644f9fa', {
@@ -163,7 +169,12 @@ const ChatPenggunaPage = ({ isChatOpen, setIsChatOpen }) => {
                         <Sidebar position="left" scrollable>
                             <ConversationList>
                                 {penyediaList.map(penyedia => (
-                                    <Conversation key={penyedia.id_penyedia} name={penyedia.nama_penyedia} onClick={() => selectPenyedia(penyedia)}>
+                                    <Conversation
+                                        key={penyedia.id_penyedia}
+                                        name={penyedia.nama_penyedia}
+                                        onClick={() => selectPenyedia(penyedia)}
+                                        className={selectedPenyedia?.id_penyedia === penyedia.id_penyedia ? "bg-blue-100" : ""}
+                                    >
                                         <Avatar src={penyedia.gambar_penyedia ? "https://tugas-akhir-backend-4aexnrp6vq-uc.a.run.app/storage/gambar/" + penyedia.gambar_penyedia : assets.profile} />
                                     </Conversation>
                                 ))}

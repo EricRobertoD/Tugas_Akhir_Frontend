@@ -144,7 +144,12 @@ const ChatPenyediaPage = () => {
                         <Sidebar position="left" scrollable>
                             <ConversationList>
                                 {penggunaList.map(pengguna => (
-                                    <Conversation key={pengguna.id_pengguna} name={pengguna.nama_pengguna} onClick={() => selectPengguna(pengguna)}>
+                                    <Conversation
+                                        key={pengguna.id_pengguna}
+                                        name={pengguna.nama_pengguna}
+                                        className={selectedPengguna?.id_pengguna === pengguna.id_pengguna ? "bg-blue-100" : ""}
+                                        onClick={() => selectPengguna(pengguna)}
+                                    >
                                         <Avatar src={pengguna.gambar_pengguna ? "https://tugas-akhir-backend-4aexnrp6vq-uc.a.run.app/storage/gambar/" + pengguna.gambar_pengguna : assets.profile} />
                                     </Conversation>
                                 ))}

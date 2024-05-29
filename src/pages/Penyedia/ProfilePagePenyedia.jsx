@@ -22,7 +22,6 @@ const ProfilePagePenyedia = () => {
     const [dataPenyedia, setDataPenyedia] = useState({});
     const [isUpdateMode, setIsUpdateMode] = useState(false);
     const openUpdateImage = useRef(null);
-    const [dataProvinsi_penyedia, setDataProvinsi_penyedia] = useState([]);
 
     useEffect(() => {
         fetchData();
@@ -45,7 +44,6 @@ const ProfilePagePenyedia = () => {
 
             const result = await response.json();
             setDataPenyedia(result.data);
-            setDataProvinsi_penyedia([result.data.provinsi_penyedia]);
             console.log(result.data);
         } catch (error) {
             console.error("Error fetching data: ", error);
@@ -90,6 +88,7 @@ const ProfilePagePenyedia = () => {
             deskripsi_penyedia: dataPenyedia.deskripsi_penyedia,
             provinsi_penyedia: dataPenyedia.provinsi_penyedia,
         };
+        console.log(updateData.provinsi_penyedia);
 
         fetch(`${BASE_URL}/api/penyedia`, {
             method: 'PUT',
@@ -162,7 +161,6 @@ const ProfilePagePenyedia = () => {
                     ...prevState,
                     provinsi_penyedia: provinceComponent.long_name
                 }));
-                setDataProvinsi_penyedia([provinceComponent.long_name]);
                 Swal.fire({
                     icon: 'success',
                     title: 'Location Retrieved',
@@ -182,6 +180,15 @@ const ProfilePagePenyedia = () => {
                 text: 'Error retrieving your location.',
             });
         }
+    };
+
+    
+    const handleProvinsiChange = (selectedKeys) => {
+        const selectedKey = Array.from(selectedKeys)[0];
+        setDataPenyedia((prevData) => ({
+            ...prevData,
+            provinsi_penyedia: selectedKey,
+        }));
     };
 
     const errorCallback = (error) => {
@@ -289,12 +296,10 @@ const ProfilePagePenyedia = () => {
                                         label="Provinsi"
                                         placeholder="Pilih Provinsi"
                                         className="w-full px-3 py-2 font-bold"
-                                        selectedKeys={dataProvinsi_penyedia}
+                                        selectedKeys={new Set([dataPenyedia.provinsi_penyedia])}
                                         isDisabled={!isUpdateMode}
-                                        onSelectionChange={(selected) => setDataPenyedia(prevState => ({
-                                            ...prevState,
-                                            provinsi_penyedia: Array.from(selected)[0]
-                                        }))}
+                                        value={dataPenyedia.provinsi_penyedia}
+                                        onSelectionChange={handleProvinsiChange}
                                     >
                                         {provinces.map((province) => (
                                             <SelectItem key={province} value={province}>
@@ -303,13 +308,14 @@ const ProfilePagePenyedia = () => {
                                         ))}
                                     </Select>
                                     <div className="flex flex-col justify-center">
-                                    <Button
-                                        className="bg-[#FA9884] hover:bg-red-700 text-white rounded-lg"
-                                        onClick={getCurrentPosition}
-                                        disabled={!isUpdateMode}
-                                    >
-                                        Get Current Position
-                                    </Button></div>
+                                        <Button
+                                            className="bg-[#FA9884] hover:bg-red-700 text-white rounded-lg"
+                                            onClick={getCurrentPosition}
+                                            disabled={!isUpdateMode}
+                                        >
+                                            Get Current Position
+                                        </Button>
+                                    </div>
                                 </div>
                                 <Textarea
                                     label="Deskripsi"
