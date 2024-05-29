@@ -41,7 +41,7 @@ const ChatPenyediaPage = () => {
             const channel = pusher.subscribe('channel-' + idPenyedia);
             console.log('Attempting to subscribe to channel: ', 'channel-' + idPenyedia);
 
-            channel.bind('NotifyyFrontend', function (data) {
+            channel.bind('App\Events\NotifyyFrontend', function (data) {
                 console.log('Received data: ', data);
                 if (selectedPengguna && data.id_pengguna === selectedPengguna.id_pengguna) {
                     setChatMessages(prevMessages => [...prevMessages, data]);

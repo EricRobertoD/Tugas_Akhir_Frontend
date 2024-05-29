@@ -40,7 +40,7 @@ const ChatPenggunaPage = ({ isChatOpen, setIsChatOpen, initialSelectedPenyedia }
             const channel = pusher.subscribe('channel-' + idPengguna);
             console.log('Attempting to subscribe to channel: ', 'channel-' + idPengguna);
             
-            channel.bind('NotifyyFrontend', function (data) {
+            channel.bind('App\Events\NotifyyFrontend', function (data) {
                 console.log('Received data: ', data);
                 if (selectedPenyedia && data.id_penyedia === selectedPenyedia.id_penyedia) {
                     setChatMessages(prevMessages => [...prevMessages, data]);
