@@ -3,7 +3,7 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import { MainContainer, ChatContainer, MessageList, Message, MessageInput, Sidebar, ConversationList, Conversation, Avatar } from "@chatscope/chat-ui-kit-react";
 import "@chatscope/chat-ui-kit-styles/dist/default/styles.min.css";
-import BASE_URL from "../../apiConfig";  // Ensure this path is correct
+import BASE_URL from "../../apiConfig";
 import { Button } from "@nextui-org/react";
 import assets from "../assets";
 import Pusher from 'pusher-js';
@@ -44,7 +44,7 @@ const ChatPenyediaPage = () => {
             channel.bind('NotifyyFrontend', function (data) {
                 console.log('Received data: ', data);
                 if (selectedPengguna && data.id_pengguna === selectedPengguna.id_pengguna) {
-                    fetchChatMessages(selectedPengguna.id_pengguna);
+                    setChatMessages(prevMessages => [...prevMessages, data]);
                 }
             });
 
