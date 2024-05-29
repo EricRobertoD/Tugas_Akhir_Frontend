@@ -31,21 +31,23 @@ const ChatPenggunaPage = ({ isChatOpen, setIsChatOpen, initialSelectedPenyedia }
     }, [selectedPenyedia]);
 
     useEffect(() => {
-        const pusher = new Pusher('e21838f78ffab644f9fa', {
-            cluster: 'ap1'
-        });
+        if (idPengguna) {
+            const pusher = new Pusher('e21838f78ffab644f9fa', {
+                cluster: 'ap1'
+            });
 
-        const channel = pusher.subscribe('channel-' + idPengguna);
-        channel.bind('NotifyyFrontend', function (data) {
-            if (selectedPenyedia) {
-                fetchChatMessages(selectedPenyedia.id_penyedia);
-            }
-        });
+            const channel = pusher.subscribe('channel-' + idPengguna);
+            channel.bind('NotifyyFrontend', function (data) {
+                if (selectedPenyedia) {
+                    fetchChatMessages(selectedPenyedia.id_penyedia);
+                }
+            });
 
-        return () => {
-            channel.unbind_all();
-            channel.unsubscribe();
-        };
+            return () => {
+                channel.unbind_all();
+                channel.unsubscribe();
+            };
+        }
     }, [idPengguna, selectedPenyedia]);
 
     const fetchIdPengguna = async () => {
