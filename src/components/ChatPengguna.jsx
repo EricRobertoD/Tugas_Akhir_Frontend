@@ -37,7 +37,9 @@ const ChatPenggunaPage = ({ isChatOpen, setIsChatOpen, initialSelectedPenyedia }
             });
 
             const channel = pusher.subscribe('channel-' + idPengguna);
+            console.log('Subscribed to channel: ', 'channel-' + idPengguna);
             channel.bind('NotifyyFrontend', function (data) {
+                console.log('Received data: ', data);
                 if (selectedPenyedia) {
                     fetchChatMessages(selectedPenyedia.id_penyedia);
                 }
