@@ -261,11 +261,11 @@ const ProfilePagePengguna = () => {
         setter(rupiah(value));
     };
 
-    const handleUpdateModeToggle = () => {
-        if (isUpdateMode) {
+    const handleUpdateModeToggle = (isSelected) => {
+        if (!isSelected) {
             setDataPengguna(initialDataPengguna);
         }
-        setIsUpdateMode(!isUpdateMode);
+        setIsUpdateMode(isSelected);
     };
 
     const getCurrentPosition = () => {
@@ -359,7 +359,7 @@ const ProfilePagePengguna = () => {
                                             <p className="font-bold text-xl">Biodata</p>
                                         </div>
                                         <div className="">
-                                            <Switch className="px-3 py-1" checked={isUpdateMode} onChange={handleUpdateModeToggle}>
+                                            <Switch className="px-3 py-1" isSelected={isUpdateMode} onValueChange={handleUpdateModeToggle}>
                                                 Update Profile
                                             </Switch>
                                         </div>
