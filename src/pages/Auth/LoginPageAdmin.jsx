@@ -7,7 +7,7 @@ import { Input } from "@nextui-org/react";
 import { useNavigate } from 'react-router-dom';
 import BASE_URL from "../../../apiConfig";
 
-const LoginPage = () => {
+const LoginPageAdmin = () => {
     const navigate = useNavigate();
     const [LoginPengguna, setLoginPengguna] = useState({
         email: "",
@@ -22,7 +22,7 @@ const LoginPage = () => {
             password: LoginPengguna.password,
         };
 
-        fetch(`${BASE_URL}/api/login`, {
+        fetch(`${BASE_URL}/api/loginAdmin`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -32,22 +32,10 @@ const LoginPage = () => {
             .then((response) => response.json())
             .then((data) => {
                 Swal.close();
-                if (data.message === 'Authenticated as pengguna') {
+                if (data.message === 'Authenticated as admin') {
                     console.log('Login berhasil');
                     localStorage.setItem('authToken', data.data.access_token);
-                    gtag('event', 'login', {
-                        method: 'Email',
-                        role: 'pengguna' // Include the custom dimension 'role'
-                    });
-                    navigate('/DashboardPage');
-                } else if (data.message === 'Authenticated as penyedia') {
-                    console.log('Login berhasil');
-                    localStorage.setItem('authToken', data.data.access_token);
-                    gtag('event', 'login', {
-                        method: 'Email',
-                        role: 'penyedia' // Include the custom dimension 'role'
-                    });
-                    navigate('/DashboardPagePenyedia');
+                    navigate('/DashboardPageAdmin')
                 } else {
                     Swal.fire({
                         icon: 'error',
@@ -108,7 +96,6 @@ const LoginPage = () => {
                                     onChange={(e) => setLoginPengguna({ ...LoginPengguna, password: e.target.value })}
                                     onKeyDown={handleKeyDown}
                                 />
-                                <a href="/ForgotPasswordPage" className="text-blue-700 text-base pr-1 underline text-right">Lupa sandi?</a>
                                 <div className="px-3 mt-4">
                                     <button
                                         className="bg-[#FA9884] py-4 text-white rounded-md hover-bg-blue-600 w-full"
@@ -116,8 +103,6 @@ const LoginPage = () => {
                                     >
                                         Masuk
                                     </button>
-                                    <p className="flex justify-center mt-10 text-center">Anda belum mempunyai akun?</p>
-                                    <p className="flex justify-center text-center">Silahkan<a href="/registerPage" className="text-blue-700 pl-1 pr-1 underline">daftar</a> terlebih dahulu</p>
                                 </div>
                             </div>
                         </div>
@@ -132,4 +117,4 @@ const LoginPage = () => {
     );
 };
 
-export default LoginPage;
+export default LoginPageAdmin;

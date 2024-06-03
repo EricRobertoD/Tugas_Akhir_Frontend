@@ -19,6 +19,11 @@ import ProfilePagePengguna from "./pages/Pengguna/ProfilePagePengguna.jsx";
 import PesananPagePengguna from "./pages/Pengguna/PesananPagePengguna.jsx";
 import DetailPagePengguna from "./pages/Pengguna/DetailPagePengguna.jsx";
 import KeranjangPagePengguna from "./pages/Pengguna/KeranjangPagePengguna.jsx";
+import LoginPageAdmin from "./pages/Auth/LoginPageAdmin.jsx";
+import DashboardPageAdmin from "./pages/Dashboard/DashboardPageAdmin.jsx";
+import ConfirmDepositPage from "./pages/Admin/confirmDepositPage.jsx";
+import ConfirmWithdrawPage from "./pages/Admin/confirmWithdrawPage.jsx";
+import LaporanAdminPage from "./pages/Admin/LaporanAdminPage.jsx";
 
 const App = () => {
   return (
@@ -43,6 +48,11 @@ const App = () => {
           <Route path="/PesananPagePengguna" element={<PesananPagePengguna />}></Route>
           <Route path="/DetailPagePengguna" element={<DetailPagePengguna />}></Route>
           <Route path="/KeranjangPagePengguna" element={<KeranjangPagePengguna />}></Route>
+          <Route path="/LoginPageAdmin" element={<LoginPageAdmin />}></Route>
+          <Route path="/DashboardPageAdmin" element={<DashboardPageAdmin />}></Route>
+          <Route path="/ConfirmDepositPage" element={<ConfirmDepositPage />}></Route>
+          <Route path="/ConfirmWithdrawPage" element={<ConfirmWithdrawPage />}></Route>
+          <Route path="/LaporanAdminPage" element={<LaporanAdminPage />}></Route>
 
         </Routes>
       </BrowserRouter>

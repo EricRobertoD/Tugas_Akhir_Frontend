@@ -20,7 +20,11 @@ import {
     ModalFooter,
     ModalHeader,
     ModalBody,
-    useDisclosure
+    useDisclosure,
+    Dropdown,
+    DropdownTrigger,
+    DropdownMenu,
+    DropdownItem
 } from "@nextui-org/react";
 import NavbarPenggunaLogin from "../../components/NavbarPenggunaLogin";
 import { Time } from "@internationalized/date";
@@ -40,6 +44,10 @@ const provinces = [
     "Sumatera Utara", "Daerah Istimewa Yogyakarta"
 ];
 
+const roles = [
+    "Semua", "Pembawa Acara", "Fotografer", "Penyusun Acara", "Katering", "Dekor", "Administrasi", "Operasional", "Tim Event Organizer"
+];
+
 const MainPagePengguna = () => {
     const location = useLocation();
     const filterData = location.state?.filterData;
@@ -51,6 +59,7 @@ const MainPagePengguna = () => {
         start_time: filterData?.start_time ? new Time(...filterData.start_time.split(":")) : new Time(9),
         end_time: filterData?.end_time ? new Time(...filterData.end_time.split(":")) : new Time(18),
         provinsi_penyedia: filterData?.provinsi_penyedia || "Semua",
+        role_penyedia: filterData?.role_penyedia || "Semua"
     });
     const [dataPenyedia, setDataPenyedia] = useState([]);
     const [selectedPenyedia, setSelectedPenyedia] = useState(null);
@@ -98,6 +107,21 @@ const MainPagePengguna = () => {
         }
     }, [filterData]);
 
+    const calculateAverageRating = (paket) => {
+        let totalRating = 0;
+        let reviewCount = 0;
+
+        paket.forEach(p => {
+            p.detail_transaksi.forEach(dt => {
+                dt.ulasan.forEach(u => {
+                    totalRating += parseFloat(u.rate_ulasan);
+                    reviewCount++;
+                });
+            });
+        });
+
+        return reviewCount > 0 ? (totalRating / reviewCount).toFixed(1) : 0;
+    };
 
     const handleFirstChat = async (penyedia) => {
         try {
@@ -133,25 +157,25 @@ const MainPagePengguna = () => {
                 },
                 body: JSON.stringify({ id_penyedia })
             });
-    
+
             if (!response.ok) {
                 throw new Error("Network response was not ok");
             }
-    
+
             const result = await response.json();
             const penyedia = result.data;
-    
+
             const formattedDate = `${formData.date_time.year}-${formData.date_time.month.toString().padStart(2, '0')}-${formData.date_time.day.toString().padStart(2, '0')}`;
             const formattedStartTime = `${formData.start_time.hour.toString().padStart(2, '0')}:${formData.start_time.minute.toString().padStart(2, '0')}:00`;
             const formattedEndTime = `${formData.end_time.hour.toString().padStart(2, '0')}:${formData.end_time.minute.toString().padStart(2, '0')}:00`;
-    
-            navigate("/DetailPagePengguna", { 
-                state: { 
+
+            navigate("/DetailPagePengguna", {
+                state: {
                     penyedia,
                     tanggal_pelaksanaan: formattedDate,
                     jam_mulai: formattedStartTime,
                     jam_selesai: formattedEndTime
-                } 
+                }
             });
         } catch (error) {
             console.error("Error fetching penyedia details:", error);
@@ -162,7 +186,6 @@ const MainPagePengguna = () => {
             });
         }
     };
-    
 
     const fetchPaketOptions = async (penyediaId) => {
         try {
@@ -192,8 +215,6 @@ const MainPagePengguna = () => {
             const formattedStartTime = `${formData.start_time.hour.toString().padStart(2, '0')}:${formData.start_time.minute.toString().padStart(2, '0')}:00`;
             const formattedEndTime = `${formData.end_time.hour.toString().padStart(2, '0')}:${formData.end_time.minute.toString().padStart(2, '0')}:00`;
 
-            console.log(selectedPaketDetail);
-
             const response = await axios.post(`${BASE_URL}/api/tambahKeranjang`, {
                 id_paket: selectedPaket,
                 subtotal: selectedPaketDetail?.harga_paket,
@@ -221,7 +242,6 @@ const MainPagePengguna = () => {
             });
         }
     };
-
 
     const openModal = async (penyediaId) => {
         await fetchPaketOptions(penyediaId);
@@ -259,6 +279,14 @@ const MainPagePengguna = () => {
         setFormData((prevData) => ({
             ...prevData,
             provinsi_penyedia: selectedKey,
+        }));
+    };
+
+    const handleRoleChange = (selectedKeys) => {
+        const selectedKey = Array.from(selectedKeys)[0];
+        setFormData((prevData) => ({
+            ...prevData,
+            role_penyedia: selectedKey,
         }));
     };
 
@@ -358,21 +386,43 @@ const MainPagePengguna = () => {
         });
     };
 
+    const filteredPenyedia = dataPenyedia.filter(penyedia =>
+        formData.role_penyedia === "Semua" || penyedia.nama_role === formData.role_penyedia
+    );
+
     return (
         <>
             <div className="min-h-screen bg-[#FFF3E2] w-full flex flex-col items-center">
                 <NavbarPenggunaLogin />
                 <Card className="w-[70%] h-[40%] bg-[#FFE5CA] p-10 mt-10">
                     <form onSubmit={searchData}>
-                        <div className="mb-4">
-                            <DatePicker
-                                label="Tanggal Acara"
-                                type="date"
-                                id="date_time"
-                                value={formData.date_time}
-                                onChange={handleDateChange}
-                            />
+                        <div className="mb-4 flex gap-4">
+                            <div className="w-5/6">
+                                <DatePicker
+                                    label="Tanggal Acara"
+                                    type="date"
+                                    id="date_time"
+                                    value={formData.date_time}
+                                    onChange={handleDateChange}
+                                />
+                            </div>
+                            <div className="w-1/6">
+                                <Select
+                                    label="Role Penyedia"
+                                    id="role_penyedia"
+                                    value={formData.role_penyedia}
+                                    selectedKeys={new Set([formData.role_penyedia])}
+                                    onSelectionChange={handleRoleChange}
+                                >
+                                    {roles.map((role) => (
+                                        <SelectItem key={role} value={role}>
+                                            {role}
+                                        </SelectItem>
+                                    ))}
+                                </Select>
+                            </div>
                         </div>
+
                         <label className="block text-sm font-medium text-gray-700">Budget Range</label>
                         <div className="flex gap-4">
                             <div className="mb-4 w-full">
@@ -449,34 +499,47 @@ const MainPagePengguna = () => {
                         </div>
                     </form>
                 </Card>
-                <div className="mt-10 grid grid-cols-3 gap-x-20 gap-y-10 w-[70%] max-lg:grid-cols-1">
-                    {dataPenyedia.length > 0 ? (
-                        dataPenyedia.map((penyedia) => (
-                            <Card key={penyedia.id_penyedia} className="">
-                                <CardHeader className="flex justify-between items-center">
-                                    <div className="flex items-center">
-                                        <Avatar
-                                            className="w-16 h-16 text-large"
-                                            src={penyedia.gambar_penyedia ? "https://tugas-akhir-backend-4aexnrp6vq-uc.a.run.app/storage/gambar/" + penyedia.gambar_penyedia : assets.profile}
-                                        />
-                                        <div className="flex flex-col items-start justify-center px-2">
-                                            <p className="font-bold">{penyedia.nama_penyedia}</p>
-                                        </div>
-                                    </div>
-                                    <Button className="font-bold bg-[#FA9884] hover:bg-red-700 text-white" onClick={() => handleFirstChat(penyedia)}>Chat</Button>
-                                </CardHeader>
-                                <Divider />
-                                <CardBody>
-                                    <p className="text-justify">{penyedia.deskripsi_penyedia}</p>
-                                    <a onClick={() => handleDetailClick(penyedia.id_penyedia)} className="text-blue-700 text-right py-3 cursor-pointer">Selengkapnya</a>
-                                </CardBody>
-                                <Divider />
-                                <CardFooter className="flex justify-center py-4">
-                                    <p className="font-bold size-15 cursor-pointer" onClick={() => openModal(penyedia.id_penyedia)}>Tambah Keranjang</p>
-                                </CardFooter>
+                <div className="mt-10 grid grid-cols-3 gap-x-20 gap-y-10 w-[70%] max-lg:grid-cols-1 mb-10">
+                    {filteredPenyedia.length > 0 ? (
+                        filteredPenyedia.map((penyedia) => {
+                            const averageRating = calculateAverageRating(penyedia.paket);
 
-                            </Card>
-                        ))
+                            return (
+                                <Card key={penyedia.id_penyedia} className="">
+                                    <CardHeader className="flex justify-between items-center">
+                                        <div className="flex items-center">
+                                            <Avatar
+                                                className="w-16 h-16 text-large"
+                                                src={penyedia.gambar_penyedia ? "https://tugas-akhir-backend-4aexnrp6vq-uc.a.run.app/storage/gambar/" + penyedia.gambar_penyedia : assets.profile}
+                                            />
+                                            <div className="flex flex-col items-start justify-center px-2">
+                                                <p className="font-bold">{penyedia.nama_penyedia}</p>
+                                                {averageRating > 0 ? (
+                                                    <span className="ml-2 text-yellow-500 flex items-center">
+                                                        {averageRating} <p>⭐</p>
+                                                    </span>
+                                                ) : (
+                                                    <span className="ml-2 text-gray-500 flex items-center">
+                                                        - <p>⭐</p>
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <Button className="font-bold bg-[#FA9884] hover:bg-red-700 text-white" onClick={() => handleFirstChat(penyedia)}>Chat</Button>
+                                    </CardHeader>
+                                    <Divider />
+                                    <CardBody>
+                                    <p className="text-justify font-bold text-lg">{penyedia.nama_role}</p>
+                                        <p className="text-justify">{penyedia.deskripsi_penyedia}</p>
+                                        <a onClick={() => handleDetailClick(penyedia.id_penyedia)} className="text-blue-700 text-right py-3 cursor-pointer">Selengkapnya</a>
+                                    </CardBody>
+                                    <Divider />
+                                    <CardFooter className="flex justify-center py-4">
+                                        <p className="font-bold size-15 cursor-pointer" onClick={() => openModal(penyedia.id_penyedia)}>Tambah Keranjang</p>
+                                    </CardFooter>
+                                </Card>
+                            );
+                        })
                     ) : (
                         <p>No data available.</p>
                     )}
@@ -536,3 +599,4 @@ const MainPagePengguna = () => {
 };
 
 export default MainPagePengguna;
+

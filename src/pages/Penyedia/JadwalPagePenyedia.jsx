@@ -16,8 +16,8 @@ const JadwalPagePenyedia = () => {
     const [editId, setEditId] = useState(null);
 
     const [hari, setHari] = useState("");
-    const [jamBuka, setJamBuka] = useState(new Time(9));
-    const [jamTutup, setJamTutup] = useState(new Time(18));
+    const [jamBuka, setJamBuka] = useState(new Time(0o0));
+    const [jamTutup, setJamTutup] = useState(new Time(23,59));
     const [hariSelect, setHariSelect] = useState(new Set());
 
     const fetchData = async () => {
@@ -137,6 +137,11 @@ const JadwalPagePenyedia = () => {
 
             fetchDataJadwal();
             onOpenChange(false);
+            setHariSelect(new Set());
+            setJamBuka(new Time(0o0));
+            setJamTutup(new Time(23,59));
+            setEditId(null);
+            setHari("");
         } catch (error) {
             console.error("Error creating jadwal: ", error);
             Swal.fire({
@@ -204,8 +209,8 @@ const JadwalPagePenyedia = () => {
         setEditId(null);
         setHari("");
         setHariSelect(new Set());
-        setJamBuka(new Time(9));
-        setJamTutup(new Time(18));
+        setJamBuka(new Time(0o0));
+        setJamTutup(new Time(23,59));
         onOpenChange(false);
     };
 
@@ -316,14 +321,14 @@ const JadwalPagePenyedia = () => {
                                 </Select>
                                 <TimeInput 
                                     label="Jam Buka" 
-                                    placeholderValue={new Time(9)}
+                                    placeholderValue={new Time(0o0)}
                                     hourCycle={24}
                                     value={jamBuka}
                                     onChange={setJamBuka}
                                 />
                                 <TimeInput
                                     label="Jam Tutup" 
-                                    placeholderValue={new Time(18)}
+                                    placeholderValue={new Time(23,59)}
                                     hourCycle={24}
                                     value={jamTutup}
                                     onChange={setJamTutup}

@@ -5,16 +5,15 @@ import { Scrollbar } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Navigation } from 'swiper/modules';
 import { Card, CardBody, CardHeader, Divider, Image } from "@nextui-org/react";
-import NavbarPenyediaLogin from "../../components/NavbarPenyediaLogin";
-import ChatPenyediaPage from "../../components/ChatPenyedia";
+import NavbarAdminLogin from "../../components/NavbarAdminLogin";
 import usePageTitle from "../../usePageTitle";
 
-const DashboardPagePenyedia = () => {
-    usePageTitle('DashboardPagePenyedia');
+const DashboardPageAdmin = () => {
+    usePageTitle('DashboardPageAdmin');
     return (
         <>
             <div className="min-h-screen bg-[#FFF3E2]">
-                <NavbarPenyediaLogin></NavbarPenyediaLogin>
+                <NavbarAdminLogin></NavbarAdminLogin>
                 <Swiper
                     scrollbar={{
                         hide: true,
@@ -103,10 +102,9 @@ const DashboardPagePenyedia = () => {
 
             </div>
             <Footer />
-            <ChatPenyediaPage />
         </>
 
     )
 }
 
-export default DashboardPagePenyedia
+export default DashboardPageAdmin

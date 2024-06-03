@@ -10,8 +10,8 @@ import ChatPenyediaPage from "../../components/ChatPenyedia";
 const PesananPagePenyedia = () => {
     const [dataPenyedia, setDataPenyedia] = useState([]);
     const [filter, setFilter] = useState("Semua");
-    
-    
+
+
 
     const fetchData = async () => {
         try {
@@ -35,6 +35,113 @@ const PesananPagePenyedia = () => {
             console.error("Error fetching data: ", error);
         }
     };
+
+    const handleConfirmDetailTransaksi = (id) => {
+        const authToken = localStorage.getItem("authToken");
+    
+        Swal.fire({
+            title: 'Apakah Anda yakin?',
+            text: 'Apakah Anda yakin untuk mengkonfirmasi transaksi ini?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ya!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.showLoading();
+    
+                fetch(`${BASE_URL}/api/confirmDetailTransaksi/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${authToken}`,
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    Swal.close();
+    
+                    if (data.status === 'success') {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Transaksi Confirmed',
+                            text: 'Transaksi berhasil dikonfirmasi.',
+                        });
+                        fetchData();
+                    } else {
+                        console.error('Confirmation failed', data);
+    
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Confirmation Failed',
+                            text: data.message || 'Please check the details.',
+                        });
+                    }
+                })
+                .catch(error => {
+                    Swal.close();
+                    console.error('Error:', error);
+                });
+            }
+        });
+    };
+    
+    const handleCancelDetailTransaksi = (id) => {
+        const authToken = localStorage.getItem("authToken");
+    
+        Swal.fire({
+            title: 'Apakah Anda yakin?',
+            text: 'Apakah Anda yakin untuk membatalkan transaksi ini?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ya!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.showLoading();
+    
+                fetch(`${BASE_URL}/api/cancelDetailTransaksi/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${authToken}`,
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    Swal.close();
+    
+                    if (data.status === 'success') {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Transaksi Canceled',
+                            text: 'Transaksi berhasil dibatalkan.',
+                        });
+                        fetchData();
+                    } else {
+                        console.error('Cancellation failed', data);
+    
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Cancellation Failed',
+                            text: data.message || 'Please check the details.',
+                        });
+                    }
+                })
+                .catch(error => {
+                    Swal.close();
+                    console.error('Error:', error);
+                });
+            }
+        });
+    };
+    
 
     const handleUpdateStatus = (id, newStatus) => {
         const authToken = localStorage.getItem("authToken");
@@ -155,18 +262,19 @@ const PesananPagePenyedia = () => {
                                             <>
                                                 <button
                                                     className="bg-[#00A7E1] text-white rounded-lg px-3 py-1 text-md"
-                                                    onClick={() => handleUpdateStatus(detailTransaksi.id_detail_transaksi, "Sedang bekerja sama dengan pelanggan")}
+                                                    onClick={() => handleConfirmDetailTransaksi(detailTransaksi.id_detail_transaksi)}
                                                 >
                                                     Konfirmasi
                                                 </button>
                                                 <button
                                                     className="bg-[#FA9884] text-white rounded-lg px-3 py-1 text-md ml-2"
-                                                    onClick={() => handleUpdateStatus(detailTransaksi.id_detail_transaksi, "Belum Bayar")}
+                                                    onClick={() => handleCancelDetailTransaksi(detailTransaksi.id_detail_transaksi)}
                                                 >
                                                     Batalkan
                                                 </button>
                                             </>
                                         )}
+
                                         {detailTransaksi.status_penyedia_jasa === "Sedang bekerja sama dengan pelanggan" && (
                                             <button
                                                 className="bg-[#FA9884] text-white rounded-lg px-3 py-1 text-md ml-2"

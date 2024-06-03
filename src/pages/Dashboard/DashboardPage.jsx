@@ -8,6 +8,7 @@ import { Time } from "@internationalized/date";
 import ChatPenggunaPage from "../../components/ChatPengguna";
 import axios from 'axios';
 import Swal from "sweetalert2";
+import usePageTitle from "../../usePageTitle";
 
 const provinces = [
     "Semua", "Aceh", "Bali", "Banten", "Bengkulu", "Gorontalo", "Jakarta", "Jambi",
@@ -20,6 +21,8 @@ const provinces = [
 ];
 
 const DashboardPage = () => {
+    usePageTitle('DashboardPage');
+
     const [startBudget, setStartBudget] = useState("");
     const [jamBuka, setJamBuka] = useState(new Time(9));
     const [jamTutup, setJamTutup] = useState(new Time(18));
@@ -101,9 +104,10 @@ const DashboardPage = () => {
         <>
             <div className="min-h-screen bg-[#FFF3E2] w-full">
                 <NavbarPenggunaLogin />
-                    <img src={assets.landingImage1} alt="" className="w-full" />
-                    <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
-                        <Card className="w-[80%] bg-[#d9d9d9] p-10">
+                <div className="relative py-32">
+                    <img src={assets.landingImage1} alt="" className="object-cover h-full w-full absolute top-0 left-0 right-0 bottom-0" />
+                    <div className="container mx-auto">
+                        <Card className="bg-[#d9d9d9] p-10">
                             <form onSubmit={handleSubmit}>
                                 <div className="mb-4">
                                     <DatePicker
@@ -193,8 +197,9 @@ const DashboardPage = () => {
                             </form>
                         </Card>
                     </div>
+                </div>
                 <section id="partner" className="flex flex-col items-center justify-center py-unit-4xl mx-unit-2xl">
-                    <span className="mb-5 text-5xl font-bold">Testimoni Pengguna</span>
+                    <span className="mb-5 text-5xl font-bold text-center">Testimoni Pengguna</span>
                     <div className="flex flex-col gap-10 md:flex-row mb-[100px] mt-[100px]">
                         <Card className="max-w-[400px]">
                             <CardHeader className="flex gap-3">

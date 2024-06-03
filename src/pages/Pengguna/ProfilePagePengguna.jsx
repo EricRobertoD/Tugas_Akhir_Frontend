@@ -1,25 +1,40 @@
 import React, { useEffect, useRef, useState } from "react";
 import assets from "../../assets";
 import Footer from "../../components/Footer";
-import { Avatar, Card, CardBody, CardFooter, CardHeader, Divider, Image, Input, Textarea } from "@nextui-org/react";
+import { Avatar, Button, Card, CardBody, CardHeader, Input, Switch, Tab, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Tabs, Textarea } from "@nextui-org/react";
 import Swal from "sweetalert2";
-import axios from "axios";
 import NavbarPenggunaLogin from "../../components/NavbarPenggunaLogin";
 import BASE_URL from "../../../apiConfig";
 import ChatPenggunaPage from "../../components/ChatPengguna";
+import { rupiah } from "../../utils/Currency";
+import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@nextui-org/react";
+import axios from "axios";
 
 const ProfilePagePengguna = () => {
     const [dataPengguna, setDataPengguna] = useState({});
+    const [initialDataPengguna, setInitialDataPengguna] = useState({});
+    const [dataSaldo, setDataSaldo] = useState({});
     const [isUpdateMode, setIsUpdateMode] = useState(false);
     const [isChatOpen, setIsChatOpen] = useState(false);
+    const [depositTotal, setDepositTotal] = useState("");
+    const [depositImage, setDepositImage] = useState(null);
+    const [withdrawTotal, setWithdrawTotal] = useState("");
+    const [nomorRekening, setNomorRekening] = useState("");
+
+    const { isOpen: isDepositOpen, onOpen: openDepositModal, onOpenChange: onDepositOpenChange } = useDisclosure();
+    const { isOpen: isWithdrawOpen, onOpen: openWithdrawModal, onOpenChange: onWithdrawOpenChange } = useDisclosure();
 
     const openUpdateImage = useRef(null);
+
+    useEffect(() => {
+        fetchData();
+        fetchDataSaldo();
+    }, []);
 
     const fetchData = async () => {
         try {
             const authToken = localStorage.getItem("authToken");
-            const response = await fetch(`
-            ${BASE_URL}//api/pengguna`, {
+            const response = await fetch(`${BASE_URL}/api/pengguna`, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
@@ -33,12 +48,36 @@ const ProfilePagePengguna = () => {
 
             const result = await response.json();
             setDataPengguna(result.data);
+            setInitialDataPengguna(result.data); // Store the initial data
             console.log(result.data);
         } catch (error) {
             console.error("Error fetching data: ", error);
         }
     };
 
+    const fetchDataSaldo = async () => {
+        try {
+            const authToken = localStorage.getItem("authToken");
+            const response = await fetch(`${BASE_URL}/api/saldoPengguna`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    Authorization: `Bearer ${authToken}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+
+            const result = await response.json();
+            const sortedData = result.data.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+            setDataSaldo(sortedData);
+            console.log(sortedData);
+        } catch (error) {
+            console.error("Error fetching data: ", error);
+        }
+    };
 
     const handleOpen = () => {
         openUpdateImage.current.click();
@@ -47,24 +86,30 @@ const ProfilePagePengguna = () => {
     const updateImage = async (e) => {
         const formData = new FormData();
         formData.append('gambar_pengguna', e.target.files[0]);
-        console.log(e.target.files[0])
+        console.log(e.target.files[0]);
 
         const authToken = localStorage.getItem("authToken");
 
-        axios.post(`${BASE_URL}/api/updatePenggunaGambar`, formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-                Authorization: `Bearer ${authToken}`,
+        try {
+            const response = await fetch(`${BASE_URL}/api/updatePenggunaGambar`, {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+                body: formData,
+            });
+
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
             }
-        }).then((response) => {
+
             fetchData();
             openUpdateImage.current.value = null;
-            console.log(response);
-        }).catch((error) => {
+            console.log(await response.json());
+        } catch (error) {
             console.log(error);
-        });
+        }
     };
-
 
     const handleUpdate = () => {
         const authToken = localStorage.getItem("authToken");
@@ -79,7 +124,7 @@ const ProfilePagePengguna = () => {
             deskripsi_pengguna: dataPengguna.deskripsi_pengguna,
         };
 
-        fetch(`${BASE_URL}//api/pengguna`, {
+        fetch(`${BASE_URL}/api/pengguna`, {
             method: 'PUT',
             headers: {
                 'Accept': 'application/json',
@@ -98,24 +143,24 @@ const ProfilePagePengguna = () => {
                         title: 'Berhasil ganti profil',
                         text: 'Anda telah berhasil melakukan ganti profil.',
                     });
-                    console.log('Registration successful');
+                    console.log('Update successful');
                     fetchData();
                     setIsUpdateMode(false);
                 } else {
-                    console.log('Registration failed');
+                    console.log('Update failed');
 
                     if (data.errors) {
                         const errorMessages = Object.values(data.errors).join('\n');
                         Swal.fire({
                             icon: 'error',
-                            title: 'Registrasi Gagal',
+                            title: 'Update Gagal',
                             text: errorMessages,
                         });
                     } else {
                         Swal.fire({
                             icon: 'error',
-                            title: 'Registrasi Gagal',
-                            text: 'Please check the registration details.',
+                            title: 'Update Gagal',
+                            text: 'Please check the update details.',
                         });
                     }
                 }
@@ -126,18 +171,164 @@ const ProfilePagePengguna = () => {
             });
     };
 
+    const handleDeposit = async () => {
+        const authToken = localStorage.getItem("authToken");
+        const formData = new FormData();
+        formData.append('total', depositTotal.replace(/[^\d]/g, '')); // Remove non-digit characters
+        formData.append('gambar_saldo', depositImage);
 
-    useEffect(() => {
-        fetchData();
-    }, []);
+        try {
+            const response = await fetch(`${BASE_URL}/api/saldoDeposit`, {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                },
+                body: formData,
+            });
+
+            const result = await response.json();
+
+            if (result.status === 'success') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Deposit berhasil',
+                    text: 'Permintaan deposit berhasil diajukan.',
+                });
+                fetchDataSaldo();
+                fetchData();
+                onDepositOpenChange(false);
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Deposit gagal',
+                    text: 'Terjadi kesalahan saat mengajukan deposit.',
+                });
+            }
+        } catch (error) {
+            console.error("Error during deposit: ", error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Deposit gagal',
+                text: error.message,
+            });
+        }
+    };
+
+    const handleWithdraw = async () => {
+        const authToken = localStorage.getItem("authToken");
+
+        try {
+            const response = await fetch(`${BASE_URL}/api/saldoWithdraw`, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${authToken}`,
+                },
+                body: JSON.stringify({ total: withdrawTotal.replace(/[^\d]/g, ''), nomor_rekening: nomorRekening }),
+            });
+
+            const result = await response.json();
+
+            if (result.status === 'success') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Withdraw berhasil',
+                    text: 'Permintaan withdraw berhasil diajukan.',
+                });
+                fetchDataSaldo();
+                fetchData();
+                onWithdrawOpenChange(false);
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Withdraw gagal',
+                    text: result.message || 'Terjadi kesalahan saat mengajukan withdraw.',
+                });
+            }
+        } catch (error) {
+            console.error("Error during withdraw: ", error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Withdraw gagal',
+                text: 'Terjadi kesalahan saat mengajukan withdraw.',
+            });
+        }
+    };
+
+    const handleCurrencyChange = (setter) => (e) => {
+        const value = e.target.value.replace(/[^\d]/g, '');
+        setter(rupiah(value));
+    };
+
+    const handleUpdateModeToggle = () => {
+        if (isUpdateMode) {
+            setDataPengguna(initialDataPengguna);
+        }
+        setIsUpdateMode(!isUpdateMode);
+    };
+
+    const getCurrentPosition = () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Geolocation Error',
+                text: 'Geolocation is not supported by this browser.',
+            });
+        }
+    };
+
+    const successCallback = async (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        try {
+            const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyBf8Al8Z_C2kJLnYU5DYeRFsGlBlFoDbcA`);
+            const addressComponents = response.data.results[0].address_components;
+            const provinceComponent = addressComponents.find(component => component.types.includes('administrative_area_level_1'));
+            const address = response.data.results[0].formatted_address;
+            if (provinceComponent) {
+                setDataPengguna(prevState => ({
+                    ...prevState,
+                    provinsi_pengguna: provinceComponent.long_name,
+                    alamat_pengguna: address
+                }));
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Location Retrieved',
+                    text: `Your location: ${provinceComponent.long_name}, ${address}`,
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Could not determine your province from your location.',
+                });
+            }
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Error retrieving your location.',
+            });
+        }
+    };
+
+    const errorCallback = (error) => {
+        Swal.fire({
+            icon: 'error',
+            title: 'Geolocation Error',
+            text: `Error occurred while retrieving your location: ${error.message}`,
+        });
+    };
 
     return (
         <>
             <div className="min-h-screen bg-[#FFF3E2]">
                 <NavbarPenggunaLogin />
-                <div className="flex justify-center items-center py-[6%]">
-                    <Card className="w-[60%] bg-white">
-
+                <div className="mx-auto container py-32">
+                    <Card className="bg-white mb-20">
                         <CardHeader className="flex lg:justify-between gap-3 max-lg:flex-col">
                             <div className="flex py-5">
                                 <div className="flex flex-col px-5 pt-10">
@@ -149,92 +340,248 @@ const ProfilePagePengguna = () => {
                                     <button className="bg-[#FA9884] text-white rounded-lg px-3 my-2" onClick={handleOpen}>Profil</button>
                                 </div>
                                 <div className="flex flex-col items-start justify-center px-2">
-                                    <p className="font-semibold text-2xl">Profil Saya</p>
-                                    <p className="text-xl">Kelola informasi profil Anda</p>
+                                    <p className="font-semibold text-xl">Profil Saya</p>
+                                    <p className="text-lg">Kelola informasi profil Anda</p>
                                 </div>
                             </div>
-                            <div className="mr-10 flex justify-start">
-                                {isUpdateMode ? (
-                                    <div>
-                                        <button className="bg-[#FA9884] text-white rounded-lg px-3 py-1 text-lg mr-2" onClick={() => setIsUpdateMode(false)}>
-                                            Batal
-                                        </button>
-                                        <button className="bg-[#00A7E1] text-white rounded-lg px-3 py-1 text-lg" onClick={handleUpdate}>
-                                            Simpan
-                                        </button>
-                                    </div>
-                                ) : (
-                                    <button className="bg-[#FA9884] text-white rounded-lg px-3 py-1 text-lg" onClick={() => setIsUpdateMode(true)}>
-                                        Update Profile
-                                    </button>
-                                )}
+                            <div className="mr-4">
+                                <p className="text-end">Saldo Anda :</p>
+                                <p className="font-bold text-xl">{rupiah(dataPengguna.saldo)}</p>
                             </div>
                         </CardHeader>
-                        <Divider className="my-5" />
-                        <CardBody className="mb-10 mt-5">
-                            <div className="flex flex-col gap-3">
-                                <Input
-                                    label="Nama"
-                                    placeholder="Masukkan Nama"
-                                    type="text"
-                                    id="nama"
-                                    className="w-full px-3 py-2 font-bold"
-                                    value={dataPengguna.nama_pengguna}
-                                    disabled={!isUpdateMode}
-                                    onChange={(e) => setDataPengguna({ ...dataPengguna, nama_pengguna: e.target.value })}
-                                />
-                                <Input
-                                    label="Email"
-                                    placeholder="Masukkan Email"
-                                    type="text"
-                                    id="email"
-                                    className="w-full px-3 py-2 font-bold"
-                                    value={dataPengguna.email_pengguna}
-                                    disabled={!isUpdateMode}
-                                    onChange={(e) => setDataPengguna({ ...dataPengguna, email_pengguna: e.target.value })}
-                                />
-                                <Input
-                                    label="Nomor Handphone"
-                                    placeholder="Masukkan Nomor Handphone"
-                                    type="number"
-                                    id="nomor_handphone"
-                                    className="w-full px-3 py-2 font-bold"
-                                    value={dataPengguna.nomor_telepon_pengguna}
-                                    disabled={!isUpdateMode}
-                                    onChange={(e) => setDataPengguna({ ...dataPengguna, nomor_telepon_pengguna: e.target.value })}
-                                />
-                                <Input
-                                    label="Nomor Whatsapp"
-                                    placeholder="Masukkan Nomor Whatsapp"
-                                    type="number"
-                                    id="nomor_whatsapp"
-                                    className="w-full px-3 py-2 font-bold"
-                                    value={dataPengguna.nomor_whatsapp_pengguna}
-                                    disabled={!isUpdateMode}
-                                    onChange={(e) => setDataPengguna({ ...dataPengguna, nomor_whatsapp_pengguna: e.target.value })}
-                                />
-                                <Input
-                                    label="Alamat"
-                                    placeholder="Masukkan Alamat"
-                                    type="text"
-                                    id="alamat"
-                                    className="w-full px-3 py-2 font-bold"
-                                    value={dataPengguna.alamat_pengguna}
-                                    disabled={!isUpdateMode}
-                                    onChange={(e) => setDataPengguna({ ...dataPengguna, alamat_pengguna: e.target.value })}
-                                />
-                            </div>
-                        </CardBody>
+                    </Card>
+                    <Card className="bg-white">
+                        <Tabs aria-label="Options" fullWidth variant="light" className="px-6 pt-6">
+                            <Tab key="profil" title="Profil" className="w-full">
+                                <CardBody className="">
+                                    <div className="flex justify-between items-center">
+                                        <div className="px-4">
+                                            <p className="font-bold text-xl">Biodata</p>
+                                        </div>
+                                        <div className="">
+                                            <Switch className="px-3 py-1" checked={isUpdateMode} onChange={handleUpdateModeToggle}>
+                                                Update Profile
+                                            </Switch>
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col gap-3">
+                                        <div className="flex">
+                                            <Input
+                                                label="Nama"
+                                                placeholder="Masukkan Nama"
+                                                type="text"
+                                                id="nama"
+                                                className="w-full px-3 py-2 font-bold"
+                                                variant={isUpdateMode ? "bordered" : "underlined"}
+                                                value={dataPengguna.nama_pengguna}
+                                                disabled={!isUpdateMode}
+                                                onChange={(e) => setDataPengguna({ ...dataPengguna, nama_pengguna: e.target.value })}
+                                            />
+                                            <Input
+                                                label="Email"
+                                                placeholder="Masukkan Email"
+                                                type="text"
+                                                id="email"
+                                                className="w-full px-3 py-2 font-bold"
+                                                variant={isUpdateMode ? "bordered" : "underlined"}
+                                                value={dataPengguna.email_pengguna}
+                                                disabled={!isUpdateMode}
+                                                onChange={(e) => setDataPengguna({ ...dataPengguna, email_pengguna: e.target.value })}
+                                            />
+                                        </div>
+                                        <div className="flex">
+                                            <Input
+                                                label="Nomor Handphone"
+                                                placeholder="Masukkan Nomor Handphone"
+                                                type="number"
+                                                id="nomor_handphone"
+                                                className="w-full px-3 py-2 font-bold"
+                                                variant={isUpdateMode ? "bordered" : "underlined"}
+                                                value={dataPengguna.nomor_telepon_pengguna}
+                                                disabled={!isUpdateMode}
+                                                onChange={(e) => setDataPengguna({ ...dataPengguna, nomor_telepon_pengguna: e.target.value })}
+                                            />
+                                            <Input
+                                                label="Nomor Whatsapp"
+                                                placeholder="Masukkan Nomor Whatsapp"
+                                                type="number"
+                                                id="nomor_whatsapp"
+                                                className="w-full px-3 py-2 font-bold"
+                                                variant={isUpdateMode ? "bordered" : "underlined"}
+                                                value={dataPengguna.nomor_whatsapp_pengguna}
+                                                disabled={!isUpdateMode}
+                                                onChange={(e) => setDataPengguna({ ...dataPengguna, nomor_whatsapp_pengguna: e.target.value })}
+                                            />
+                                        </div>
+                                        <div className="">
+                                        <Textarea
+                                            label="Alamat"
+                                            placeholder="Masukkan Alamat"
+                                            type="text"
+                                            id="alamat"
+                                            className="w-full px-3 py-2 font-bold"
+                                            variant={isUpdateMode ? "bordered" : "underlined"}
+                                            value={dataPengguna.alamat_pengguna}
+                                            disabled={!isUpdateMode}
+                                            onChange={(e) => setDataPengguna({ ...dataPengguna, alamat_pengguna: e.target.value })}
+                                        />
+                                        <Button
+                                            className="bg-[#FA9884] hover:bg-red-700 text-white rounded-lg mt-4 mx-2"
+                                            onClick={getCurrentPosition}
+                                            disabled={!isUpdateMode}
+                                        >
+                                            Get Current Position
+                                        </Button>
+                                    </div>
+
+                                    </div>
+
+                                    {isUpdateMode && (
+                                        <Button className="bg-[#00A7E1] text-white rounded-lg px-3 py-1 text-lg flex w-auto ms-auto" onClick={handleUpdate}>
+                                            Simpan
+                                        </Button>
+                                    )}
+                                </CardBody>
+                            </Tab>
+
+                            <Tab key="saldo" title="Saldo" className="w-full">
+                                <CardBody className="">
+                                    <div className="flex justify-between items-center">
+                                        <div className="px-4">
+                                            <p className="font-bold text-xl">Saldo</p>
+                                        </div>
+                                        <div className="">
+                                            <Button
+                                                className="font-bold bg-[#00A7E1] text-white text-md"
+                                                onClick={openDepositModal}
+                                            >
+                                                Deposit
+                                            </Button>
+                                            <Button className="mx-5 font-bold bg-[#FA9884] hover:bg-red-700 text-white" onClick={openWithdrawModal}>Withdraw</Button>
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col gap-3">
+
+                                        <Table className="w-full pb-8 pt-8">
+                                            <TableHeader>
+                                                <TableColumn>Jenis</TableColumn>
+                                                <TableColumn>Total</TableColumn>
+                                                <TableColumn>Tanggal</TableColumn>
+                                                <TableColumn>Status</TableColumn>
+                                                <TableColumn>Bukti</TableColumn>
+                                            </TableHeader>
+                                            <TableBody>
+                                                {dataSaldo.length > 0 ? (
+                                                    dataSaldo.map((row) => (
+                                                        <TableRow key={row.id_saldo}>
+                                                            <TableCell>{row.jenis}</TableCell>
+                                                            <TableCell>{row.total}</TableCell>
+                                                            <TableCell>{row.tanggal}</TableCell>
+                                                            <TableCell>{row.status}</TableCell>
+                                                            <TableCell>
+                                                                {row.gambar_saldo ? (
+                                                                    <img
+                                                                        src={`${BASE_URL}/storage/gambar_saldo/${row.gambar_saldo}`}
+                                                                        alt="gambar saldo"
+                                                                        style={{ width: '50px', height: '50px' }}
+                                                                    />
+                                                                ) : (
+                                                                    '-'
+                                                                )}
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    ))
+                                                ) : (
+                                                    <TableRow>
+                                                        <TableCell colSpan={5} className="text-center">Keranjang kosong</TableCell>
+                                                        <TableCell colSpan={5} className="hidden">Keranjang kosong</TableCell>
+                                                        <TableCell colSpan={5} className="hidden">Keranjang kosong</TableCell>
+                                                        <TableCell colSpan={5} className="hidden">Keranjang kosong</TableCell>
+                                                        <TableCell colSpan={5} className="hidden">Keranjang kosong</TableCell>
+                                                    </TableRow>
+                                                )}
+                                            </TableBody>
+                                        </Table>
+                                    </div>
+                                </CardBody>
+                            </Tab>
+                        </Tabs>
                     </Card>
                 </div>
             </div>
             <Footer />
-            <ChatPenggunaPage 
-                isChatOpen={isChatOpen} 
+            <ChatPenggunaPage
+                isChatOpen={isChatOpen}
                 setIsChatOpen={setIsChatOpen}
             />
+
+            <Modal isOpen={isDepositOpen} onOpenChange={onDepositOpenChange} isDismissable={false} isKeyboardDismissDisabled={true}>
+                <ModalContent>
+                    {(onClose) => (
+                        <>
+                            <ModalHeader className="flex flex-col gap-1">Deposit</ModalHeader>
+                            <ModalBody>
+                                <Input
+                                    label="Total Deposit"
+                                    placeholder="Masukkan jumlah deposit"
+                                    type="text"
+                                    value={depositTotal}
+                                    onChange={handleCurrencyChange(setDepositTotal)}
+                                />
+                                <input
+                                    label="Upload Bukti Transfer"
+                                    type="file"
+                                    onChange={(e) => setDepositImage(e.target.files[0])}
+                                />
+                            </ModalBody>
+                            <ModalFooter>
+                                <Button color="danger" variant="light" onClick={onClose}>
+                                    Cancel
+                                </Button>
+                                <Button color="primary" onClick={handleDeposit}>
+                                    Submit
+                                </Button>
+                            </ModalFooter>
+                        </>
+                    )}
+                </ModalContent>
+            </Modal>
+
+            <Modal isOpen={isWithdrawOpen} onOpenChange={onWithdrawOpenChange} isDismissable={false} isKeyboardDismissDisabled={true}>
+                <ModalContent>
+                    {(onClose) => (
+                        <>
+                            <ModalHeader className="flex flex-col gap-1">Withdraw</ModalHeader>
+                            <ModalBody>
+                                <Input
+                                    label="Total Withdraw"
+                                    placeholder="Masukkan jumlah withdraw"
+                                    type="text"
+                                    value={withdrawTotal}
+                                    onChange={handleCurrencyChange(setWithdrawTotal)}
+                                />
+                                <Input
+                                    label="Nomor Rekening"
+                                    placeholder="Masukkan nomor rekening"
+                                    type="number"
+                                    value={nomorRekening}
+                                    onChange={(e) => setNomorRekening(e.target.value)}
+                                />
+                            </ModalBody>
+                            <ModalFooter>
+                                <Button color="danger" variant="light" onClick={onClose}>
+                                    Cancel
+                                </Button>
+                                <Button color="primary" onClick={handleWithdraw}>
+                                    Submit
+                                </Button>
+                            </ModalFooter>
+                        </>
+                    )}
+                </ModalContent>
+            </Modal>
         </>
-    )
+    );
 };
 
 export default ProfilePagePengguna;

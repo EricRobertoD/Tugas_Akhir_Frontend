@@ -25,6 +25,22 @@ const DetailPagePengguna = () => {
     const [paketOptions, setPaketOptions] = useState([]);
     const [selectedPenyedia, setSelectedPenyedia] = useState(null);
 
+    const calculateAverageRating = (paket) => {
+        let totalRating = 0;
+        let reviewCount = 0;
+
+        paket.forEach(p => {
+            p.detail_transaksi.forEach(dt => {
+                dt.ulasan.forEach(u => {
+                    totalRating += parseFloat(u.rate_ulasan);
+                    reviewCount++;
+                });
+            });
+        });
+
+        return reviewCount > 0 ? (totalRating / reviewCount).toFixed(1) : 0;
+    };
+
     useEffect(() => {
         const fetchPenyediaData = async (id_penyedia) => {
             try {
@@ -89,7 +105,6 @@ const DetailPagePengguna = () => {
         }
     };
 
-    
     const handleFirstChat = async (penyedia) => {
         console.log(penyedia);
         try {
@@ -121,11 +136,13 @@ const DetailPagePengguna = () => {
         onOpenChange(false);
     };
 
+    const averageRating = calculateAverageRating(penyediaData?.paket || []);
+
     return (
         <>
             <NavbarPenggunaLogin />
             <div className="min-h-screen bg-[#FFF3E2] w-full flex flex-col items-center">
-                <Card className="w-[70%] h-[40%] bg-white p-10 mt-10">
+                <Card className="w-[70%] h-[40%] bg-white p-10 mt-10 mb-10">
                     {penyediaData ? (
                         <>
                             <CardHeader className="flex justify-between items-center">
@@ -136,7 +153,18 @@ const DetailPagePengguna = () => {
                                     />
                                     <div className="flex flex-col items-start justify-center px-2">
                                         <p className="font-semibold text-2xl">{penyediaData.nama_penyedia}</p>
-                                        <p className="text-xl">{penyediaData.nama_role}</p>
+                                        <p className="text-xl flex items-center">
+                                            {penyediaData.nama_role}
+                                            {averageRating > 0 ? (
+                                                <span className="ml-2 text-yellow-500 flex items-center">
+                                                    {averageRating} <p>⭐</p>
+                                                </span>
+                                            ) : (
+                                                <span className="ml-2 text-gray-500 flex items-center">
+                                                    - <p>⭐</p>
+                                                </span>
+                                            )}
+                                        </p>
                                     </div>
                                 </div>
                                 <Button className="font-bold bg-[#FA9884] hover:bg-red-700 text-white" onClick={() => handleFirstChat(penyediaData)}>Chat</Button>
@@ -144,7 +172,7 @@ const DetailPagePengguna = () => {
                             <Divider />
                             <CardBody>
                                 <div className="flex max-lg:flex-col">
-                                    <div className="lg:w-[30%] lg:p-10 lg:mt-10">
+                                    <div className="lg:w-[40%] lg:p-10 lg:mt-10">
                                         <Swiper
                                             scrollbar={{ hide: true }}
                                             autoplay={{ delay: 2500, disableOnInteraction: false }}

@@ -25,11 +25,13 @@ import ChatPenggunaPage from "../../components/ChatPengguna";
 import Swal from "sweetalert2";
 import axios from "axios";
 import BASE_URL from "../../../apiConfig";
+import usePageTitle from "../../usePageTitle";
 
 const KeranjangPagePengguna = () => {
+    usePageTitle('KeranjangPage');
+
     const location = useLocation();
     const [detailTransaksis, setDetailTransaksis] = useState([]);
-    const [selectedFile, setSelectedFile] = useState(null);
     const [selectedTransaction, setSelectedTransaction] = useState(null);
     const [isChatOpen, setIsChatOpen] = useState(false);
     const { isOpen, onOpenChange } = useDisclosure();
@@ -90,52 +92,54 @@ const KeranjangPagePengguna = () => {
         });
     };
 
-    const handleFileChange = (e) => {
-        setSelectedFile(e.target.files[0]);
-    };
-
     const handleBayar = (id_transaksi, total_harga) => {
         setSelectedTransaction({ id: id_transaksi, total_harga });
         onOpenChange(true);
     };
 
     const handleSubmitBayar = async () => {
-        if (!selectedFile) {
-            Swal.fire("Error", "Please select a file", "error");
-            return;
-        }
-
         const authToken = localStorage.getItem("authToken");
-        const formData = new FormData();
-        formData.append("status_transaksi", "Sudah Bayar");
-        formData.append("bukti_bayar", selectedFile);
-
+    
         try {
-            const response = await axios.post(
+            const response = await fetch(
                 `${BASE_URL}/api/updateStatusTransaksi/${selectedTransaction.id}`,
-                formData,
                 {
+                    method: 'POST',
                     headers: {
-                        Authorization: `Bearer ${authToken}`,
-                        'Content-Type': 'multipart/form-data',
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`,
                     },
+                    body: JSON.stringify({
+                        status_transaksi: "Sudah Bayar",
+                        total_harga: selectedTransaction.total_harga,
+                    }),
                 }
             );
-
+    
+            const data = await response.json();
+    
             if (response.status === 200) {
                 Swal.fire("Success", "Transaksi updated successfully", "success");
                 fetchDetailTransaksis();
                 setSelectedTransaction(null);
-                setSelectedFile(null);
                 onOpenChange(false);
             } else {
-                Swal.fire("Error", response.data.message || "There was an error", "error");
+                Swal.fire("Error", data.message || "There was an error", "error");
             }
         } catch (error) {
             console.error("Error updating transaksi: ", error);
-            Swal.fire("Error", "There was an error", "error");
+            let errorMessage = "There was an error";
+    
+            if (error.response && error.response.data && error.response.data.message) {
+                errorMessage = error.response.data.message;
+            } else if (error.message) {
+                errorMessage = error.message;
+            }
+    
+            Swal.fire("Error", errorMessage, "error");
         }
     };
+    
 
     useEffect(() => {
         fetchDetailTransaksis();
@@ -240,11 +244,6 @@ const KeranjangPagePengguna = () => {
                             </ModalHeader>
                             <ModalBody>
                                 <p>Total Harga: {selectedTransaction?.total_harga}</p>
-                                <input
-                                    type="file"
-                                    onChange={handleFileChange}
-                                    label="Upload Bukti Pembayaran"
-                                />
                             </ModalBody>
                             <ModalFooter>
                                 <Button auto flat onClick={onClose}>
