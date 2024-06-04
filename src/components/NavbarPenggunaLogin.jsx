@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from "react";
 import { useIdleTimer } from "react-idle-timer";
 import BASE_URL from "../../apiConfig";
+import { FaShoppingCart } from "react-icons/fa";
 
 export default function NavbarPenggunaLogin() {
   const [dataPengguna, setDataPengguna] = useState({});
@@ -83,12 +84,9 @@ export default function NavbarPenggunaLogin() {
         className="sm:hidden"
       />
       <NavbarContent justify="end">
-            <Avatar
-              size="xl"
-              style={{ cursor: "pointer" }}
-              src={assets.shopping}
-              onClick={() => navigate('/KeranjangPagePengguna')}
-            />
+        <Link to="/KeranjangPagePengguna">
+        <FaShoppingCart size={30} />
+        </Link>
         <Popover isOpen={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
           <PopoverTrigger>
             <Avatar
