@@ -7,6 +7,7 @@ import BASE_URL from "../../apiConfig";
 import { Button } from "@nextui-org/react";
 import assets from "../assets";
 import Pusher from 'pusher-js';
+import { IoMdChatbubbles } from "react-icons/io";
 
 const ChatPenggunaPage = ({ isChatOpen, setIsChatOpen, initialSelectedPenyedia }) => {
     const [penyediaList, setPenyediaList] = useState([]);
@@ -221,7 +222,7 @@ const ChatPenggunaPage = ({ isChatOpen, setIsChatOpen, initialSelectedPenyedia }
             {!isChatOpen && (
                 <div>
                     <Button onClick={toggleChat} className="bg-[#FA9884] hover:bg-red-700 text-white w-full">
-                        Open Chat
+                    <IoMdChatbubbles size={20}/>
                     </Button>
                 </div>
             )}

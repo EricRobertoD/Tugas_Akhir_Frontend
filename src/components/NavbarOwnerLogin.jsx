@@ -6,15 +6,15 @@ import React, { useEffect, useState } from "react";
 import { useIdleTimer } from "react-idle-timer";
 import BASE_URL from "../../apiConfig";
 
-export default function NavbarAdminLogin() {
-  const [dataAdmin, setDataAdmin] = useState({});
+export default function NavbarOwnerLogin() {
+  const [dataOwner, setDataOwner] = useState({});
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
   const fetchData = async () => {
     try {
       const authToken = localStorage.getItem("authToken");
-      const response = await fetch(`${BASE_URL}/api/admin`, {
+      const response = await fetch(`${BASE_URL}/api/owner`, {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
@@ -27,7 +27,7 @@ export default function NavbarAdminLogin() {
       }
 
       const result = await response.json();
-      setDataAdmin(result.data);
+      setDataOwner(result.data);
       console.log(result.data);
     } catch (error) {
       console.error("Error fetching data: ", error);
@@ -66,53 +66,19 @@ export default function NavbarAdminLogin() {
     timeout: 180 * 60 * 1000,
   });
 
-  const menuItems = [{
-    title: "Withdraw",
-    link: "/ConfirmWithdrawPage",
-  }, {
-    title: "Kupon",
-    link: "/KuponAdminPage",
-  }
-  ];
-
   return (
     <Navbar isBordered onMenuOpenChange={setIsMenuOpen} className="bg-white py-5" maxWidth="full">
       <NavbarContent className="hidden sm:flex gap-2">
         <NavbarBrand >
-          <Link to="/DashboardPageAdmin">
+          <Link to="/DashboardPageOwner">
             <img src={assets.logoRencara} alt="Logo" style={logoStyle} />
           </Link>
         </NavbarBrand>
-      </NavbarContent>
-      <NavbarContent className="hidden sm:flex" justify="center">
-        {menuItems.map((item, index) => (
-          <NavbarItem key={index} isActive>
-            <Link to={item.link} style={{ cursor: "pointer", fontSize: "1.2rem" }}>
-              {item.title}
-            </Link>
-          </NavbarItem>
-        ))}
       </NavbarContent>
       <NavbarMenuToggle
         aria-label={isMenuOpen ? "Close menu" : "Open menu"}
         className="sm:hidden"
       />
-      <NavbarMenu className="mt-10 flex justify-start">
-        {menuItems.map((item, index) => (
-          <NavbarMenuItem key={`${item}-${index}`}>
-            <Link
-              color={
-                index === 2 ? "primary" : index === menuItems.length - 1 ? "danger" : "foreground"
-              }
-              className="w-full"
-              to={item.link}
-              size="lg"
-            >
-              {item.title}
-            </Link>
-          </NavbarMenuItem>
-        ))}
-      </NavbarMenu>
       <NavbarContent justify="end">
         <Button color="danger" size="lg" onClick={logout}>
           Keluar

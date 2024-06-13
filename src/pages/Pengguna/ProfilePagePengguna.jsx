@@ -17,12 +17,8 @@ const ProfilePagePengguna = () => {
     const [isUpdateMode, setIsUpdateMode] = useState(false);
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [depositTotal, setDepositTotal] = useState("");
-    const [depositImage, setDepositImage] = useState(null);
-    const [withdrawTotal, setWithdrawTotal] = useState("");
-    const [nomorRekening, setNomorRekening] = useState("");
 
     const { isOpen: isDepositOpen, onOpen: openDepositModal, onOpenChange: onDepositOpenChange } = useDisclosure();
-    const { isOpen: isWithdrawOpen, onOpen: openWithdrawModal, onOpenChange: onWithdrawOpenChange } = useDisclosure();
 
     const openUpdateImage = useRef(null);
 
@@ -30,6 +26,11 @@ const ProfilePagePengguna = () => {
         fetchData();
         fetchDataSaldo();
     }, []);
+
+    const handleDepositClose = () => {
+        setDepositTotal("");
+        onDepositOpenChange(false);
+    };
 
     const fetchData = async () => {
         try {
@@ -48,7 +49,7 @@ const ProfilePagePengguna = () => {
 
             const result = await response.json();
             setDataPengguna(result.data);
-            setInitialDataPengguna(result.data); // Store the initial data
+            setInitialDataPengguna(result.data);
             console.log(result.data);
         } catch (error) {
             console.error("Error fetching data: ", error);
@@ -173,85 +174,69 @@ const ProfilePagePengguna = () => {
 
     const handleDeposit = async () => {
         const authToken = localStorage.getItem("authToken");
-        const formData = new FormData();
-        formData.append('total', depositTotal.replace(/[^\d]/g, '')); // Remove non-digit characters
-        formData.append('gambar_saldo', depositImage);
 
         try {
-            const response = await fetch(`${BASE_URL}/api/saldoDeposit`, {
-                method: 'POST',
-                headers: {
-                    Authorization: `Bearer ${authToken}`,
+            const response = await axios.post(`${BASE_URL}/api/depositMidtrans`,
+                { total: (parseInt(depositTotal.replace(/[^\d]/g, '')) * 1.10).toFixed(2) },
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${authToken}`,
+                    },
+                }
+            );
+
+            const { snap_token } = response.data.data;
+
+            window.snap.pay(snap_token, {
+                onSuccess: async (result) => {
+                    try {
+                        const confirmResponse = await axios.post(`${BASE_URL}/api/confirmDepositMidtrans/${result.order_id}`, {}, {
+                            headers: {
+                                "Content-Type": "application/json",
+                                "Authorization": `Bearer ${authToken}`,
+                            },
+                        });
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Deposit berhasil',
+                            text: 'Permintaan deposit berhasil diajukan.',
+                        });
+                        fetchDataSaldo();
+                        fetchData();
+                        onDepositOpenChange(false);
+                        setDepositTotal("");
+                    } catch (error) {
+                        console.error("Error confirming deposit:", error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Deposit gagal',
+                            text: 'Terjadi kesalahan saat mengonfirmasi deposit.',
+                        });
+                    }
                 },
-                body: formData,
+                onPending: (result) => {
+                    console.log('Pending:', result);
+                },
+                onError: (result) => {
+                    console.log('Error:', result);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Deposit gagal',
+                        text: 'Terjadi kesalahan saat memproses deposit.',
+                    });
+                },
+                onClose: () => {
+                    console.log('Customer closed the popup without finishing the payment');
+                },
             });
 
-            const result = await response.json();
-
-            if (result.status === 'success') {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Deposit berhasil',
-                    text: 'Permintaan deposit berhasil diajukan.',
-                });
-                fetchDataSaldo();
-                fetchData();
-                onDepositOpenChange(false);
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Deposit gagal',
-                    text: 'Terjadi kesalahan saat mengajukan deposit.',
-                });
-            }
         } catch (error) {
-            console.error("Error during deposit: ", error);
+            console.error("Error getting snap token:", error);
             Swal.fire({
                 icon: 'error',
                 title: 'Deposit gagal',
-                text: error.message,
-            });
-        }
-    };
-
-    const handleWithdraw = async () => {
-        const authToken = localStorage.getItem("authToken");
-
-        try {
-            const response = await fetch(`${BASE_URL}/api/saldoWithdraw`, {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${authToken}`,
-                },
-                body: JSON.stringify({ total: withdrawTotal.replace(/[^\d]/g, ''), nomor_rekening: nomorRekening }),
-            });
-
-            const result = await response.json();
-
-            if (result.status === 'success') {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Withdraw berhasil',
-                    text: 'Permintaan withdraw berhasil diajukan.',
-                });
-                fetchDataSaldo();
-                fetchData();
-                onWithdrawOpenChange(false);
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Withdraw gagal',
-                    text: result.message || 'Terjadi kesalahan saat mengajukan withdraw.',
-                });
-            }
-        } catch (error) {
-            console.error("Error during withdraw: ", error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Withdraw gagal',
-                text: 'Terjadi kesalahan saat mengajukan withdraw.',
+                text: 'Terjadi kesalahan saat mengajukan deposit.',
             });
         }
     };
@@ -414,25 +399,25 @@ const ProfilePagePengguna = () => {
                                             />
                                         </div>
                                         <div className="">
-                                        <Textarea
-                                            label="Alamat"
-                                            placeholder="Masukkan Alamat"
-                                            type="text"
-                                            id="alamat"
-                                            className="w-full px-3 py-2 font-bold"
-                                            variant={isUpdateMode ? "bordered" : "underlined"}
-                                            value={dataPengguna.alamat_pengguna}
-                                            disabled={!isUpdateMode}
-                                            onChange={(e) => setDataPengguna({ ...dataPengguna, alamat_pengguna: e.target.value })}
-                                        />
-                                        <Button
-                                            className="bg-[#FA9884] hover:bg-red-700 text-white rounded-lg mt-4 mx-2"
-                                            onClick={getCurrentPosition}
-                                            disabled={!isUpdateMode}
-                                        >
-                                            Get Current Position
-                                        </Button>
-                                    </div>
+                                            <Textarea
+                                                label="Alamat"
+                                                placeholder="Masukkan Alamat"
+                                                type="text"
+                                                id="alamat"
+                                                className="w-full px-3 py-2 font-bold"
+                                                variant={isUpdateMode ? "bordered" : "underlined"}
+                                                value={dataPengguna.alamat_pengguna}
+                                                disabled={!isUpdateMode}
+                                                onChange={(e) => setDataPengguna({ ...dataPengguna, alamat_pengguna: e.target.value })}
+                                            />
+                                            <Button
+                                                className="bg-[#FA9884] hover:bg-red-700 text-white rounded-lg mt-4 mx-2"
+                                                onClick={getCurrentPosition}
+                                                disabled={!isUpdateMode}
+                                            >
+                                                Get Current Position
+                                            </Button>
+                                        </div>
 
                                     </div>
 
@@ -457,47 +442,33 @@ const ProfilePagePengguna = () => {
                                             >
                                                 Deposit
                                             </Button>
-                                            <Button className="mx-5 font-bold bg-[#FA9884] hover:bg-red-700 text-white" onClick={openWithdrawModal}>Withdraw</Button>
                                         </div>
                                     </div>
                                     <div className="flex flex-col gap-3">
 
                                         <Table className="w-full pb-8 pt-8">
                                             <TableHeader>
-                                                <TableColumn>Jenis</TableColumn>
-                                                <TableColumn>Total</TableColumn>
-                                                <TableColumn>Tanggal</TableColumn>
-                                                <TableColumn>Status</TableColumn>
-                                                <TableColumn>Bukti</TableColumn>
+                                                <TableColumn className="text-center">Jenis</TableColumn>
+                                                <TableColumn className="text-center">Total</TableColumn>
+                                                <TableColumn className="text-center">Tanggal</TableColumn>
+                                                <TableColumn className="text-center">Status</TableColumn>
                                             </TableHeader>
                                             <TableBody>
                                                 {dataSaldo.length > 0 ? (
                                                     dataSaldo.map((row) => (
                                                         <TableRow key={row.id_saldo}>
-                                                            <TableCell>{row.jenis}</TableCell>
-                                                            <TableCell>{row.total}</TableCell>
-                                                            <TableCell>{row.tanggal}</TableCell>
-                                                            <TableCell>{row.status}</TableCell>
-                                                            <TableCell>
-                                                                {row.gambar_saldo ? (
-                                                                    <img
-                                                                        src={`${BASE_URL}/storage/gambar_saldo/${row.gambar_saldo}`}
-                                                                        alt="gambar saldo"
-                                                                        style={{ width: '50px', height: '50px' }}
-                                                                    />
-                                                                ) : (
-                                                                    '-'
-                                                                )}
-                                                            </TableCell>
+                                                            <TableCell className="text-center">{row.jenis}</TableCell>
+                                                            <TableCell className="text-center">{row.total}</TableCell>
+                                                            <TableCell className="text-center">{row.tanggal}</TableCell>
+                                                            <TableCell className="text-center">{row.status}</TableCell>
                                                         </TableRow>
                                                     ))
                                                 ) : (
                                                     <TableRow>
-                                                        <TableCell colSpan={5} className="text-center">Keranjang kosong</TableCell>
-                                                        <TableCell colSpan={5} className="hidden">Keranjang kosong</TableCell>
-                                                        <TableCell colSpan={5} className="hidden">Keranjang kosong</TableCell>
-                                                        <TableCell colSpan={5} className="hidden">Keranjang kosong</TableCell>
-                                                        <TableCell colSpan={5} className="hidden">Keranjang kosong</TableCell>
+                                                        <TableCell colSpan={4} className="text-center">Transaksi kosong</TableCell>
+                                                        <TableCell colSpan={4} className="hidden">Transaksi kosong</TableCell>
+                                                        <TableCell colSpan={4} className="hidden">Transaksi kosong</TableCell>
+                                                        <TableCell colSpan={4} className="hidden">Transaksi kosong</TableCell>
                                                     </TableRow>
                                                 )}
                                             </TableBody>
@@ -515,7 +486,7 @@ const ProfilePagePengguna = () => {
                 setIsChatOpen={setIsChatOpen}
             />
 
-            <Modal isOpen={isDepositOpen} onOpenChange={onDepositOpenChange} isDismissable={false} isKeyboardDismissDisabled={true}>
+            <Modal isOpen={isDepositOpen} onOpenChange={(isOpen) => isOpen ? openDepositModal() : handleDepositClose()} isDismissable={false} isKeyboardDismissDisabled={true}>
                 <ModalContent>
                     {(onClose) => (
                         <>
@@ -528,51 +499,12 @@ const ProfilePagePengguna = () => {
                                     value={depositTotal}
                                     onChange={handleCurrencyChange(setDepositTotal)}
                                 />
-                                <input
-                                    label="Upload Bukti Transfer"
-                                    type="file"
-                                    onChange={(e) => setDepositImage(e.target.files[0])}
-                                />
                             </ModalBody>
                             <ModalFooter>
                                 <Button color="danger" variant="light" onClick={onClose}>
                                     Cancel
                                 </Button>
                                 <Button color="primary" onClick={handleDeposit}>
-                                    Submit
-                                </Button>
-                            </ModalFooter>
-                        </>
-                    )}
-                </ModalContent>
-            </Modal>
-
-            <Modal isOpen={isWithdrawOpen} onOpenChange={onWithdrawOpenChange} isDismissable={false} isKeyboardDismissDisabled={true}>
-                <ModalContent>
-                    {(onClose) => (
-                        <>
-                            <ModalHeader className="flex flex-col gap-1">Withdraw</ModalHeader>
-                            <ModalBody>
-                                <Input
-                                    label="Total Withdraw"
-                                    placeholder="Masukkan jumlah withdraw"
-                                    type="text"
-                                    value={withdrawTotal}
-                                    onChange={handleCurrencyChange(setWithdrawTotal)}
-                                />
-                                <Input
-                                    label="Nomor Rekening"
-                                    placeholder="Masukkan nomor rekening"
-                                    type="number"
-                                    value={nomorRekening}
-                                    onChange={(e) => setNomorRekening(e.target.value)}
-                                />
-                            </ModalBody>
-                            <ModalFooter>
-                                <Button color="danger" variant="light" onClick={onClose}>
-                                    Cancel
-                                </Button>
-                                <Button color="primary" onClick={handleWithdraw}>
                                     Submit
                                 </Button>
                             </ModalFooter>

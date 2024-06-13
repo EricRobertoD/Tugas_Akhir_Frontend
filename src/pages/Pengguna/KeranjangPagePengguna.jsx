@@ -92,17 +92,21 @@ const KeranjangPagePengguna = () => {
         });
     };
 
-    const handleBayar = (id_transaksi, total_harga) => {
-        setSelectedTransaction({ id: id_transaksi, total_harga });
+    const handleBayar = () => {
+        const transactionIds = detailTransaksis.map(transaction => transaction.id_transaksi);
+        const totalHarga = detailTransaksis.reduce((total, transaction) => total + transaction.subtotal, 0);
+        setSelectedTransaction({ ids: transactionIds, total_harga: totalHarga });
         onOpenChange(true);
     };
 
+
     const handleSubmitBayar = async () => {
         const authToken = localStorage.getItem("authToken");
-    
+
+        console.log("Selected Transaction: ", selectedTransaction);
         try {
             const response = await fetch(
-                `${BASE_URL}/api/updateStatusTransaksi/${selectedTransaction.id}`,
+                `${BASE_URL}/api/updateStatusTransaksi`,
                 {
                     method: 'POST',
                     headers: {
@@ -110,14 +114,15 @@ const KeranjangPagePengguna = () => {
                         'Authorization': `Bearer ${authToken}`,
                     },
                     body: JSON.stringify({
+                        ids: selectedTransaction.ids,
                         status_transaksi: "Sudah Bayar",
                         total_harga: selectedTransaction.total_harga,
                     }),
                 }
             );
-    
+
             const data = await response.json();
-    
+
             if (response.status === 200) {
                 Swal.fire("Success", "Transaksi updated successfully", "success");
                 fetchDetailTransaksis();
@@ -129,17 +134,18 @@ const KeranjangPagePengguna = () => {
         } catch (error) {
             console.error("Error updating transaksi: ", error);
             let errorMessage = "There was an error";
-    
+
             if (error.response && error.response.data && error.response.data.message) {
                 errorMessage = error.response.data.message;
             } else if (error.message) {
                 errorMessage = error.message;
             }
-    
+
             Swal.fire("Error", errorMessage, "error");
         }
     };
-    
+
+
 
     useEffect(() => {
         fetchDetailTransaksis();
@@ -209,12 +215,7 @@ const KeranjangPagePengguna = () => {
                             <div className="flex justify-end pt-10">
                                 <Button
                                     className="font-bold bg-[#FA9884] hover:bg-red-700 text-white"
-                                    onClick={() =>
-                                        handleBayar(
-                                            detailTransaksis[0]?.id_transaksi,
-                                            detailTransaksis[0]?.transaksi.total_harga
-                                        )
-                                    }
+                                    onClick={handleBayar}
                                 >
                                     Bayar
                                 </Button>

@@ -25,12 +25,9 @@ const ProfilePagePenyedia = () => {
     const [dataSaldo, setDataSaldo] = useState([]);
     const [isUpdateMode, setIsUpdateMode] = useState(false);
     const [isChatOpen, setIsChatOpen] = useState(false);
-    const [depositTotal, setDepositTotal] = useState("");
-    const [depositImage, setDepositImage] = useState(null);
     const [withdrawTotal, setWithdrawTotal] = useState("");
     const [nomorRekening, setNomorRekening] = useState("");
 
-    const { isOpen: isDepositOpen, onOpen: openDepositModal, onOpenChange: onDepositOpenChange } = useDisclosure();
     const { isOpen: isWithdrawOpen, onOpen: openWithdrawModal, onOpenChange: onWithdrawOpenChange } = useDisclosure();
 
     const openUpdateImage = useRef(null);
@@ -85,50 +82,6 @@ const ProfilePagePenyedia = () => {
             console.log(sortedData);
         } catch (error) {
             console.error("Error fetching data: ", error);
-        }
-    };
-
-    
-    const handleDeposit = async () => {
-        const authToken = localStorage.getItem("authToken");
-        const formData = new FormData();
-        formData.append('total', depositTotal.replace(/[^\d]/g, '')); // Remove non-digit characters
-        formData.append('gambar_saldo', depositImage);
-
-        try {
-            const response = await fetch(`${BASE_URL}/api/saldoDeposit`, {
-                method: 'POST',
-                headers: {
-                    Authorization: `Bearer ${authToken}`,
-                },
-                body: formData,
-            });
-
-            const result = await response.json();
-
-            if (result.status === 'success') {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Deposit berhasil',
-                    text: 'Permintaan deposit berhasil diajukan.',
-                });
-                fetchDataSaldo();
-                fetchData();
-                onDepositOpenChange(false);
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Deposit gagal',
-                    text: 'Terjadi kesalahan saat mengajukan deposit.',
-                });
-            }
-        } catch (error) {
-            console.error("Error during deposit: ", error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Deposit gagal',
-                text: error.message,
-            });
         }
     };
 
@@ -488,12 +441,6 @@ const ProfilePagePenyedia = () => {
                                             <p className="font-bold text-xl">Saldo</p>
                                         </div>
                                         <div className="">
-                                            <Button
-                                                className="font-bold bg-[#00A7E1] text-white text-md"
-                                                onClick={openDepositModal}
-                                            >
-                                                Deposit
-                                            </Button>
                                             <Button className="mx-5 font-bold bg-[#FA9884] hover:bg-red-700 text-white" onClick={openWithdrawModal}>Withdraw</Button>
                                         </div>
                                     </div>
@@ -530,11 +477,11 @@ const ProfilePagePenyedia = () => {
                                                     ))
                                                 ) : (
                                                     <TableRow>
-                                                        <TableCell colSpan={5} className="text-center">Keranjang kosong</TableCell>
-                                                        <TableCell colSpan={5} className="hidden">Keranjang kosong</TableCell>
-                                                        <TableCell colSpan={5} className="hidden">Keranjang kosong</TableCell>
-                                                        <TableCell colSpan={5} className="hidden">Keranjang kosong</TableCell>
-                                                        <TableCell colSpan={5} className="hidden">Keranjang kosong</TableCell>
+                                                    <TableCell colSpan={5} className="text-center">Transaksi kosong</TableCell>
+                                                    <TableCell colSpan={5} className="hidden">Transaksi kosong</TableCell>
+                                                    <TableCell colSpan={5} className="hidden">Transaksi kosong</TableCell>
+                                                    <TableCell colSpan={5} className="hidden">Transaksi kosong</TableCell>
+                                                    <TableCell colSpan={5} className="hidden">Transaksi kosong</TableCell>
                                                     </TableRow>
                                                 )}
                                             </TableBody>
@@ -552,38 +499,6 @@ const ProfilePagePenyedia = () => {
                 isChatOpen={isChatOpen}
                 setIsChatOpen={setIsChatOpen}
             />
-
-            <Modal isOpen={isDepositOpen} onOpenChange={onDepositOpenChange} isDismissable={false} isKeyboardDismissDisabled={true}>
-                <ModalContent>
-                    {(onClose) => (
-                        <>
-                            <ModalHeader className="flex flex-col gap-1">Deposit</ModalHeader>
-                            <ModalBody>
-                                <Input
-                                    label="Total Deposit"
-                                    placeholder="Masukkan jumlah deposit"
-                                    type="text"
-                                    value={depositTotal}
-                                    onChange={handleCurrencyChange(setDepositTotal)}
-                                />
-                                <input
-                                    label="Upload Bukti Transfer"
-                                    type="file"
-                                    onChange={(e) => setDepositImage(e.target.files[0])}
-                                />
-                            </ModalBody>
-                            <ModalFooter>
-                                <Button color="danger" variant="light" onClick={onClose}>
-                                    Cancel
-                                </Button>
-                                <Button color="primary" onClick={handleDeposit}>
-                                    Submit
-                                </Button>
-                            </ModalFooter>
-                        </>
-                    )}
-                </ModalContent>
-            </Modal>
 
             <Modal isOpen={isWithdrawOpen} onOpenChange={onWithdrawOpenChange} isDismissable={false} isKeyboardDismissDisabled={true}>
                 <ModalContent>

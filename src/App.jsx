@@ -21,9 +21,9 @@ import DetailPagePengguna from "./pages/Pengguna/DetailPagePengguna.jsx";
 import KeranjangPagePengguna from "./pages/Pengguna/KeranjangPagePengguna.jsx";
 import LoginPageAdmin from "./pages/Auth/LoginPageAdmin.jsx";
 import DashboardPageAdmin from "./pages/Dashboard/DashboardPageAdmin.jsx";
-import ConfirmDepositPage from "./pages/Admin/confirmDepositPage.jsx";
 import ConfirmWithdrawPage from "./pages/Admin/confirmWithdrawPage.jsx";
-import LaporanAdminPage from "./pages/Admin/LaporanAdminPage.jsx";
+import GoogleAnalyticPage from "./pages/Owner/GoogleAnalyticPage.jsx";
+import LoginPageOwner from "./pages/Auth/LoginPageOwner.jsx";
 
 const App = () => {
   return (
@@ -50,9 +50,9 @@ const App = () => {
           <Route path="/KeranjangPagePengguna" element={<KeranjangPagePengguna />}></Route>
           <Route path="/LoginPageAdmin" element={<LoginPageAdmin />}></Route>
           <Route path="/DashboardPageAdmin" element={<DashboardPageAdmin />}></Route>
-          <Route path="/ConfirmDepositPage" element={<ConfirmDepositPage />}></Route>
           <Route path="/ConfirmWithdrawPage" element={<ConfirmWithdrawPage />}></Route>
-          <Route path="/LaporanAdminPage" element={<LaporanAdminPage />}></Route>
+          <Route path="/GoogleAnalyticPage" element={<GoogleAnalyticPage />}></Route>
+          <Route path="/LoginPageOwner" element={<LoginPageOwner />}></Route>
 
         </Routes>
       </BrowserRouter>

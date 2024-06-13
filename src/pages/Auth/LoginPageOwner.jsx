@@ -7,7 +7,7 @@ import { Input } from "@nextui-org/react";
 import { useNavigate } from 'react-router-dom';
 import BASE_URL from "../../../apiConfig";
 
-const LoginPageAdmin = () => {
+const LoginPageOwner = () => {
     const navigate = useNavigate();
     const [LoginPengguna, setLoginPengguna] = useState({
         email: "",
@@ -22,7 +22,7 @@ const LoginPageAdmin = () => {
             password: LoginPengguna.password,
         };
 
-        fetch(`${BASE_URL}/api/loginAdmin`, {
+        fetch(`${BASE_URL}/api/loginOwner`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -32,14 +32,14 @@ const LoginPageAdmin = () => {
             .then((response) => response.json())
             .then((data) => {
                 Swal.close();
-                if (data.message === 'Authenticated as admin') {
+                if (data.message === 'Authenticated as owner') {
                     console.log('Login berhasil');
                     localStorage.setItem('authToken', data.data.access_token);
                     gtag('event', 'login', {
                         method: 'Email',
-                        role: 'admin'
+                        role: 'owner'
                     });
-                    navigate('/DashboardPageAdmin')
+                    navigate('/GoogleAnalyticPage')
                 } else {
                     Swal.fire({
                         icon: 'error',
@@ -121,4 +121,4 @@ const LoginPageAdmin = () => {
     );
 };
 
-export default LoginPageAdmin;
+export default LoginPageOwner;
