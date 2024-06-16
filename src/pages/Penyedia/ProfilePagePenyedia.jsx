@@ -96,12 +96,12 @@ const ProfilePagePenyedia = () => {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${authToken}`,
                 },
-                body: JSON.stringify({ total: withdrawTotal.replace(/[^\d]/g, ''), nomor_rekening: nomorRekening }), 
+                body: JSON.stringify({ total: withdrawTotal.replace(/[^\d]/g, ''), nomor_rekening: nomorRekening }),
             });
 
             const result = await response.json();
 
-            if (result.status === 'success') {
+            if (response.ok) {
                 Swal.fire({
                     icon: 'success',
                     title: 'Withdraw berhasil',
@@ -111,11 +111,20 @@ const ProfilePagePenyedia = () => {
                 fetchData();
                 onWithdrawOpenChange(false);
             } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Withdraw gagal',
-                    text: result.message || 'Terjadi kesalahan saat mengajukan withdraw.',
-                });
+                if (result.errors) {
+                    let errorMessages = Object.values(result.errors).flat();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Withdraw gagal',
+                        html: errorMessages.join('<br>'),
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Withdraw gagal',
+                        text: result.message || 'Terjadi kesalahan saat mengajukan withdraw.',
+                    });
+                }
             }
         } catch (error) {
             console.error("Error during withdraw: ", error);
@@ -126,6 +135,7 @@ const ProfilePagePenyedia = () => {
             });
         }
     };
+
 
     const handleOpen = () => {
         openUpdateImage.current.click();
@@ -187,7 +197,7 @@ const ProfilePagePenyedia = () => {
                     });
                     console.log('Update successful');
                     fetchData();
-                    setIsUpdateMode(false); // Turn off the switch after successful update
+                    setIsUpdateMode(false);
                 } else {
                     console.log('Update failed');
 
@@ -298,13 +308,13 @@ const ProfilePagePenyedia = () => {
                     <Card className="bg-white mb-20">
                         <CardHeader className="flex lg:justify-between gap-3 max-lg:flex-col">
                             <div className="flex py-5">
-                                <div className="flex flex-col px-5 pt-10">
+                                <div className="flex flex-col px-5 pt-10 items-center">
                                     <Avatar
                                         className="w-20 h-20 text-large"
                                         src={dataPenyedia.gambar_penyedia ? "https://tugas-akhir-backend-4aexnrp6vq-uc.a.run.app/storage/gambar/" + dataPenyedia.gambar_penyedia : assets.profile}
                                     />
                                     <input ref={openUpdateImage} type="file" className="hidden" onChange={updateImage} />
-                                    <button className="bg-[#FA9884] text-white rounded-lg px-3 my-2" onClick={handleOpen}>Profil</button>
+                                    <Button className="bg-[#FA9884] text-white my-2" onClick={handleOpen}>Ubah Gambar</Button>
                                 </div>
                                 <div className="flex flex-col items-start justify-center px-2">
                                     <p className="font-semibold text-xl">Profil Saya</p>
@@ -331,7 +341,7 @@ const ProfilePagePenyedia = () => {
                                                 isSelected={isUpdateMode}
                                                 onValueChange={handleUpdateModeToggle}
                                             >
-                                                Update Profile
+                                                Ubah Profil
                                             </Switch>
 
 
@@ -419,7 +429,7 @@ const ProfilePagePenyedia = () => {
                                                     onClick={getCurrentPosition}
                                                     disabled={!isUpdateMode}
                                                 >
-                                                    Get Current Position
+                                                    Posisi Saat Ini
                                                 </Button>
                                             </div>
                                         </div>
@@ -441,7 +451,7 @@ const ProfilePagePenyedia = () => {
                                             <p className="font-bold text-xl">Saldo</p>
                                         </div>
                                         <div className="">
-                                            <Button className="mx-5 font-bold bg-[#FA9884] hover:bg-red-700 text-white" onClick={openWithdrawModal}>Withdraw</Button>
+                                            <Button className="mx-5 font-bold bg-[#FA9884] hover:bg-red-700 text-white" onClick={openWithdrawModal}>Penarikan</Button>
                                         </div>
                                     </div>
                                     <div className="flex flex-col gap-3">
@@ -477,11 +487,11 @@ const ProfilePagePenyedia = () => {
                                                     ))
                                                 ) : (
                                                     <TableRow>
-                                                    <TableCell colSpan={5} className="text-center">Transaksi kosong</TableCell>
-                                                    <TableCell colSpan={5} className="hidden">Transaksi kosong</TableCell>
-                                                    <TableCell colSpan={5} className="hidden">Transaksi kosong</TableCell>
-                                                    <TableCell colSpan={5} className="hidden">Transaksi kosong</TableCell>
-                                                    <TableCell colSpan={5} className="hidden">Transaksi kosong</TableCell>
+                                                        <TableCell colSpan={5} className="text-center">Transaksi kosong</TableCell>
+                                                        <TableCell colSpan={5} className="hidden">Transaksi kosong</TableCell>
+                                                        <TableCell colSpan={5} className="hidden">Transaksi kosong</TableCell>
+                                                        <TableCell colSpan={5} className="hidden">Transaksi kosong</TableCell>
+                                                        <TableCell colSpan={5} className="hidden">Transaksi kosong</TableCell>
                                                     </TableRow>
                                                 )}
                                             </TableBody>
@@ -504,7 +514,7 @@ const ProfilePagePenyedia = () => {
                 <ModalContent>
                     {(onClose) => (
                         <>
-                            <ModalHeader className="flex flex-col gap-1">Withdraw</ModalHeader>
+                            <ModalHeader className="flex flex-col gap-1">Penarikan</ModalHeader>
                             <ModalBody>
                                 <Input
                                     label="Total Withdraw"
@@ -523,10 +533,10 @@ const ProfilePagePenyedia = () => {
                             </ModalBody>
                             <ModalFooter>
                                 <Button color="danger" variant="light" onClick={onClose}>
-                                    Cancel
+                                    Batal
                                 </Button>
                                 <Button color="primary" onClick={handleWithdraw}>
-                                    Submit
+                                    Tarik
                                 </Button>
                             </ModalFooter>
                         </>

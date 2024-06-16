@@ -423,11 +423,11 @@ const MainPagePengguna = () => {
                             </div>
                         </div>
 
-                        <label className="block text-sm font-medium text-gray-700">Budget Range</label>
+                        <label className="block text-sm font-medium text-gray-700">Kisaran Anggaran</label>
                         <div className="flex gap-4">
                             <div className="mb-4 w-full">
                                 <Input
-                                    label="Minimum Budget"
+                                    label="Anggaran Minimal"
                                     type="number"
                                     id="start_budget"
                                     placeholder="Enter minimum budget"
@@ -437,7 +437,7 @@ const MainPagePengguna = () => {
                             </div>
                             <div className="mb-4 w-full">
                                 <Input
-                                    label="Maximum Budget"
+                                    label="Anggaran Maksimal"
                                     type="number"
                                     id="end_budget"
                                     placeholder="Enter maximum budget"
@@ -450,7 +450,7 @@ const MainPagePengguna = () => {
                         <div className="flex gap-4">
                             <div className="mb-4 w-full">
                                 <TimeInput
-                                    label="Jam Buka"
+                                    label="Jam Mulai"
                                     placeholderValue={new Time(9)}
                                     hourCycle={24}
                                     value={formData.start_time}
@@ -459,7 +459,7 @@ const MainPagePengguna = () => {
                             </div>
                             <div className="mb-4 w-full">
                                 <TimeInput
-                                    label="Jam Tutup"
+                                    label="Jam Selesai"
                                     placeholderValue={new Time(18)}
                                     hourCycle={24}
                                     value={formData.end_time}
@@ -467,7 +467,7 @@ const MainPagePengguna = () => {
                                 />
                             </div>
                         </div>
-                        <label className="block text-sm font-medium text-gray-700">Provinsi Penyedia</label>
+                        <label className="block text-sm font-medium text-gray-700">Lokasi</label>
                         <div className="flex gap-4 mb-4">
                             <Select
                                 label="Provinsi"
@@ -584,10 +584,10 @@ const MainPagePengguna = () => {
                             </ModalBody>
                             <ModalFooter>
                                 <Button auto flat onClick={handleModalClose}>
-                                    Cancel
+                                    Batal
                                 </Button>
                                 <Button auto onClick={handleTambahKeranjang}>
-                                    Add to Cart
+                                    Tambah Keranjang
                                 </Button>
                             </ModalFooter>
                         </>

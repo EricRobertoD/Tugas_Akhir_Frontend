@@ -1,25 +1,28 @@
 import React, { useEffect, useState } from "react";
 import assets from "../../assets";
 import Footer from "../../components/Footer";
-import NavbarPenyediaLogin from "../../components/NavbarPenyediaLogin";
-import { Avatar, Card, CardHeader, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, DateRangePicker } from "@nextui-org/react";
+import NavbarAdminLogin from "../../components/NavbarAdminLogin";
+import { Avatar, Card, CardHeader, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Input, DateRangePicker } from "@nextui-org/react";
 import Swal from "sweetalert2";
 import { parseDate } from "@internationalized/date";
 import BASE_URL from "../../../apiConfig";
-import ChatPenyediaPage from "../../components/ChatPenyedia";
 
-const LiburPagePenyedia = () => {
-    const [dataPenyedia, setDataPenyedia] = useState({});
-    const [libur, setLibur] = useState([]);
+const KuponPage = () => {
+    const [kupon, setKupon] = useState([]);
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const [isEditMode, setIsEditMode] = useState(false);
     const [editId, setEditId] = useState(null);
     const [tanggalRange, setTanggalRange] = useState({ start: null, end: null });
+    const [formValues, setFormValues] = useState({
+        kode_voucher: "",
+        persen: "",
+        status: "aktif"
+    });
 
-    const fetchData = async () => {
+    const fetchDataKupon = async () => {
         try {
             const authToken = localStorage.getItem("authToken");
-            const response = await fetch(`${BASE_URL}//api/penyedia`, {
+            const response = await fetch(`${BASE_URL}/api/voucher`, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
@@ -32,39 +35,14 @@ const LiburPagePenyedia = () => {
             }
 
             const result = await response.json();
-            setDataPenyedia(result.data);
-            console.log(result.data);
-        } catch (error) {
-            console.error("Error fetching data: ", error);
-        }
-    };
-
-    const fetchDataLibur = async () => {
-        try {
-            const authToken = localStorage.getItem("authToken");
-            const response = await fetch(`${BASE_URL}//api/tanggalLibur`, {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json',
-                    Authorization: `Bearer ${authToken}`,
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error("Network response was not ok");
-            }
-
-            const result = await response.json();
-            setLibur(result.data);
-            console.log(result.data);
+            setKupon(result.data);
         } catch (error) {
             console.error("Error fetching data: ", error);
         }
     };
 
     useEffect(() => {
-        fetchData();
-        fetchDataLibur();
+        fetchDataKupon();
     }, []);
 
     const handleDelete = async (id) => {
@@ -80,7 +58,7 @@ const LiburPagePenyedia = () => {
             cancelButtonText: 'Batal'
         }).then((result) => {
             if (result.isConfirmed) {
-                fetch(`${BASE_URL}//api/tanggalLibur/${id}`, {
+                fetch(`${BASE_URL}/api/voucher/${id}`, {
                     method: 'DELETE',
                     headers: {
                         Authorization: `Bearer ${authToken}`,
@@ -88,11 +66,11 @@ const LiburPagePenyedia = () => {
                 }).then((response) => {
                     if (response.ok) {
                         Swal.fire(
-                            'Deleted!',
-                            'Tanggal Libur telah dihapus.',
+                            'Terhapus!',
+                            'Voucher telah dihapus.',
                             'success'
                         );
-                        fetchDataLibur();
+                        fetchDataKupon();
                     } else {
                         throw new Error('Network response was not ok.');
                     }
@@ -103,18 +81,19 @@ const LiburPagePenyedia = () => {
         });
     };
 
-    const handleAddLibur = async () => {
+    const handleAddKupon = async () => {
         try {
             const authToken = localStorage.getItem("authToken");
-            const response = await fetch(`${BASE_URL}//api/tanggalLibur`, {
+            const response = await fetch(`${BASE_URL}/api/voucher`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${authToken}`,
                 },
                 body: JSON.stringify({
-                    tanggal_awal: tanggalRange.start?.toString(),
-                    tanggal_akhir: tanggalRange.end?.toString()
+                    ...formValues,
+                    tanggal_mulai: tanggalRange.start?.toString(),
+                    tanggal_selesai: tanggalRange.end?.toString()
                 })
             });
 
@@ -122,43 +101,50 @@ const LiburPagePenyedia = () => {
                 const errorData = await response.json();
                 let errorMessage = 'Something went wrong';
                 if (errorData.errors) {
-                    errorMessage = Object.values(errorData.errors).flat();
+                    errorMessage = Object.values(errorData.errors).flat().join('<br />');
                 }
                 throw new Error(errorMessage);
             }
 
             Swal.fire({
                 title: 'Berhasil!',
-                text: 'Berhasil menambah tanggal libur baru!',
+                text: 'Berhasil menambah voucher baru!',
                 icon: 'success',
                 confirmButtonText: 'OK'
             });
+            setFormValues({
+                kode_voucher: "",
+                persen: "",
+                status: "aktif"
+            });
             setTanggalRange({ start: null, end: null });
-            fetchDataLibur();
+            fetchDataKupon();
             onOpenChange(false);
         } catch (error) {
-            console.error("Error creating tanggal libur: ", error);
+            console.error("Error creating voucher: ", error);
             Swal.fire({
                 title: 'Error!',
-                text: error.message,
+                html: error.message,
                 icon: 'error',
                 confirmButtonText: 'OK'
             });
         }
     };
 
-    const handleEditLibur = async () => {
+    const handleEditKupon = async () => {
         try {
             const authToken = localStorage.getItem("authToken");
-            const response = await fetch(`${BASE_URL}//api/tanggalLibur/${editId}`, {
+            const response = await fetch(`${BASE_URL}/api/voucher/${editId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${authToken}`,
+                    'Accept': 'application/json'
                 },
                 body: JSON.stringify({
-                    tanggal_awal: tanggalRange.start?.toString(),
-                    tanggal_akhir: tanggalRange.end?.toString()
+                    ...formValues,
+                    tanggal_mulai: tanggalRange.start?.toString(),
+                    tanggal_selesai: tanggalRange.end?.toString()
                 })
             });
 
@@ -166,41 +152,51 @@ const LiburPagePenyedia = () => {
                 const errorData = await response.json();
                 let errorMessage = 'Something went wrong';
                 if (errorData.errors) {
-                    errorMessage = Object.values(errorData.errors).flat();
+                    errorMessage = Object.values(errorData.errors).flat().join('<br />');
                 }
                 throw new Error(errorMessage);
             }
 
             Swal.fire({
                 title: 'Berhasil!',
-                text: 'Berhasil mengubah tanggal libur!',
+                text: 'Berhasil mengubah voucher!',
                 icon: 'success',
                 confirmButtonText: 'OK'
             });
 
-            fetchDataLibur();
+            fetchDataKupon();
             onOpenChange(false);
         } catch (error) {
-            console.error("Error editing tanggal libur: ", error);
+            console.error("Error editing voucher: ", error);
             Swal.fire({
                 title: 'Error!',
-                text: error.message,
+                html: error.message,
                 icon: 'error',
                 confirmButtonText: 'OK'
             });
         }
     };
 
-    const handleOpenEditModal = (libur) => {
+    const handleOpenEditModal = (kupon) => {
         setIsEditMode(true);
-        setEditId(libur.id_tanggal);
-        setTanggalRange({ start: parseDate(libur.tanggal_awal), end: parseDate(libur.tanggal_akhir) });
+        setEditId(kupon.id_voucher);
+        setFormValues({
+            kode_voucher: kupon.kode_voucher,
+            persen: kupon.persen,
+            status: kupon.status
+        });
+        setTanggalRange({ start: parseDate(kupon.tanggal_mulai), end: parseDate(kupon.tanggal_selesai) });
         onOpenChange(true);
     };
 
     const handleModalClose = () => {
         setIsEditMode(false);
         setEditId(null);
+        setFormValues({
+            kode_voucher: "",
+            persen: "",
+            status: "aktif"
+        });
         setTanggalRange({ start: null, end: null });
         onOpenChange(false);
     };
@@ -208,25 +204,19 @@ const LiburPagePenyedia = () => {
     return (
         <>
             <div className="min-h-screen bg-[#FFF3E2]">
-                <NavbarPenyediaLogin />
+                <NavbarAdminLogin />
                 <div className="flex justify-center items-center py-[2%]">
                     <Card className="w-[70%] h-[180px] bg-white">
                         <CardHeader className="flex lg:justify-between max-lg:flex-col mt-2 pt-10">
                             <div className="flex px-5">
-                                <div className="flex flex-col">
-                                    <Avatar
-                                        className="w-20 h-20 text-large"
-                                        src={dataPenyedia.gambar_penyedia ? "https://tugas-akhir-backend-4aexnrp6vq-uc.a.run.app/storage/gambar/" + dataPenyedia.gambar_penyedia : assets.profile}
-                                    />
-                                </div>
-                                <div className="flex flex-col items-start justify-center ml-5">
-                                    <p className="font-semibold text-2xl">Tanggal Libur</p>
-                                    <p className="text-xl">Kelola informasi tanggal libur Anda</p>
+                                <div className="flex flex-col items-start justify-center ">
+                                    <p className="font-semibold text-2xl">Kupon</p>
+                                    <p className="text-xl">Kelola informasi kupon</p>
                                 </div>
                             </div>
                             <div className="flex justify-start px-5">
                                 <Button className="bg-[#FA9884] text-white rounded-lg px-3 py-1 text-lg" onPress={onOpen}>
-                                    Tambah Tanggal Libur
+                                    Tambah Kupon
                                 </Button>
                             </div>
                         </CardHeader>
@@ -235,24 +225,28 @@ const LiburPagePenyedia = () => {
                 <div className="flex justify-center items-center py-[2%]">
                     <Table className="w-[60%]">
                         <TableHeader>
-                            <TableColumn>Tanggal Awal</TableColumn>
-                            <TableColumn>Tanggal Akhir</TableColumn>
+                            <TableColumn>Kode Kupon</TableColumn>
+                            <TableColumn>Tanggal Mulai</TableColumn>
+                            <TableColumn>Tanggal Selesai</TableColumn>
+                            <TableColumn>Persen</TableColumn>
                             <TableColumn>Ubah</TableColumn>
                             <TableColumn>Hapus</TableColumn>
                         </TableHeader>
                         <TableBody>
-                            {libur.length > 0 ? (
-                                libur.map((row) => (
-                                    <TableRow key={row.id_tanggal}>
-                                        <TableCell>{row.tanggal_awal}</TableCell>
-                                        <TableCell>{row.tanggal_akhir}</TableCell>
+                            {kupon.length > 0 ? (
+                                kupon.map((row) => (
+                                    <TableRow key={row.id_voucher}>
+                                        <TableCell>{row.kode_voucher}</TableCell>
+                                        <TableCell>{row.tanggal_mulai}</TableCell>
+                                        <TableCell>{row.tanggal_selesai}</TableCell>
+                                        <TableCell>{row.persen}</TableCell>
                                         <TableCell>
                                             <button className="bg-[#00A7E1] text-white rounded-lg px-3 py-1 text-md" onClick={() => handleOpenEditModal(row)}>
                                                 Ubah
                                             </button>
                                         </TableCell>
                                         <TableCell>
-                                            <button className="bg-[#FA9884] text-white rounded-lg px-3 py-1 text-md" onClick={() => handleDelete(row.id_tanggal)}>
+                                            <button className="bg-[#FA9884] text-white rounded-lg px-3 py-1 text-md" onClick={() => handleDelete(row.id_voucher)}>
                                                 Hapus
                                             </button>
                                         </TableCell>
@@ -260,10 +254,13 @@ const LiburPagePenyedia = () => {
                                 ))
                             ) : (
                                 <TableRow>
-                                    <TableCell colSpan={4} className="text-center">Tidak ada tanggal libur</TableCell>
-                                    <TableCell colSpan={4} className="text-center hidden">Tidak ada tanggal libur</TableCell>
-                                    <TableCell colSpan={4} className="text-center hidden">Tidak ada tanggal libur</TableCell>
-                                    <TableCell colSpan={4} className="text-center hidden">Tidak ada tanggal libur</TableCell>
+                                    <TableCell colSpan={7} className="text-center">Tidak ada kupon</TableCell>
+                                    <TableCell colSpan={7} className="text-center hidden">Tidak ada kupon</TableCell>
+                                    <TableCell colSpan={7} className="text-center hidden">Tidak ada kupon</TableCell>
+                                    <TableCell colSpan={7} className="text-center hidden">Tidak ada kupon</TableCell>
+                                    <TableCell colSpan={7} className="text-center hidden">Tidak ada kupon</TableCell>
+                                    <TableCell colSpan={7} className="text-center hidden">Tidak ada kupon</TableCell>
+                                    <TableCell colSpan={7} className="text-center hidden">Tidak ada kupon</TableCell>
                                 </TableRow>
                             )}
                         </TableBody>
@@ -271,7 +268,6 @@ const LiburPagePenyedia = () => {
                 </div>
             </div>
             <Footer />
-            <ChatPenyediaPage />
 
             <Modal 
                 backdrop="opaque" 
@@ -284,21 +280,35 @@ const LiburPagePenyedia = () => {
                 <ModalContent>
                     {(onClose) => (
                         <>
-                            <ModalHeader className="flex flex-col gap-1">{isEditMode ? "Edit Tanggal Libur" : "Tambah Tanggal Libur"}</ModalHeader>
+                            <ModalHeader className="flex flex-col gap-1">{isEditMode ? "Edit Kupon" : "Tambah Kupon"}</ModalHeader>
                             <ModalBody>
+                                <Input
+                                    label="Kode Voucher"
+                                    value={formValues.kode_voucher}
+                                    onChange={(e) => setFormValues({ ...formValues, kode_voucher: e.target.value })}
+                                    fullWidth
+                                    clearable
+                                />
                                 <DateRangePicker
-                                    label="Tanggal Libur"
+                                    label="Tanggal Kupon"
                                     value={tanggalRange}
                                     onChange={(range) => setTanggalRange(range)}
                                     visibleMonths={2}
                                     pageBehavior="single"
+                                />
+                                <Input
+                                    label="Persentase Diskon"
+                                    type="number"
+                                    value={formValues.persen}
+                                    onChange={(e) => setFormValues({ ...formValues, persen: e.target.value })}
+                                    fullWidth
                                 />
                             </ModalBody>
                             <ModalFooter>
                                 <Button color="danger" variant="light" onPress={handleModalClose}>
                                     Batal
                                 </Button>
-                                <Button color="primary" onPress={isEditMode ? handleEditLibur : handleAddLibur}>
+                                <Button color="primary" onPress={isEditMode ? handleEditKupon : handleAddKupon}>
                                     {isEditMode ? "Ubah" : "Tambah"}
                                 </Button>
                             </ModalFooter>
@@ -310,4 +320,4 @@ const LiburPagePenyedia = () => {
     );
 };
 
-export default LiburPagePenyedia;
+export default KuponPage;

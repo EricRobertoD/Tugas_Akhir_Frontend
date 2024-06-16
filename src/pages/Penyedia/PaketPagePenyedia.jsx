@@ -118,7 +118,11 @@ const PaketPagePenyedia = () => {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.message || 'Something went wrong');
+                let errorMessage = 'Something went wrong';
+                if (errorData.errors) {
+                    errorMessage = Object.values(errorData.errors).flat().join('<br />');
+                }
+                throw new Error(errorMessage);
             }
 
             Swal.fire({
@@ -134,12 +138,13 @@ const PaketPagePenyedia = () => {
             console.error("Error creating paket: ", error);
             Swal.fire({
                 title: 'Error!',
-                text: error.message,
+                html: error.message,
                 icon: 'error',
                 confirmButtonText: 'OK'
             });
         }
     };
+
 
     const handleEditPaket = async () => {
         try {
@@ -155,7 +160,11 @@ const PaketPagePenyedia = () => {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.message || 'Something went wrong');
+                let errorMessage = 'Something went wrong';
+                if (errorData.errors) {
+                    errorMessage = Object.values(errorData.errors).flat().join('<br />');
+                }
+                throw new Error(errorMessage);
             }
 
             Swal.fire({
@@ -171,7 +180,7 @@ const PaketPagePenyedia = () => {
             console.error("Error editing paket: ", error);
             Swal.fire({
                 title: 'Error!',
-                text: error.message,
+                html: error.message,
                 icon: 'error',
                 confirmButtonText: 'OK'
             });
@@ -220,8 +229,12 @@ const PaketPagePenyedia = () => {
                                     <p className="text-xl">Kelola informasi paket Anda</p>
                                 </div>
                             </div>
-                            <div className=" px-5 flex justify-start">
-                                <Button className="bg-[#FA9884] text-white rounded-lg px-3 py-1 text-lg" onPress={onOpen}>
+                            <div className="px-5 flex justify-start">
+                                <Button
+                                    className="bg-[#FA9884] text-white rounded-lg px-3 py-1 text-lg"
+                                    onPress={onOpen}
+                                    isDisabled={paket.length >= 5} // Disable button if paket length is 5 or more
+                                >
                                     Tambah Paket
                                 </Button>
                             </div>
@@ -272,9 +285,9 @@ const PaketPagePenyedia = () => {
             <Footer />
             <ChatPenyediaPage />
 
-            <Modal 
-                backdrop="opaque" 
-                isOpen={isOpen} 
+            <Modal
+                backdrop="opaque"
+                isOpen={isOpen}
                 onOpenChange={handleModalClose}
                 classNames={{
                     backdrop: "bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20"
@@ -319,10 +332,10 @@ const PaketPagePenyedia = () => {
                             </ModalBody>
                             <ModalFooter>
                                 <Button color="danger" variant="light" onPress={handleModalClose}>
-                                    Close
+                                    Batal
                                 </Button>
                                 <Button color="primary" onPress={isEditMode ? handleEditPaket : handleAddPaket}>
-                                    {isEditMode ? "Update" : "Tambah"}
+                                    {isEditMode ? "Simpan" : "Tambah"}
                                 </Button>
                             </ModalFooter>
                         </>

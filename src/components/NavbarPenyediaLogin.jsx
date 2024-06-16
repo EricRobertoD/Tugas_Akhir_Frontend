@@ -70,7 +70,7 @@ export default function NavbarPenyediaLogin() {
   });
 
   const menuItems = [{
-    title: "Tampilan",
+    title: "Portofolio",
     link: "/GambarPage",
   }, {
     title: "Paket",

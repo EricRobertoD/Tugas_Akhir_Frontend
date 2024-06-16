@@ -59,7 +59,7 @@ const JadwalPagePenyedia = () => {
             }
 
             const result = await response.json();
-            setJadwal(result.data);
+            setJadwal(result.data.sort((a, b) => a.hari - b.hari));
             console.log(result.data);
         } catch (error) {
             console.error("Error fetching data: ", error);
@@ -106,7 +106,6 @@ const JadwalPagePenyedia = () => {
             }
         });
     };
-
     const handleAddJadwal = async () => {
         try {
             const authToken = localStorage.getItem("authToken");
@@ -122,19 +121,23 @@ const JadwalPagePenyedia = () => {
                     jam_tutup: `${jamTutup.hour}:${jamTutup.minute}`
                 })
             });
-
+    
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.message || 'Something went wrong');
+                let errorMessage = 'Something went wrong';
+                if (errorData.errors) {
+                    errorMessage = Object.values(errorData.errors).flat().join('<br />');
+                }
+                throw new Error(errorMessage);
             }
-
+    
             Swal.fire({
                 title: 'Berhasil!',
                 text: 'Berhasil menambah jadwal baru!',
                 icon: 'success',
                 confirmButtonText: 'OK'
             });
-
+    
             fetchDataJadwal();
             onOpenChange(false);
             setHariSelect(new Set());
@@ -146,7 +149,7 @@ const JadwalPagePenyedia = () => {
             console.error("Error creating jadwal: ", error);
             Swal.fire({
                 title: 'Error!',
-                text: error.message,
+                html: error.message,  // Use html property instead of text
                 icon: 'error',
                 confirmButtonText: 'OK'
             });
@@ -171,7 +174,11 @@ const JadwalPagePenyedia = () => {
 
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.message || 'Something went wrong');
+                let errorMessage = 'Something went wrong';
+                if (errorData.errors) {
+                    errorMessage = Object.values(errorData.errors).flat().join('<br />');
+                }
+                throw new Error(errorMessage);
             }
 
             Swal.fire({
@@ -187,7 +194,7 @@ const JadwalPagePenyedia = () => {
             console.error("Error editing jadwal: ", error);
             Swal.fire({
                 title: 'Error!',
-                text: error.message,
+                html: error.message,
                 icon: 'error',
                 confirmButtonText: 'OK'
             });
@@ -239,10 +246,10 @@ const JadwalPagePenyedia = () => {
                                     <p className="text-xl">Kelola informasi jadwal buka Anda</p>
                                 </div>
                             </div>
-                            <div className=" px-5 flex justify-start">
-                                <Button className="bg-[#FA9884] text-white rounded-lg px-3 py-1 text-lg" onPress={onOpen}>
-                                    Tambah Jadwal
-                                </Button>
+                            <div className="px-5 flex justify-start">
+                                    <Button className="bg-[#FA9884] text-white rounded-lg px-3 py-1 text-lg" onPress={onOpen} isDisabled={availableDays.length === 0}>
+                                        Tambah Jadwal
+                                    </Button>
                             </div>
                         </CardHeader>
                     </Card>
@@ -336,7 +343,7 @@ const JadwalPagePenyedia = () => {
                             </ModalBody>
                             <ModalFooter>
                                 <Button color="danger" variant="light" onPress={handleModalClose}>
-                                    Close
+                                    Batal
                                 </Button>
                                 <Button color="primary" onPress={isEditMode ? handleEditJadwal : handleAddJadwal}>
                                     {isEditMode ? "Update" : "Tambah"}

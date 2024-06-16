@@ -25,9 +25,8 @@ const ForgotPasswordPage = () => {
     
         const data = {
             email_pengguna: email,
-            password : password,
-            token : token,
-            
+            password: password,
+            token: token,
         };
     
         fetch(`${BASE_URL}/api/resetPassword`, {
@@ -39,12 +38,15 @@ const ForgotPasswordPage = () => {
         })
         .then((response) => {
             if (!response.ok) {
-                if (response.status === 404) {
-                    return response.json().then((responseData) => {
+                return response.json().then((responseData) => {
+                    if (response.status === 400) {
+                        throw new Error(Object.values(responseData.errors).join('\n'));
+                    } else if (response.status === 404) {
                         throw new Error(responseData.errors.email);
-                    });
-                }
-                throw new Error(`HTTP error! Status: ${response.status}`);
+                    } else {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                });
             }
             return response.json();
         })
@@ -52,10 +54,10 @@ const ForgotPasswordPage = () => {
             if (responseData.status === 'success') {
                 Swal.fire({
                     icon: "success",
-                    title: "Berhasil Reset Email",
+                    title: "Berhasil Reset Password",
                     text: "Password Berhasil Diganti.",
                 });
-                navigate('/LoginPage')
+                navigate('/LoginPage');
             } else {
                 const errorMessages = Object.values(responseData.errors).join('\n');
                 Swal.fire({
@@ -74,6 +76,7 @@ const ForgotPasswordPage = () => {
             console.error('Error:', error);
         });
     };
+    
     
 
     return (

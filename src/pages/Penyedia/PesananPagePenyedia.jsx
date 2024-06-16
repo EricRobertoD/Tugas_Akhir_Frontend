@@ -101,7 +101,7 @@ const PesananPagePenyedia = () => {
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
             confirmButtonText: 'Ya!',
-            cancelButtonText: 'Batal'
+            cancelButtonText: 'Tidak'
         }).then((result) => {
             if (result.isConfirmed) {
                 Swal.showLoading();
@@ -320,6 +320,7 @@ const PesananPagePenyedia = () => {
                                                         </>
                                                     )}
                                                     {detailTransaksi.status_penyedia_jasa === "Sedang bekerja sama dengan pelanggan" && (
+                                                        new Date() >= new Date(`${detailTransaksi.tanggal_pelaksanaan}T${detailTransaksi.jam_selesai}`) &&
                                                         <Button
                                                             className="font-bold bg-[#FA9884] hover:bg-red-700 text-white mx-auto"
                                                             onClick={() => handleUpdateStatus(detailTransaksi.id_detail_transaksi, "Selesai")}

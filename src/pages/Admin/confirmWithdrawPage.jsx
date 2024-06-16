@@ -159,7 +159,7 @@ const ConfirmWithdrawPage = () => {
                                                 onClick={() => handleConfirm(row.id_saldo)}
                                                 className="px-4 py-2 bg-[#00A7E1] hover:bg-blue-600 text-white rounded-lg"
                                             >
-                                                Confirm
+                                                Konfirmasi
                                             </Button>
                                         </TableCell>
                                         <TableCell>
@@ -191,7 +191,7 @@ const ConfirmWithdrawPage = () => {
                 <ModalContent>
                     {(onClose) => (
                         <>
-                            <ModalHeader className="flex flex-col gap-1">Upload Confirmation Image</ModalHeader>
+                            <ModalHeader className="flex flex-col gap-1">Unggah Gambar Konfirmasi</ModalHeader>
                             <ModalBody>
                                 <input
                                     label="Upload Bukti Transfer"
@@ -201,10 +201,10 @@ const ConfirmWithdrawPage = () => {
                             </ModalBody>
                             <ModalFooter>
                                 <Button color="danger" variant="light" onClick={onClose}>
-                                    Cancel
+                                    Batal
                                 </Button>
                                 <Button color="primary" onClick={confirmWithdraw}>
-                                    Submit
+                                    Kirim
                                 </Button>
                             </ModalFooter>
                         </>

@@ -67,11 +67,11 @@ export default function NavbarAdminLogin() {
   });
 
   const menuItems = [{
-    title: "Withdraw",
+    title: "Penarikan",
     link: "/ConfirmWithdrawPage",
   }, {
     title: "Kupon",
-    link: "/KuponAdminPage",
+    link: "/KuponPage",
   }
   ];
 

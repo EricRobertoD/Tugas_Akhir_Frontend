@@ -142,7 +142,7 @@ const GambarPage = () => {
                                             />
                                         </CardBody>
                                         <CardFooter className="flex justify-center">
-                                            <p className="text-default-600 font-bold">Gambar</p>
+                                            <p className="text-default-600 font-bold">Ubah Gambar</p>
                                         </CardFooter>
                                     </Card>
                                 ))}

@@ -118,11 +118,11 @@ const DashboardPage = () => {
                                         onChange={(newDate) => setDateTime(newDate)}
                                     />
                                 </div>
-                                <label className="block text-sm font-medium text-gray-700">Budget Range</label>
+                                <label className="block text-sm font-medium text-gray-700">Kisaran Anggaran</label>
                                 <div className="flex gap-4">
                                     <div className="mb-4 w-full">
                                         <Input
-                                            label="Minimum Budget"
+                                            label="Anggaran Minimal"
                                             type="number"
                                             id="startBudget"
                                             placeholder="Enter minimum budget"
@@ -132,7 +132,7 @@ const DashboardPage = () => {
                                     </div>
                                     <div className="mb-4 w-full">
                                         <Input
-                                            label="Maximum Budget"
+                                            label="Anggaran Maksimal"
                                             type="number"
                                             id="endBudget"
                                             placeholder="Enter maximum budget"
@@ -145,7 +145,7 @@ const DashboardPage = () => {
                                 <div className="flex gap-4">
                                     <div className="mb-4 w-full">
                                         <TimeInput
-                                            label="Jam Buka"
+                                            label="Jam Mulai"
                                             placeholderValue={new Time(9)}
                                             hourCycle={24}
                                             value={jamBuka}
@@ -154,7 +154,7 @@ const DashboardPage = () => {
                                     </div>
                                     <div className="mb-4 w-full">
                                         <TimeInput
-                                            label="Jam Tutup"
+                                            label="Jam Selesai"
                                             placeholderValue={new Time(18)}
                                             hourCycle={24}
                                             value={jamTutup}
@@ -162,7 +162,7 @@ const DashboardPage = () => {
                                         />
                                     </div>
                                 </div>
-                                <label className="block text-sm font-medium text-gray-700">Provinsi Penyedia</label>
+                                <label className="block text-sm font-medium text-gray-700">Lokasi</label>
                                 <div className="flex gap-4 mb-4">
                                     <Select
                                         label="Provinsi"
@@ -182,7 +182,7 @@ const DashboardPage = () => {
                                             className="bg-[#FA9884] hover:bg-red-700 text-white rounded-lg"
                                             onClick={getCurrentPosition}
                                         >
-                                            Get Current Position
+                                            Posisi Saat Ini
                                         </Button>
                                     </div>
                                 </div>

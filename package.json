@@ -27,7 +27,8 @@
     "react-router-dom": "^6.23.0",
     "react-stars": "^2.2.5",
     "sweetalert2": "^11.6.13",
-    "swiper": "^11.1.1"
+    "swiper": "^11.1.1",
+    "toastr": "^2.1.4"
   },
   "devDependencies": {
     "@types/react": "^18.2.66",

@@ -316,13 +316,13 @@ const ProfilePagePengguna = () => {
                     <Card className="bg-white mb-20">
                         <CardHeader className="flex lg:justify-between gap-3 max-lg:flex-col">
                             <div className="flex py-5">
-                                <div className="flex flex-col px-5 pt-10">
+                                <div className="flex flex-col px-5 pt-10 items-center">
                                     <Avatar
                                         className="w-20 h-20 text-large"
                                         src={dataPengguna.gambar_pengguna ? "https://tugas-akhir-backend-4aexnrp6vq-uc.a.run.app/storage/gambar/" + dataPengguna.gambar_pengguna : assets.profile}
                                     />
                                     <input ref={openUpdateImage} type="file" className="hidden" onChange={updateImage} />
-                                    <button className="bg-[#FA9884] text-white rounded-lg px-3 my-2" onClick={handleOpen}>Profil</button>
+                                    <Button className="bg-[#FA9884] text-white my-2 " onClick={handleOpen}>Ubah Gambar</Button>
                                 </div>
                                 <div className="flex flex-col items-start justify-center px-2">
                                     <p className="font-semibold text-xl">Profil Saya</p>
@@ -345,7 +345,7 @@ const ProfilePagePengguna = () => {
                                         </div>
                                         <div className="">
                                             <Switch className="px-3 py-1" isSelected={isUpdateMode} onValueChange={handleUpdateModeToggle}>
-                                                Update Profile
+                                                Ubah Profil
                                             </Switch>
                                         </div>
                                     </div>
@@ -415,7 +415,7 @@ const ProfilePagePengguna = () => {
                                                 onClick={getCurrentPosition}
                                                 disabled={!isUpdateMode}
                                             >
-                                                Get Current Position
+                                                Posisi Saat Ini
                                             </Button>
                                         </div>
 
@@ -502,10 +502,10 @@ const ProfilePagePengguna = () => {
                             </ModalBody>
                             <ModalFooter>
                                 <Button color="danger" variant="light" onClick={onClose}>
-                                    Cancel
+                                    Batal
                                 </Button>
                                 <Button color="primary" onClick={handleDeposit}>
-                                    Submit
+                                    Bayar
                                 </Button>
                             </ModalFooter>
                         </>

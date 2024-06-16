@@ -322,7 +322,7 @@ const PesananPagePengguna = () => {
                                 <Divider />
                                 <ModalFooter>
                                     <Button color="danger" variant="light" onPress={onReviewClose}>
-                                        Tutup
+                                        Batal
                                     </Button>
                                     <Button color="primary" onPress={handleReviewSubmit}>
                                         Simpan

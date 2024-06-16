@@ -24,6 +24,7 @@ import DashboardPageAdmin from "./pages/Dashboard/DashboardPageAdmin.jsx";
 import ConfirmWithdrawPage from "./pages/Admin/confirmWithdrawPage.jsx";
 import GoogleAnalyticPage from "./pages/Owner/GoogleAnalyticPage.jsx";
 import LoginPageOwner from "./pages/Auth/LoginPageOwner.jsx";
+import KuponPage from "./pages/Admin/KuponPage.jsx";
 
 const App = () => {
   return (
@@ -53,6 +54,7 @@ const App = () => {
           <Route path="/ConfirmWithdrawPage" element={<ConfirmWithdrawPage />}></Route>
           <Route path="/GoogleAnalyticPage" element={<GoogleAnalyticPage />}></Route>
           <Route path="/LoginPageOwner" element={<LoginPageOwner />}></Route>
+          <Route path="/KuponPage" element={<KuponPage />}></Route>
 
         </Routes>
       </BrowserRouter>

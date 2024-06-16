@@ -2,14 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import assets from "../../assets";
 import Footer from "../../components/Footer";
-import { AccordionItem, Avatar, Button, Card, CardBody, CardFooter, CardHeader, Divider, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem, useDisclosure } from "@nextui-org/react";
+import { AccordionItem, Avatar, Button, Card, CardBody, CardFooter, CardHeader, Divider, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Select, SelectItem, useDisclosure, Image, Accordion } from "@nextui-org/react";
 import Swal from "sweetalert2";
 import NavbarPenggunaLogin from "../../components/NavbarPenggunaLogin";
 import BASE_URL from "../../../apiConfig";
 import ChatPenggunaPage from "../../components/ChatPengguna";
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Accordion } from "@nextui-org/react";
-import { Scrollbar, Autoplay, Navigation } from 'swiper/modules';
 import axios from 'axios';
 
 const DetailPagePengguna = () => {
@@ -142,7 +139,7 @@ const DetailPagePengguna = () => {
         <>
             <NavbarPenggunaLogin />
             <div className="min-h-screen bg-[#FFF3E2] w-full flex flex-col items-center">
-                <Card className="w-[70%] h-[40%] bg-white p-10 mt-10 mb-10">
+                <Card className="w-[70%] h-[40%] bg-white p-10 mt-8 mb-8">
                     {penyediaData ? (
                         <>
                             <CardHeader className="flex justify-between items-center">
@@ -153,7 +150,7 @@ const DetailPagePengguna = () => {
                                     />
                                     <div className="flex flex-col items-start justify-center px-2">
                                         <p className="font-semibold text-2xl">{penyediaData.nama_penyedia}</p>
-                                        <p className="text-xl flex items-center">
+                                        <span className="text-xl flex items-center">
                                             {penyediaData.nama_role}
                                             {averageRating > 0 ? (
                                                 <span className="ml-2 text-yellow-500 flex items-center">
@@ -164,35 +161,34 @@ const DetailPagePengguna = () => {
                                                     - <p>⭐</p>
                                                 </span>
                                             )}
-                                        </p>
+                                        </span>
                                     </div>
                                 </div>
                                 <Button className="font-bold bg-[#FA9884] hover:bg-red-700 text-white" onClick={() => handleFirstChat(penyediaData)}>Chat</Button>
                             </CardHeader>
-                            <Divider />
                             <CardBody>
-                                <div className="flex max-lg:flex-col">
-                                    <div className="lg:w-[40%] lg:p-10 lg:mt-10">
-                                        <Swiper
-                                            scrollbar={{ hide: true }}
-                                            autoplay={{ delay: 2500, disableOnInteraction: false }}
-                                            navigation={false}
-                                            modules={[Scrollbar, Autoplay, Navigation]}
-                                            className="mySwiper"
-                                        >
-                                            {penyediaData?.gambar_porto?.map((porto, index) => (
-                                                <SwiperSlide key={index}>
-                                                    <img
-                                                        src={`https://tugas-akhir-backend-4aexnrp6vq-uc.a.run.app/storage/gambar/${porto.gambar}`}
-                                                        alt={`Porto ${index + 1}`}
-                                                        className="w-full h-96 object-cover border-2 border-gray-300 rounded-2xl"
-                                                    />
-                                                </SwiperSlide>
-                                            ))}
-                                        </Swiper>
-                                    </div>
-                                    <div className="lg:w-[70%] lg:p-10 lg:mt-10">
+                                <div className="lg:grid lg:grid-cols-3 gap-4">
+                                    {penyediaData?.gambar_porto?.map((porto, index) => (
+                                        <Card key={index} className="w-full">
+                                            <CardBody className="p-0">
+                                                <Image
+                                                    shadow="sm"
+                                                    radius="lg"
+                                                    width="100%"
+                                                    alt={`Porto ${index + 1}`}
+                                                    className="w-full object-cover h-96 border-2 border-gray-300 rounded-2xl"
+                                                    src={`https://tugas-akhir-backend-4aexnrp6vq-uc.a.run.app/storage/gambar/${porto.gambar}`}
+                                                />
+                                            </CardBody>
+                                        </Card>
+                                    ))}
+                                </div>
+                                <Divider className="my-4" />   
+                                <div className="flex">
+                                    <div className="w-full mr-8">
                                         <p className="text-justify pb-10 font-semibold">{penyediaData.deskripsi_penyedia}</p>
+                                    </div>
+                                    <div className="w-full">
                                         <Accordion variant="shadow">
                                             {penyediaData?.paket?.map((paket, index) => (
                                                 <AccordionItem key={index} title={paket.nama_paket}>
@@ -256,10 +252,10 @@ const DetailPagePengguna = () => {
                             </ModalBody>
                             <ModalFooter>
                                 <Button auto flat onClick={handleModalClose}>
-                                    Cancel
+                                    Batal
                                 </Button>
                                 <Button auto onClick={handleTambahKeranjang}>
-                                    Add to Cart
+                                    Tambah Keranjang
                                 </Button>
                             </ModalFooter>
                         </>
