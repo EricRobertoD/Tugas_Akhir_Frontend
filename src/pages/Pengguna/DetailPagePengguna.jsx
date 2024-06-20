@@ -146,7 +146,7 @@ const DetailPagePengguna = () => {
                                 <div className="flex items-center">
                                     <Avatar
                                         className="w-16 h-16 text-large"
-                                        src={penyediaData.gambar_penyedia ? `https://tugas-akhir-backend-4aexnrp6vq-uc.a.run.app/storage/gambar/${penyediaData.gambar_penyedia}` : assets.profile}
+                                        src={penyediaData.gambar_penyedia ? `https:/tugas-akhir-backend-4aexnrp6vq-uc.a.run.app/storage/gambar/${penyediaData.gambar_penyedia}` : assets.profile}
                                     />
                                     <div className="flex flex-col items-start justify-center px-2">
                                         <p className="font-semibold text-2xl">{penyediaData.nama_penyedia}</p>
@@ -177,7 +177,7 @@ const DetailPagePengguna = () => {
                                                     width="100%"
                                                     alt={`Porto ${index + 1}`}
                                                     className="w-full object-cover h-96 border-2 border-gray-300 rounded-2xl"
-                                                    src={`https://tugas-akhir-backend-4aexnrp6vq-uc.a.run.app/storage/gambar/${porto.gambar}`}
+                                                    src={`https:/tugas-akhir-backend-4aexnrp6vq-uc.a.run.app/storage/gambar/${porto.gambar}`}
                                                 />
                                             </CardBody>
                                         </Card>
@@ -186,7 +186,9 @@ const DetailPagePengguna = () => {
                                 <Divider className="my-4" />   
                                 <div className="flex">
                                     <div className="w-full mr-8">
-                                        <p className="text-justify pb-10 font-semibold">{penyediaData.deskripsi_penyedia}</p>
+                                        {penyediaData.deskripsi_penyedia.split('\n').map((line, index) => (
+                                            <p key={index} className="text-justify pb-2 font-semibold">{line}</p>
+                                        ))}
                                     </div>
                                     <div className="w-full">
                                         <Accordion variant="shadow">

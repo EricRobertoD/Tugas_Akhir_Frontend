@@ -13,15 +13,14 @@ const LoginPage = () => {
         email: "",
         password: "",
     });
-
     const handleLogin = () => {
         Swal.showLoading();
-
+    
         const loginData = {
             email: LoginPengguna.email,
             password: LoginPengguna.password,
         };
-
+    
         fetch(`${BASE_URL}/api/login`, {
             method: 'POST',
             headers: {
@@ -37,7 +36,7 @@ const LoginPage = () => {
                     localStorage.setItem('authToken', data.data.access_token);
                     gtag('event', 'login', {
                         method: 'Email',
-                        role: 'pengguna' // Include the custom dimension 'role'
+                        role: 'pengguna'
                     });
                     navigate('/DashboardPage');
                 } else if (data.message === 'Authenticated as penyedia') {
@@ -45,9 +44,15 @@ const LoginPage = () => {
                     localStorage.setItem('authToken', data.data.access_token);
                     gtag('event', 'login', {
                         method: 'Email',
-                        role: 'penyedia' // Include the custom dimension 'role'
+                        role: 'penyedia'
                     });
                     navigate('/DashboardPagePenyedia');
+                } else if (data.message === 'Maaf akun Anda diblokir') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Login Gagal',
+                        text: 'Maaf akun Anda diblokir',
+                    });
                 } else {
                     Swal.fire({
                         icon: 'error',
@@ -65,6 +70,7 @@ const LoginPage = () => {
                 });
             });
     };
+    
 
     const handleKeyDown = (event) => {
         if (event.key === 'Enter') {

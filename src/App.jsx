@@ -25,6 +25,8 @@ import ConfirmWithdrawPage from "./pages/Admin/confirmWithdrawPage.jsx";
 import GoogleAnalyticPage from "./pages/Owner/GoogleAnalyticPage.jsx";
 import LoginPageOwner from "./pages/Auth/LoginPageOwner.jsx";
 import KuponPage from "./pages/Admin/KuponPage.jsx";
+import FakturPagePengguna from "./pages/Pengguna/FakturPagePengguna.jsx";
+import BlokirPenyediaPage from "./pages/Admin/BlokirPenyediaPage.jsx";
 
 const App = () => {
   return (
@@ -55,6 +57,8 @@ const App = () => {
           <Route path="/GoogleAnalyticPage" element={<GoogleAnalyticPage />}></Route>
           <Route path="/LoginPageOwner" element={<LoginPageOwner />}></Route>
           <Route path="/KuponPage" element={<KuponPage />}></Route>
+          <Route path="/faktur/:id" element={<FakturPagePengguna />}></Route>
+          <Route path="/BlokirPenyediaPage" element={<BlokirPenyediaPage />}></Route>
 
         </Routes>
       </BrowserRouter>

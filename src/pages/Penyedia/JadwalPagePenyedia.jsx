@@ -7,6 +7,8 @@ import Swal from "sweetalert2";
 import { Time } from "@internationalized/date";
 import BASE_URL from "../../../apiConfig";
 import ChatPenyediaPage from "../../components/ChatPenyedia";
+import { CiEdit } from "react-icons/ci";
+import { MdOutlineSave } from "react-icons/md";
 
 const JadwalPagePenyedia = () => {
     const [dataPenyedia, setDataPenyedia] = useState({});
@@ -17,13 +19,17 @@ const JadwalPagePenyedia = () => {
 
     const [hari, setHari] = useState("");
     const [jamBuka, setJamBuka] = useState(new Time(0o0));
-    const [jamTutup, setJamTutup] = useState(new Time(23,59));
+    const [jamTutup, setJamTutup] = useState(new Time(23, 59));
     const [hariSelect, setHariSelect] = useState(new Set());
+
+    const [isEditing, setIsEditing] = useState(false);
+    const [minimalPersiapan, setMinimalPersiapan] = useState(0);
+    const [originalMinimalPersiapan, setOriginalMinimalPersiapan] = useState(0);
 
     const fetchData = async () => {
         try {
             const authToken = localStorage.getItem("authToken");
-            const response = await fetch(`${BASE_URL}//api/penyedia`, {
+            const response = await fetch(`${BASE_URL}/api/penyedia`, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
@@ -37,6 +43,8 @@ const JadwalPagePenyedia = () => {
 
             const result = await response.json();
             setDataPenyedia(result.data);
+            setMinimalPersiapan(result.data.minimal_persiapan);
+            setOriginalMinimalPersiapan(result.data.minimal_persiapan);
             console.log(result.data);
         } catch (error) {
             console.error("Error fetching data: ", error);
@@ -46,7 +54,7 @@ const JadwalPagePenyedia = () => {
     const fetchDataJadwal = async () => {
         try {
             const authToken = localStorage.getItem("authToken");
-            const response = await fetch(`${BASE_URL}//api/jadwal`, {
+            const response = await fetch(`${BASE_URL}/api/jadwal`, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
@@ -84,7 +92,7 @@ const JadwalPagePenyedia = () => {
             cancelButtonText: 'Batal'
         }).then((result) => {
             if (result.isConfirmed) {
-                fetch(`${BASE_URL}//api/jadwal/${id}`, {
+                fetch(`${BASE_URL}/api/jadwal/${id}`, {
                     method: 'DELETE',
                     headers: {
                         Authorization: `Bearer ${authToken}`,
@@ -106,10 +114,11 @@ const JadwalPagePenyedia = () => {
             }
         });
     };
+
     const handleAddJadwal = async () => {
         try {
             const authToken = localStorage.getItem("authToken");
-            const response = await fetch(`${BASE_URL}//api/jadwal`, {
+            const response = await fetch(`${BASE_URL}/api/jadwal`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -121,7 +130,7 @@ const JadwalPagePenyedia = () => {
                     jam_tutup: `${jamTutup.hour}:${jamTutup.minute}`
                 })
             });
-    
+
             if (!response.ok) {
                 const errorData = await response.json();
                 let errorMessage = 'Something went wrong';
@@ -130,26 +139,26 @@ const JadwalPagePenyedia = () => {
                 }
                 throw new Error(errorMessage);
             }
-    
+
             Swal.fire({
                 title: 'Berhasil!',
                 text: 'Berhasil menambah jadwal baru!',
                 icon: 'success',
                 confirmButtonText: 'OK'
             });
-    
+
             fetchDataJadwal();
             onOpenChange(false);
             setHariSelect(new Set());
             setJamBuka(new Time(0o0));
-            setJamTutup(new Time(23,59));
+            setJamTutup(new Time(23, 59));
             setEditId(null);
             setHari("");
         } catch (error) {
             console.error("Error creating jadwal: ", error);
             Swal.fire({
                 title: 'Error!',
-                html: error.message,  // Use html property instead of text
+                html: error.message,
                 icon: 'error',
                 confirmButtonText: 'OK'
             });
@@ -159,7 +168,7 @@ const JadwalPagePenyedia = () => {
     const handleEditJadwal = async () => {
         try {
             const authToken = localStorage.getItem("authToken");
-            const response = await fetch(`${BASE_URL}//api/jadwal/${editId}`, {
+            const response = await fetch(`${BASE_URL}/api/jadwal/${editId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -217,8 +226,47 @@ const JadwalPagePenyedia = () => {
         setHari("");
         setHariSelect(new Set());
         setJamBuka(new Time(0o0));
-        setJamTutup(new Time(23,59));
+        setJamTutup(new Time(23, 59));
         onOpenChange(false);
+    };
+
+    const handleEditMinimalPersiapan = async () => {
+        try {
+            const authToken = localStorage.getItem("authToken");
+            const response = await fetch(`${BASE_URL}/api/minimalPersiapan`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${authToken}`,
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({
+                    minimal_persiapan: minimalPersiapan
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to update minimal_persiapan");
+            }
+
+            Swal.fire({
+                title: 'Berhasil!',
+                text: 'Minimal persiapan berhasil diupdate!',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
+
+            setIsEditing(false);
+            setOriginalMinimalPersiapan(minimalPersiapan);
+        } catch (error) {
+            console.error("Error updating minimal_persiapan: ", error);
+            Swal.fire({
+                title: 'Error!',
+                text: error.message,
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+        }
     };
 
     const dayOfWeek = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"];
@@ -233,25 +281,46 @@ const JadwalPagePenyedia = () => {
                 <NavbarPenyediaLogin />
                 <div className="flex justify-center items-center py-[2%]">
                     <Card className="w-[70%] h-[180px] bg-white">
-                        <CardHeader className="flex lg:justify-between gap-3 max-lg:flex-col mt-2 pt-10">
-                            <div className="flex px-5">
-                                <div className="flex flex-col">
-                                    <Avatar
-                                        className="w-20 h-20 text-large"
-                                        src={dataPenyedia.gambar_penyedia ? "https://tugas-akhir-backend-4aexnrp6vq-uc.a.run.app/storage/gambar/" + dataPenyedia.gambar_penyedia : assets.profile}
-                                    />
-                                </div>
-                                <div className="flex flex-col items-start justify-center ml-5">
-                                    <p className="font-semibold text-2xl">Jadwal Buka</p>
-                                    <p className="text-xl">Kelola informasi jadwal buka Anda</p>
+                        <CardHeader className="flex lg:justify-between max-lg:flex-col pt-10">
+                            <div>
+                                <div className="flex px-5">
+                                    <div className="flex flex-col">
+                                        <Avatar
+                                            className="w-20 h-20 text-large"
+                                            src={dataPenyedia.gambar_penyedia ? "https:/tugas-akhir-backend-4aexnrp6vq-uc.a.run.app/storage/gambar/" + dataPenyedia.gambar_penyedia : assets.profile}
+                                        />
+                                    </div>
+                                    <div className="flex flex-col items-start justify-center ml-5">
+                                        <p className="font-semibold text-2xl">Jadwal Buka</p>
+                                        <p className="text-xl">Kelola informasi jadwal buka Anda</p>
+                                    </div>
                                 </div>
                             </div>
                             <div className="px-5 flex justify-start">
-                                    <Button className="bg-[#FA9884] text-white rounded-lg px-3 py-1 text-lg" onPress={onOpen} isDisabled={availableDays.length === 0}>
-                                        Tambah Jadwal
-                                    </Button>
+                                <Button className="bg-[#FA9884] text-white rounded-lg px-3 py-1 text-lg" onPress={onOpen} isDisabled={availableDays.length === 0}>
+                                    Tambah Jadwal
+                                </Button>
                             </div>
                         </CardHeader>
+                        <div className="px-8 flex items-center">
+                            <p className="mr-2">Jadwal minimal persiapan Anda adalah:</p>
+                            {isEditing ? (
+                                <input
+                                    type="number"
+                                    value={minimalPersiapan}
+                                    onChange={(e) => setMinimalPersiapan(e.target.value)}
+                                    className="border border-gray-300 rounded px-2 py-1 mr-2 w-[8%]"
+                                />
+                            ) : (
+                                <span className="mr-2">{minimalPersiapan}</span>
+                            )}
+                            <span>hari</span>
+                            {isEditing ? (
+                                <MdOutlineSave className="cursor-pointer ml-2" onClick={handleEditMinimalPersiapan} />
+                            ) : (
+                                <CiEdit className="cursor-pointer ml-2" onClick={() => setIsEditing(true)} />
+                            )}
+                        </div>
                     </Card>
                 </div>
                 <div className="flex justify-center items-center py-[2%]">
@@ -298,9 +367,9 @@ const JadwalPagePenyedia = () => {
             <Footer />
             <ChatPenyediaPage />
 
-            <Modal 
-                backdrop="opaque" 
-                isOpen={isOpen} 
+            <Modal
+                backdrop="opaque"
+                isOpen={isOpen}
                 onOpenChange={handleModalClose}
                 classNames={{
                     backdrop: "bg-gradient-to-t from-zinc-900 to-zinc-900/10 backdrop-opacity-20"
@@ -311,7 +380,7 @@ const JadwalPagePenyedia = () => {
                         <>
                             <ModalHeader className="flex flex-col gap-1">{isEditMode ? "Edit Jadwal" : "Tambah Jadwal"}</ModalHeader>
                             <ModalBody>
-                                <Select 
+                                <Select
                                     items={availableDays}
                                     label="Hari"
                                     selectedKeys={hariSelect}
@@ -326,16 +395,16 @@ const JadwalPagePenyedia = () => {
                                         <SelectItem key={item.value}>{item.label}</SelectItem>
                                     )}
                                 </Select>
-                                <TimeInput 
-                                    label="Jam Buka" 
+                                <TimeInput
+                                    label="Jam Buka"
                                     placeholderValue={new Time(0o0)}
                                     hourCycle={24}
                                     value={jamBuka}
                                     onChange={setJamBuka}
                                 />
                                 <TimeInput
-                                    label="Jam Tutup" 
-                                    placeholderValue={new Time(23,59)}
+                                    label="Jam Tutup"
+                                    placeholderValue={new Time(23, 59)}
                                     hourCycle={24}
                                     value={jamTutup}
                                     onChange={setJamTutup}
@@ -354,7 +423,7 @@ const JadwalPagePenyedia = () => {
                 </ModalContent>
             </Modal>
         </>
-    )
+    );
 };
 
 export default JadwalPagePenyedia;

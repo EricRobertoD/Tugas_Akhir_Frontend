@@ -254,13 +254,12 @@ const KuponPage = () => {
                                 ))
                             ) : (
                                 <TableRow>
-                                    <TableCell colSpan={7} className="text-center">Tidak ada kupon</TableCell>
-                                    <TableCell colSpan={7} className="text-center hidden">Tidak ada kupon</TableCell>
-                                    <TableCell colSpan={7} className="text-center hidden">Tidak ada kupon</TableCell>
-                                    <TableCell colSpan={7} className="text-center hidden">Tidak ada kupon</TableCell>
-                                    <TableCell colSpan={7} className="text-center hidden">Tidak ada kupon</TableCell>
-                                    <TableCell colSpan={7} className="text-center hidden">Tidak ada kupon</TableCell>
-                                    <TableCell colSpan={7} className="text-center hidden">Tidak ada kupon</TableCell>
+                                    <TableCell colSpan={6} className="text-center">Tidak ada kupon</TableCell>
+                                    <TableCell colSpan={6} className="text-center hidden">Tidak ada kupon</TableCell>
+                                    <TableCell colSpan={6} className="text-center hidden">Tidak ada kupon</TableCell>
+                                    <TableCell colSpan={6} className="text-center hidden">Tidak ada kupon</TableCell>
+                                    <TableCell colSpan={6} className="text-center hidden">Tidak ada kupon</TableCell>
+                                    <TableCell colSpan={6} className="text-center hidden">Tidak ada kupon</TableCell>
                                 </TableRow>
                             )}
                         </TableBody>

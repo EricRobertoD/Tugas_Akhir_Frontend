@@ -269,7 +269,7 @@ const ProfilePagePengguna = () => {
         const lat = position.coords.latitude;
         const lng = position.coords.longitude;
         try {
-            const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyBf8Al8Z_C2kJLnYU5DYeRFsGlBlFoDbcA`);
+            const response = await axios.get(`https:/maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyBf8Al8Z_C2kJLnYU5DYeRFsGlBlFoDbcA`);
             const addressComponents = response.data.results[0].address_components;
             const provinceComponent = addressComponents.find(component => component.types.includes('administrative_area_level_1'));
             const address = response.data.results[0].formatted_address;
@@ -319,7 +319,7 @@ const ProfilePagePengguna = () => {
                                 <div className="flex flex-col px-5 pt-10 items-center">
                                     <Avatar
                                         className="w-20 h-20 text-large"
-                                        src={dataPengguna.gambar_pengguna ? "https://tugas-akhir-backend-4aexnrp6vq-uc.a.run.app/storage/gambar/" + dataPengguna.gambar_pengguna : assets.profile}
+                                        src={dataPengguna.gambar_pengguna ? "https:/tugas-akhir-backend-4aexnrp6vq-uc.a.run.app/storage/gambar/" + dataPengguna.gambar_pengguna : assets.profile}
                                     />
                                     <input ref={openUpdateImage} type="file" className="hidden" onChange={updateImage} />
                                     <Button className="bg-[#FA9884] text-white my-2 " onClick={handleOpen}>Ubah Gambar</Button>

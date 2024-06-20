@@ -222,10 +222,11 @@ const KeranjangPagePengguna = () => {
                                 <TableHeader>
                                     <TableColumn>Penyedia Jasa</TableColumn>
                                     <TableColumn>Paket</TableColumn>
-                                    <TableColumn>Harga Paket</TableColumn>
                                     <TableColumn>Tanggal Pelaksanaan</TableColumn>
                                     <TableColumn>Jam Mulai</TableColumn>
                                     <TableColumn>Jam Selesai</TableColumn>
+                                    <TableColumn>Harga Paket</TableColumn>
+                                    <TableColumn>Subtotal</TableColumn>
                                     <TableColumn>Hapus</TableColumn>
                                 </TableHeader>
                                 <TableBody>
@@ -236,10 +237,11 @@ const KeranjangPagePengguna = () => {
                                                     {row.paket.penyedia_jasa.nama_penyedia}
                                                 </TableCell>
                                                 <TableCell>{row.paket.nama_paket}</TableCell>
-                                                <TableCell>{rupiah(row.paket.harga_paket)}</TableCell>
                                                 <TableCell>{row.tanggal_pelaksanaan}</TableCell>
                                                 <TableCell>{row.jam_mulai}</TableCell>
                                                 <TableCell>{row.jam_selesai}</TableCell>
+                                                <TableCell>{rupiah(row.paket.harga_paket)}</TableCell>
+                                                <TableCell>{rupiah(row.subtotal)}</TableCell>
                                                 <TableCell>
                                                     <Button
                                                         className="bg-[#FA9884] hover:bg-red-700 text-white"
@@ -252,13 +254,14 @@ const KeranjangPagePengguna = () => {
                                         ))
                                     ) : (
                                         <TableRow>
-                                            <TableCell colSpan={7} className="text-center">Keranjang kosong</TableCell>
-                                            <TableCell colSpan={7} className="hidden">Keranjang kosong</TableCell>
-                                            <TableCell colSpan={7} className="hidden">Keranjang kosong</TableCell>
-                                            <TableCell colSpan={7} className="hidden">Keranjang kosong</TableCell>
-                                            <TableCell colSpan={7} className="hidden">Keranjang kosong</TableCell>
-                                            <TableCell colSpan={7} className="hidden">Keranjang kosong</TableCell>
-                                            <TableCell colSpan={7} className="hidden">Keranjang kosong</TableCell>
+                                            <TableCell colSpan={8} className="text-center">Keranjang kosong</TableCell>
+                                            <TableCell colSpan={8} className="hidden">Keranjang kosong</TableCell>
+                                            <TableCell colSpan={8} className="hidden">Keranjang kosong</TableCell>
+                                            <TableCell colSpan={8} className="hidden">Keranjang kosong</TableCell>
+                                            <TableCell colSpan={8} className="hidden">Keranjang kosong</TableCell>
+                                            <TableCell colSpan={8} className="hidden">Keranjang kosong</TableCell>
+                                            <TableCell colSpan={8} className="hidden">Keranjang kosong</TableCell>
+                                            <TableCell colSpan={8} className="hidden">Keranjang kosong</TableCell>
                                         </TableRow>
                                     )}
                                 </TableBody>

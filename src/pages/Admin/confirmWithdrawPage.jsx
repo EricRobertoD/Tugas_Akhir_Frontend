@@ -4,6 +4,7 @@ import { Button, Table, TableBody, TableCell, TableColumn, TableHeader, TableRow
 import Swal from "sweetalert2";
 import BASE_URL from "../../../apiConfig";
 import NavbarAdminLogin from "../../components/NavbarAdminLogin";
+import { rupiah } from "../../utils/Currency";
 
 const ConfirmWithdrawPage = () => {
     const [dataWithdraw, setDataWithdraw] = useState([]);
@@ -139,22 +140,20 @@ const ConfirmWithdrawPage = () => {
                 <NavbarAdminLogin />
                 <Table className="py-10 lg:py-20 lg:px-96">
                     <TableHeader>
-                        <TableColumn>Nama</TableColumn>
-                        <TableColumn>Tipe</TableColumn>
-                        <TableColumn>Status</TableColumn>
-                        <TableColumn>Total</TableColumn>
-                        <TableColumn>Konfirmasi</TableColumn>
-                        <TableColumn>Tolak</TableColumn>
+                        <TableColumn className="text-center">Nama</TableColumn>
+                        <TableColumn className="text-center">Status</TableColumn>
+                        <TableColumn className="text-center">Total</TableColumn>
+                        <TableColumn className="text-center">Konfirmasi</TableColumn>
+                        <TableColumn className="text-center">Tolak</TableColumn>
                     </TableHeader>
                     <TableBody>
                         {dataWithdraw.length > 0 ? (
                                 dataWithdraw.map((row) => (
                                     <TableRow key={row.id_saldo}>
-                                        <TableCell>{row.pengguna?.nama_pengguna || row.penyedia_jasa?.nama_penyedia}</TableCell>
-                                        <TableCell>{row.pengguna ? 'Pengguna' : 'Penyedia'}</TableCell>
-                                        <TableCell>{row.status}</TableCell>
-                                        <TableCell>{row.total}</TableCell>
-                                        <TableCell>
+                                        <TableCell className="text-center">{row.pengguna?.nama_pengguna || row.penyedia_jasa?.nama_penyedia}</TableCell>
+                                        <TableCell className="text-center">{row.status}</TableCell>
+                                        <TableCell className="text-center">{rupiah(row.total)}</TableCell>
+                                        <TableCell className="text-center">
                                             <Button
                                                 onClick={() => handleConfirm(row.id_saldo)}
                                                 className="px-4 py-2 bg-[#00A7E1] hover:bg-blue-600 text-white rounded-lg"

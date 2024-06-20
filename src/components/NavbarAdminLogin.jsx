@@ -72,6 +72,9 @@ export default function NavbarAdminLogin() {
   }, {
     title: "Kupon",
     link: "/KuponPage",
+  }, {
+    title: "Blokir",
+    link: "/BlokirPenyediaPage",
   }
   ];
 

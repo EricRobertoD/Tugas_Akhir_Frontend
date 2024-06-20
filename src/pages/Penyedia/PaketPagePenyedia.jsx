@@ -233,7 +233,7 @@ const PaketPagePenyedia = () => {
                                 <Button
                                     className="bg-[#FA9884] text-white rounded-lg px-3 py-1 text-lg"
                                     onPress={onOpen}
-                                    isDisabled={paket.length >= 5} // Disable button if paket length is 5 or more
+                                    isDisabled={paket.length >= 5}
                                 >
                                     Tambah Paket
                                 </Button>

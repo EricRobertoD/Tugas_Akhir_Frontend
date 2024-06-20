@@ -109,6 +109,7 @@ const DashboardPage = () => {
                     <div className="container mx-auto">
                         <Card className="bg-[#d9d9d9] p-10">
                             <form onSubmit={handleSubmit}>
+                                <label className="block text-sm font-medium text-gray-700">Tanggal Pelaksanaan</label>
                                 <div className="mb-4">
                                     <DatePicker
                                         label="Tanggal Acara"

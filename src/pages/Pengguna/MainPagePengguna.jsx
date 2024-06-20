@@ -2,30 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import assets from "../../assets";
 import Footer from "../../components/Footer";
-import {
-    Avatar,
-    Button,
-    Card,
-    CardBody,
-    CardFooter,
-    CardHeader,
-    DatePicker,
-    Divider,
-    TimeInput,
-    Select,
-    SelectItem,
-    Input,
-    Modal,
-    ModalContent,
-    ModalFooter,
-    ModalHeader,
-    ModalBody,
-    useDisclosure,
-    Dropdown,
-    DropdownTrigger,
-    DropdownMenu,
-    DropdownItem
-} from "@nextui-org/react";
+import { Avatar, Button, Card, CardBody, CardFooter, CardHeader, DatePicker, Divider, TimeInput, Select, SelectItem, Input, Modal, ModalContent, ModalFooter, ModalHeader, ModalBody, useDisclosure,} from "@nextui-org/react";
 import NavbarPenggunaLogin from "../../components/NavbarPenggunaLogin";
 import { Time } from "@internationalized/date";
 import BASE_URL from "../../../apiConfig";
@@ -59,7 +36,8 @@ const MainPagePengguna = () => {
         start_time: filterData?.start_time ? new Time(...filterData.start_time.split(":")) : new Time(9),
         end_time: filterData?.end_time ? new Time(...filterData.end_time.split(":")) : new Time(18),
         provinsi_penyedia: filterData?.provinsi_penyedia || "Semua",
-        role_penyedia: filterData?.role_penyedia || "Semua"
+        role_penyedia: filterData?.role_penyedia || "Semua",
+        pack: filterData?.pack || ""
     });
     const [dataPenyedia, setDataPenyedia] = useState([]);
     const [selectedPenyedia, setSelectedPenyedia] = useState(null);
@@ -211,17 +189,25 @@ const MainPagePengguna = () => {
             const authToken = localStorage.getItem('authToken');
             const selectedPaketDetail = paketOptions.find(paket => paket.id_paket === parseInt(selectedPaket));
 
+            const isKatering = selectedPaketDetail?.penyedia_jasa?.nama_role === 'Katering';
+
             const formattedDate = `${formData.date_time.year}-${formData.date_time.month.toString().padStart(2, '0')}-${formData.date_time.day.toString().padStart(2, '0')}`;
             const formattedStartTime = `${formData.start_time.hour.toString().padStart(2, '0')}:${formData.start_time.minute.toString().padStart(2, '0')}:00`;
             const formattedEndTime = `${formData.end_time.hour.toString().padStart(2, '0')}:${formData.end_time.minute.toString().padStart(2, '0')}:00`;
 
-            const response = await axios.post(`${BASE_URL}/api/tambahKeranjang`, {
+            const requestData = {
                 id_paket: selectedPaket,
                 subtotal: selectedPaketDetail?.harga_paket,
                 tanggal_pelaksanaan: formattedDate,
                 jam_mulai: formattedStartTime,
                 jam_selesai: formattedEndTime,
-            }, {
+            };
+
+            if (isKatering) {
+                requestData.pack = formData.pack;
+            }
+
+            const response = await axios.post(`${BASE_URL}/api/tambahKeranjang`, requestData, {
                 headers: {
                     'Authorization': `Bearer ${authToken}`
                 }
@@ -306,7 +292,7 @@ const MainPagePengguna = () => {
         const lat = position.coords.latitude;
         const lng = position.coords.longitude;
         try {
-            const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyBf8Al8Z_C2kJLnYU5DYeRFsGlBlFoDbcA`);
+            const response = await axios.get(`https:/maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyBf8Al8Z_C2kJLnYU5DYeRFsGlBlFoDbcA`);
             const addressComponents = response.data.results[0].address_components;
             const provinceComponent = addressComponents.find(component => component.types.includes('administrative_area_level_1'));
             if (provinceComponent) {
@@ -510,7 +496,7 @@ const MainPagePengguna = () => {
                                         <div className="flex items-center">
                                             <Avatar
                                                 className="w-16 h-16 text-large"
-                                                src={penyedia.gambar_penyedia ? "https://tugas-akhir-backend-4aexnrp6vq-uc.a.run.app/storage/gambar/" + penyedia.gambar_penyedia : assets.profile}
+                                                src={penyedia.gambar_penyedia ? "https:/tugas-akhir-backend-4aexnrp6vq-uc.a.run.app/storage/gambar/" + penyedia.gambar_penyedia : assets.profile}
                                             />
                                             <div className="flex flex-col items-start justify-center px-2">
                                                 <p className="font-bold">{penyedia.nama_penyedia}</p>
@@ -529,7 +515,7 @@ const MainPagePengguna = () => {
                                     </CardHeader>
                                     <Divider />
                                     <CardBody>
-                                    <p className="text-justify font-bold text-lg">{penyedia.nama_role}</p>
+                                        <p className="text-justify font-bold text-lg">{penyedia.nama_role}</p>
                                         <p className="text-justify">{penyedia.deskripsi_penyedia}</p>
                                         <a onClick={() => handleDetailClick(penyedia.id_penyedia)} className="text-blue-700 text-right py-3 cursor-pointer">Selengkapnya</a>
                                     </CardBody>
@@ -581,6 +567,14 @@ const MainPagePengguna = () => {
                                     ))}
                                 </Select>
 
+                                {paketOptions.find(paket => paket.id_paket === parseInt(selectedPaket))?.penyedia_jasa?.nama_role === 'Katering' && (
+                                    <Input
+                                        label="Number of Packs"
+                                        placeholder="Enter number of packs"
+                                        value={formData.pack}
+                                        onChange={(e) => setFormData({ ...formData, pack: e.target.value })}
+                                    />
+                                )}
                             </ModalBody>
                             <ModalFooter>
                                 <Button auto flat onClick={handleModalClose}>

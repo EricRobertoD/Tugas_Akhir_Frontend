@@ -416,6 +416,7 @@ const ProfilePagePenyedia = () => {
                                                     variant={isUpdateMode ? "bordered" : "underlined"}
                                                     selectedKeys={new Set([dataPenyedia.provinsi_penyedia])}
                                                     value={dataPenyedia.provinsi_penyedia}
+                                                    isDisabled={!isUpdateMode}
                                                     onSelectionChange={handleProvinsiChange}
                                                 >
                                                     {provinces.map((province) => (
@@ -432,6 +433,20 @@ const ProfilePagePenyedia = () => {
                                                     Posisi Saat Ini
                                                 </Button>
                                             </div>
+                                        </div>
+                                        <div>
+
+                                            <Textarea
+                                                label="Deskripsi"
+                                                placeholder="Masukkan Deskripsi Anda"
+                                                type="text"
+                                                id="deskripsi"
+                                                className="w-full px-3 py-2 font-bold"
+                                                variant={isUpdateMode ? "bordered" : "underlined"}
+                                                value={dataPenyedia.deskripsi_penyedia}
+                                                disabled={!isUpdateMode}
+                                                onChange={(e) => setDataPenyedia({ ...dataPenyedia, deskripsi_penyedia: e.target.value })}
+                                            />
                                         </div>
                                     </div>
 

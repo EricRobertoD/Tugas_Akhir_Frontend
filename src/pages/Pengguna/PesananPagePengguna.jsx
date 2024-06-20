@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import assets from "../../assets";
 import Footer from "../../components/Footer";
-import {
-    Avatar, Card, CardBody, CardHeader, Divider, Modal, ModalContent,
-    ModalHeader, ModalBody, ModalFooter, Button, useDisclosure
-} from "@nextui-org/react";
+import { Avatar, Card, CardBody, CardHeader, Divider, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Chip } from "@nextui-org/react";
 import Swal from "sweetalert2";
 import NavbarPenggunaLogin from "../../components/NavbarPenggunaLogin";
 import BASE_URL from "../../../apiConfig";
@@ -12,7 +10,6 @@ import ReactStars from "react-stars";
 import ChatPenggunaPage from "../../components/ChatPengguna";
 import axios from "axios";
 import { rupiah } from "../../utils/Currency";
-import { Chip } from "@nextui-org/react";
 
 const PesananPagePengguna = () => {
     const [dataPenyedia, setDataPenyedia] = useState([]);
@@ -25,6 +22,7 @@ const PesananPagePengguna = () => {
     const { isOpen: isReviewOpen, onOpen: onReviewOpen, onClose: onReviewClose } = useDisclosure();
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [selectedPenyedia, setSelectedPenyedia] = useState(null);
+    const navigate = useNavigate();
 
     const fetchData = async () => {
         try {
@@ -141,6 +139,11 @@ const PesananPagePengguna = () => {
         }
     };
 
+    const handleFakturClick = (id) => {
+        const newWindow = window.open(`/faktur/${id}`, '_blank', 'noopener,noreferrer');
+        if (newWindow) newWindow.opener = null;
+    };
+
     useEffect(() => {
         fetchData();
     }, []);
@@ -178,7 +181,7 @@ const PesananPagePengguna = () => {
         <>
             <NavbarPenggunaLogin />
             <div className=" bg-[#FFF3E2] py-4">
-                <div className=" container mx-auto">
+                <div className=" container mx-auto ">
                     <Card className="bg-white flex flex-col lg:flex-row justify-between lg:px-20 lg:py-7 my-16">
                         <div onClick={() => setFilter("Semua")} className={`min-w-max cursor-pointer ${filter === "Semua" ? "underline" : ""}`}>
                             <p>Semua</p>
@@ -199,22 +202,27 @@ const PesananPagePengguna = () => {
                             <Card className="bg-white">
                                 <CardHeader className="flex gap-3 items-start -mb-7 justify-between">
                                     <p>{invoice}</p>
+                                    <Button size="sm" onPress={() => handleFakturClick(invoice)}>Faktur</Button>
                                 </CardHeader>
                                 <Divider className="mt-5" />
                                 {transactions.map((detailTransaksi, index) => (
                                     <div key={detailTransaksi.id_detail_transaksi}>
                                         <CardBody>
                                             <div className="text-end">
-                                                <Chip color={detailTransaksi.status_penyedia_jasa === "Transaksi dibatalkan" ? "danger" : "success"} variant="flat" className="ml-5 ">
-                                                    {detailTransaksi.status_penyedia_jasa}
+                                                <Chip
+                                                    color={detailTransaksi.status_penyedia_jasa === "Transaksi dibatalkan" ? "danger" : "success"}
+                                                    variant="flat"
+                                                    className="ml-5 "
+                                                >
+                                                    {detailTransaksi.status_penyedia_jasa === "Sedang bekerja sama dengan pelanggan" ? "Sedang bekerja sama" : detailTransaksi.status_penyedia_jasa}
                                                 </Chip>
                                             </div>
-                                            <div className="mb-2 flex items-center max-lg:flex-col justify-between">
+                                            <div className="mb-2 flex items-center max-lg:flex-col justify-between px-4">
                                                 <div className="flex items-center max-lg:flex-col max-lg:text-center">
                                                     <div>
                                                         <Avatar
                                                             className="w-24 h-24"
-                                                            src={detailTransaksi.paket.penyedia_jasa.gambar_penyedia ? `https://tugas-akhir-backend-4aexnrp6vq-uc.a.run.app/storage/gambar/${detailTransaksi.paket.penyedia_jasa.gambar_penyedia}` : assets.profile}
+                                                            src={detailTransaksi.paket.penyedia_jasa.gambar_penyedia ? `https:/tugas-akhir-backend-4aexnrp6vq-uc.a.run.app/storage/gambar/${detailTransaksi.paket.penyedia_jasa.gambar_penyedia}` : assets.profile}
                                                         />
                                                     </div>
                                                     <div className="flex justify-between">
@@ -229,7 +237,7 @@ const PesananPagePengguna = () => {
                                                     <p className="ml-5">{rupiah(detailTransaksi.subtotal)}</p>
                                                 </div>
                                             </div>
-                                            <div className="flex justify-between">
+                                            <div className="flex justify-between px-4">
                                                 <div>
                                                     <p>Tanggal Pelaksanaan : {detailTransaksi.tanggal_pelaksanaan}</p>
                                                     <p>Waktu Pelaksanaan : {detailTransaksi.jam_mulai.slice(0, 5)} - {detailTransaksi.jam_selesai.slice(0, 5)}</p>
@@ -247,14 +255,12 @@ const PesananPagePengguna = () => {
                                                         </>
                                                     )}
                                                     {detailTransaksi.status_penyedia_jasa === "Selesai" && detailTransaksi.status_berlangsung !== "Sudah Beri Ulasan" && (
-                                                        <>
-                                                            <Button
-                                                                className="font-bold bg-[#FA9884] hover:bg-red-700 text-white"
-                                                                onClick={() => handleReviewClick(detailTransaksi)}
-                                                            >
-                                                                Ulasan
-                                                            </Button>
-                                                        </>
+                                                        <Button
+                                                            className="font-bold bg-[#FA9884] hover:bg-red-700 text-white"
+                                                            onClick={() => handleReviewClick(detailTransaksi)}
+                                                        >
+                                                            Ulasan
+                                                        </Button>
                                                     )}
                                                 </div>
                                             </div>

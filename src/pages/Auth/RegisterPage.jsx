@@ -130,6 +130,7 @@ const RegisterPage = () => {
                         nomor_telepon_penyedia: "",
                         nomor_whatsapp_penyedia: "",
                         alamat_penyedia: "",
+                        nama_role: "",
                     })
                 } else {
                     console.log('Registration failed');
@@ -321,7 +322,7 @@ const RegisterPage = () => {
                                             />
                                             <Select
                                                 type="text"
-                                                label="Pilih Role"
+                                                label="Pilih Peran"
                                                 variant="bordered"
                                                 value={RegisterPenyedia.nama_role}
                                                 onChange={(e) => setRegisterPenyedia({ ...RegisterPenyedia, nama_role: e.target.value })}

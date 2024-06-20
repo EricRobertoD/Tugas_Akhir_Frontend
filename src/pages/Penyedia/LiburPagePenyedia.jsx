@@ -19,7 +19,7 @@ const LiburPagePenyedia = () => {
     const fetchData = async () => {
         try {
             const authToken = localStorage.getItem("authToken");
-            const response = await fetch(`${BASE_URL}//api/penyedia`, {
+            const response = await fetch(`${BASE_URL}/api/penyedia`, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
@@ -42,7 +42,7 @@ const LiburPagePenyedia = () => {
     const fetchDataLibur = async () => {
         try {
             const authToken = localStorage.getItem("authToken");
-            const response = await fetch(`${BASE_URL}//api/tanggalLibur`, {
+            const response = await fetch(`${BASE_URL}/api/tanggalLibur`, {
                 method: 'GET',
                 headers: {
                     'Accept': 'application/json',
@@ -80,7 +80,7 @@ const LiburPagePenyedia = () => {
             cancelButtonText: 'Batal'
         }).then((result) => {
             if (result.isConfirmed) {
-                fetch(`${BASE_URL}//api/tanggalLibur/${id}`, {
+                fetch(`${BASE_URL}/api/tanggalLibur/${id}`, {
                     method: 'DELETE',
                     headers: {
                         Authorization: `Bearer ${authToken}`,
@@ -106,7 +106,7 @@ const LiburPagePenyedia = () => {
     const handleAddLibur = async () => {
         try {
             const authToken = localStorage.getItem("authToken");
-            const response = await fetch(`${BASE_URL}//api/tanggalLibur`, {
+            const response = await fetch(`${BASE_URL}/api/tanggalLibur`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -150,7 +150,7 @@ const LiburPagePenyedia = () => {
     const handleEditLibur = async () => {
         try {
             const authToken = localStorage.getItem("authToken");
-            const response = await fetch(`${BASE_URL}//api/tanggalLibur/${editId}`, {
+            const response = await fetch(`${BASE_URL}/api/tanggalLibur/${editId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -216,7 +216,7 @@ const LiburPagePenyedia = () => {
                                 <div className="flex flex-col">
                                     <Avatar
                                         className="w-20 h-20 text-large"
-                                        src={dataPenyedia.gambar_penyedia ? "https://tugas-akhir-backend-4aexnrp6vq-uc.a.run.app/storage/gambar/" + dataPenyedia.gambar_penyedia : assets.profile}
+                                        src={dataPenyedia.gambar_penyedia ? "https:/tugas-akhir-backend-4aexnrp6vq-uc.a.run.app/storage/gambar/" + dataPenyedia.gambar_penyedia : assets.profile}
                                     />
                                 </div>
                                 <div className="flex flex-col items-start justify-center ml-5">
