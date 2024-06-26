@@ -222,7 +222,7 @@ const PesananPagePengguna = () => {
                                                     <div>
                                                         <Avatar
                                                             className="w-24 h-24"
-                                                            src={detailTransaksi.paket.penyedia_jasa.gambar_penyedia ? `https:/tugas-akhir-backend-4aexnrp6vq-uc.a.run.app/storage/gambar/${detailTransaksi.paket.penyedia_jasa.gambar_penyedia}` : assets.profile}
+                                                            src={detailTransaksi.paket.penyedia_jasa.gambar_penyedia ? `https://storage.googleapis.com/tugasakhir_11007/gambar/${detailTransaksi.paket.penyedia_jasa.gambar_penyedia}` : assets.profile}
                                                         />
                                                     </div>
                                                     <div className="flex justify-between">
@@ -240,7 +240,15 @@ const PesananPagePengguna = () => {
                                             <div className="flex justify-between px-4">
                                                 <div>
                                                     <p>Tanggal Pelaksanaan : {detailTransaksi.tanggal_pelaksanaan}</p>
-                                                    <p>Waktu Pelaksanaan : {detailTransaksi.jam_mulai.slice(0, 5)} - {detailTransaksi.jam_selesai.slice(0, 5)}</p>
+                                                    <p>Waktu Pelaksanaan : {
+                                                        detailTransaksi.jam_mulai
+                                                            ? detailTransaksi.jam_selesai
+                                                                ? `${detailTransaksi.jam_mulai.slice(0, 5)} - ${detailTransaksi.jam_selesai.slice(0, 5)}`
+                                                                : detailTransaksi.jam_mulai.slice(0, 5)
+                                                            : detailTransaksi.jam_selesai
+                                                                ? detailTransaksi.jam_selesai.slice(0, 5)
+                                                                : 'No time available'
+                                                    }</p>
                                                 </div>
                                                 <div >
                                                     {detailTransaksi.status_penyedia_jasa === "Sedang bekerja sama dengan pelanggan" && (

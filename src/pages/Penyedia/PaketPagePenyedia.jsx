@@ -215,13 +215,13 @@ const PaketPagePenyedia = () => {
             <div className="min-h-screen bg-[#FFF3E2]">
                 <NavbarPenyediaLogin />
                 <div className="flex justify-center items-center py-[2%]">
-                    <Card className="w-[70%] h-[180px] bg-white">
+                    <Card className="w-[70%] max-lg:w-full h-[180px] bg-white">
                         <CardHeader className="flex lg:justify-between gap-3 max-lg:flex-col mt-2 pt-10">
                             <div className="flex">
                                 <div className="flex flex-col px-5">
                                     <Avatar
                                         className="w-20 h-20 text-large"
-                                        src={dataPenyedia.gambar_penyedia ? "https://tugas-akhir-backend-4aexnrp6vq-uc.a.run.app/storage/gambar/" + dataPenyedia.gambar_penyedia : assets.profile}
+                                        src={dataPenyedia.gambar_penyedia ? "https://storage.googleapis.com/tugasakhir_11007/gambar/" + dataPenyedia.gambar_penyedia : assets.profile}
                                     />
                                 </div>
                                 <div className="flex flex-col items-start justify-center ml-5">
@@ -242,27 +242,27 @@ const PaketPagePenyedia = () => {
                     </Card>
                 </div>
                 <div className="flex justify-center items-center py-[2%]">
-                    <Table className="w-[60%]">
+                    <Table className="w-[70%]">
                         <TableHeader>
-                            <TableColumn>Nama Paket</TableColumn>
-                            <TableColumn>Harga Paket</TableColumn>
-                            <TableColumn>Isi Paket</TableColumn>
-                            <TableColumn>Ubah</TableColumn>
-                            <TableColumn>Hapus</TableColumn>
+                            <TableColumn className="text-center">Nama Paket</TableColumn>
+                            <TableColumn className="text-center">Harga Paket</TableColumn>
+                            <TableColumn className="text-center">Isi Paket</TableColumn>
+                            <TableColumn className="text-center">Ubah</TableColumn>
+                            <TableColumn className="text-center">Hapus</TableColumn>
                         </TableHeader>
                         <TableBody>
                             {paket.length > 0 ? (
                                 paket.map((row) => (
                                     <TableRow key={row.id_paket}>
-                                        <TableCell>{row.nama_paket}</TableCell>
-                                        <TableCell>{Number(row.harga_paket).toLocaleString('id-ID')}</TableCell>
-                                        <TableCell>{row.isi_paket}</TableCell>
-                                        <TableCell>
+                                        <TableCell className="text-center">{row.nama_paket}</TableCell>
+                                        <TableCell className="text-center">{Number(row.harga_paket).toLocaleString('id-ID')}</TableCell>
+                                        <TableCell className="text-center">{row.isi_paket}</TableCell>
+                                        <TableCell className="text-center">
                                             <button className="bg-[#00A7E1] text-white rounded-lg px-3 py-1 text-md" onClick={() => handleOpenEditModal(row)}>
                                                 Ubah
                                             </button>
                                         </TableCell>
-                                        <TableCell>
+                                        <TableCell className="text-center">
                                             <button className="bg-[#FA9884] text-white rounded-lg px-3 py-1 text-md" onClick={() => handleDelete(row.id_paket)}>
                                                 Hapus
                                             </button>

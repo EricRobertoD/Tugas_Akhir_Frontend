@@ -6,6 +6,9 @@ import BASE_URL from "../../../apiConfig";
 import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button, Tabs, Tab} from "@nextui-org/react";
 import moment from "moment";
 import NavbarOwnerLogin from "../../components/NavbarOwnerLogin";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
+
 
 Chart.register( CategoryScale, LinearScale, BarElement, LineElement, PointElement, Title, Tooltip, Legend);
 
@@ -18,14 +21,28 @@ const GoogleAnalyticPage = () => {
     const [selectedMonth, setSelectedMonth] = useState(new Set(["1"]));
     const [selectedYear, setSelectedYear] = useState(new Set([`${new Date().getFullYear()}`]));
   
+    
+  const generatePDF = (title, headers, rows, filename) => {
+    const doc = new jsPDF();
+
+    doc.setFontSize(18);
+    doc.text(title, 14, 22);
+
+    doc.autoTable({
+      startY: 30,
+      head: [headers],
+      body: rows,
+    });
+
+    doc.save(filename);
+  };
+  
     const roles = [
       "Pembawa Acara",
       "Fotografer",
       "Penyusun Acara",
       "Katering",
       "Dekor",
-      "Administrasi",
-      "Operasional",
       "Tim Event Organizer",
     ];
   
@@ -74,7 +91,7 @@ const GoogleAnalyticPage = () => {
         }
   
         const data = await response.json();
-        const minutes = Array.from({ length: 31 }, (_, i) => i).reverse(); // Generate an array from 30 to 0
+        const minutes = Array.from({ length: 31 }, (_, i) => i).reverse();
   
         const minuteMap = new Map(minutes.map((minute) => [minute, 0]));
   
@@ -362,41 +379,73 @@ const GoogleAnalyticPage = () => {
               </Dropdown>
             </div>
             <div className="w-full bg-white p-5 container">
-              <Tabs aria-label="Options" fullWidth variant="light" className="px-6 pt-6">
-                <Tab key="Pengguna" title="Pengguna" className="w-full">
-                  <h2 className="text-xl font-bold mb-5">Top 5 Transaksi Pengguna</h2>
-                  <Table>
-                    <TableHeader>
-                      <TableColumn>Nama Pengguna</TableColumn>
-                      <TableColumn>Jumlah Transaksi</TableColumn>
-                    </TableHeader>
-                    <TableBody>
-                      {topPenggunaData.map((row, index) => (
-                        <TableRow key={index}>
-                          <TableCell>{row.nama_pengguna}</TableCell>
-                          <TableCell>{row.transaksi_count}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </Tab>
-                <Tab key="Penyedia" title="Penyedia" className="w-full">
-                  <div>
-                    <h2 className="text-xl font-bold mb-5">Transaksi Sukses Per Peran</h2>
-                    <div className="w-full bg-white p-5">
-                      <Bar data={transaksiSuksesChartData} height={100} />
-                    </div>
-                  </div>
-                </Tab>
-                <Tab key="Deposit" title="Deposit" className="w-full">
-                  <div>
-                    <h2 className="text-xl font-bold mb-5">Deposit Per Month Per Year</h2>
-                    <div className="w-full bg-white p-5">
-                      <Bar data={depositChartData} height={100} />
-                    </div>
-                  </div>
-                </Tab>
-              </Tabs>
+            <Tabs aria-label="Data Tabs" variant="underlined">
+          <Tab key="top-pengguna" title="Top Pengguna Data">
+            <Table aria-label="Top Pengguna Table">
+              <TableHeader>
+                <TableColumn>Nama Pengguna</TableColumn>
+                <TableColumn>Jumlah Transaksi</TableColumn>
+              </TableHeader>
+              <TableBody>
+                {topPenggunaData.map((row, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{row.nama_pengguna}</TableCell>
+                    <TableCell>{row.transaksi_count}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            <Button
+              onClick={() => {
+                const headers = ["Nama Pengguna", "Jumlah Transaksi"];
+                const rows = topPenggunaData.map((row) => [
+                  row.nama_pengguna,
+                  row.transaksi_count,
+                ]);
+                generatePDF("Top Pengguna Data", headers, rows, "top_pengguna_data.pdf");
+              }}
+            >
+              Generate PDF
+            </Button>
+          </Tab>
+          <Tab key="Penyedia" title="Penyedia">
+            <div>
+              <h2 className="text-xl font-bold mb-5">Transaksi Sukses Per Peran</h2>
+              <div className="w-full bg-white p-5">
+                <Bar data={transaksiSuksesChartData} height={100} />
+              </div>
+            </div>
+            <Button
+              onClick={() => {
+                const headers = ["Role", "Transaction Count"];
+                const rows = successfulDetailTransaksiData.map((row) => [
+                  row.nama_role,
+                  row.transaksi_count,
+                ]);
+                generatePDF("Transaksi Sukses Per Peran", headers, rows, "transaksi_sukses_per_peran.pdf");
+              }}
+            >
+              Generate PDF
+            </Button>
+          </Tab>
+          <Tab key="Deposit" title="Deposit">
+            <div>
+              <h2 className="text-xl font-bold mb-5">Deposit Per Month Per Year</h2>
+              <div className="w-full bg-white p-5">
+                <Bar data={depositChartData} height={100} />
+              </div>
+            </div>
+            <Button
+              onClick={() => {
+                const headers = ["Month", "Total Deposit"];
+                const rows = depositData.map((row) => [row.month, row.total_deposit]);
+                generatePDF("Deposit Per Month Per Year", headers, rows, "deposit_per_month_per_year.pdf");
+              }}
+            >
+              Generate PDF
+            </Button>
+          </Tab>
+        </Tabs>
             </div>
           </div>
         </div>

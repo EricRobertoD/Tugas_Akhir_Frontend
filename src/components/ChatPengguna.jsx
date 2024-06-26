@@ -191,7 +191,7 @@ const ChatPenggunaPage = ({ isChatOpen, setIsChatOpen, initialSelectedPenyedia }
                                         onClick={() => selectPenyedia(penyedia)}
                                         className={selectedPenyedia?.id_penyedia === penyedia.id_penyedia ? "bg-blue-100" : ""}
                                     >
-                                        <Avatar src={penyedia.gambar_penyedia ? "https://tugas-akhir-backend-4aexnrp6vq-uc.a.run.app/storage/gambar/" + penyedia.gambar_penyedia : assets.profile} />
+                                        <Avatar src={penyedia.gambar_penyedia ? "https://storage.googleapis.com/tugasakhir_11007/gambar/" + penyedia.gambar_penyedia : assets.profile} />
                                     </Conversation>
                                 ))}
                             </ConversationList>

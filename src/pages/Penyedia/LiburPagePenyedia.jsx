@@ -210,13 +210,13 @@ const LiburPagePenyedia = () => {
             <div className="min-h-screen bg-[#FFF3E2]">
                 <NavbarPenyediaLogin />
                 <div className="flex justify-center items-center py-[2%]">
-                    <Card className="w-[70%] h-[180px] bg-white">
+                    <Card className="w-[70%] max-lg:w-full h-[180px] bg-white">
                         <CardHeader className="flex lg:justify-between max-lg:flex-col mt-2 pt-10">
                             <div className="flex px-5">
                                 <div className="flex flex-col">
                                     <Avatar
                                         className="w-20 h-20 text-large"
-                                        src={dataPenyedia.gambar_penyedia ? "https:/tugas-akhir-backend-4aexnrp6vq-uc.a.run.app/storage/gambar/" + dataPenyedia.gambar_penyedia : assets.profile}
+                                        src={dataPenyedia.gambar_penyedia ? "https://storage.googleapis.com/tugasakhir_11007/gambar/" + dataPenyedia.gambar_penyedia : assets.profile}
                                     />
                                 </div>
                                 <div className="flex flex-col items-start justify-center ml-5">
@@ -233,7 +233,7 @@ const LiburPagePenyedia = () => {
                     </Card>
                 </div>
                 <div className="flex justify-center items-center py-[2%]">
-                    <Table className="w-[60%]">
+                    <Table className="w-[70%]">
                         <TableHeader>
                             <TableColumn>Tanggal Awal</TableColumn>
                             <TableColumn>Tanggal Akhir</TableColumn>

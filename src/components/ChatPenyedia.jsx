@@ -192,7 +192,7 @@ const ChatPenyediaPage = () => {
                                         onClick={() => selectPengguna(pengguna)}
                                         className={selectedPengguna?.id_pengguna === pengguna.id_pengguna ? "bg-blue-100" : ""}
                                     >
-                                        <Avatar src={pengguna.gambar_pengguna ? "https://tugas-akhir-backend-4aexnrp6vq-uc.a.run.app/storage/gambar/" + pengguna.gambar_pengguna : assets.profile} />
+                                        <Avatar src={pengguna.gambar_pengguna ? "https://storage.googleapis.com/tugasakhir_11007/gambar/" + pengguna.gambar_pengguna : assets.profile} />
                                     </Conversation>
                                 ))}
                             </ConversationList>

@@ -311,7 +311,7 @@ const ProfilePagePenyedia = () => {
                                 <div className="flex flex-col px-5 pt-10 items-center">
                                     <Avatar
                                         className="w-20 h-20 text-large"
-                                        src={dataPenyedia.gambar_penyedia ? "https://tugas-akhir-backend-4aexnrp6vq-uc.a.run.app/storage/gambar/" + dataPenyedia.gambar_penyedia : assets.profile}
+                                        src={dataPenyedia.gambar_penyedia ? "https://storage.googleapis.com/tugasakhir_11007/gambar/" + dataPenyedia.gambar_penyedia : assets.profile}
                                     />
                                     <input ref={openUpdateImage} type="file" className="hidden" onChange={updateImage} />
                                     <Button className="bg-[#FA9884] text-white my-2" onClick={handleOpen}>Ubah Gambar</Button>
@@ -374,8 +374,8 @@ const ProfilePagePenyedia = () => {
                                         </div>
                                         <div className="flex">
                                             <Input
-                                                label="Nomor Handphone"
-                                                placeholder="Masukkan Nomor Handphone"
+                                                label="Nomor Telepon"
+                                                placeholder="Masukkan Nomor Telepon"
                                                 type="number"
                                                 id="nomor_handphone"
                                                 className="w-full px-3 py-2 font-bold"
@@ -489,11 +489,13 @@ const ProfilePagePenyedia = () => {
                                                             <TableCell>{row.status}</TableCell>
                                                             <TableCell>
                                                                 {row.gambar_saldo ? (
-                                                                    <img
-                                                                        src={`${BASE_URL}/storage/gambar_saldo/${row.gambar_saldo}`}
-                                                                        alt="gambar saldo"
-                                                                        style={{ width: '50px', height: '50px' }}
-                                                                    />
+                                                                    <a href={`https://storage.googleapis.com/tugasakhir_11007/gambar/${row.gambar_saldo}`} target="_blank" rel="noopener noreferrer">
+                                                                        <img
+                                                                            src={`https://storage.googleapis.com/tugasakhir_11007/gambar/${row.gambar_saldo}`}
+                                                                            alt="gambar saldo"
+                                                                            style={{ width: '50px', height: '50px' }}
+                                                                        />
+                                                                    </a>
                                                                 ) : (
                                                                     '-'
                                                                 )}
@@ -532,8 +534,8 @@ const ProfilePagePenyedia = () => {
                             <ModalHeader className="flex flex-col gap-1">Penarikan</ModalHeader>
                             <ModalBody>
                                 <Input
-                                    label="Total Withdraw"
-                                    placeholder="Masukkan jumlah withdraw"
+                                    label="Total Penarikan"
+                                    placeholder="Masukkan jumlah Penarikan"
                                     type="text"
                                     value={withdrawTotal}
                                     onChange={handleCurrencyChange(setWithdrawTotal)}

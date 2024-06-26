@@ -121,7 +121,7 @@ const BlokirPenyediaPage = () => {
                         <TableColumn>Ulasan</TableColumn>
                         <TableColumn>Transaksi Selesai</TableColumn>
                         <TableColumn>Transaksi Batal</TableColumn>
-                        <TableColumn>Role</TableColumn>
+                        <TableColumn>Peran</TableColumn>
                         <TableColumn>Status Blokir</TableColumn>
                         <TableColumn>Aksi</TableColumn>
                     </TableHeader>

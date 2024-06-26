@@ -9,6 +9,7 @@ import ChatPenggunaPage from "../../components/ChatPengguna";
 import axios from 'axios';
 import Swal from "sweetalert2";
 import usePageTitle from "../../usePageTitle";
+import { rupiah } from "../../utils/Currency";
 
 const provinces = [
     "Semua", "Aceh", "Bali", "Banten", "Bengkulu", "Gorontalo", "Jakarta", "Jambi",
@@ -38,8 +39,8 @@ const DashboardPage = () => {
         e.preventDefault();
 
         const filterData = {
-            start_budget: startBudget,
-            end_budget: endBudget,
+            start_budget: startBudget.replace(/[^0-9]/g, ""),
+            end_budget: endBudget.replace(/[^0-9]/g, ""),
             date_time: dateTime ? `${dateTime.year}-${dateTime.month.toString().padStart(2, '0')}-${dateTime.day.toString().padStart(2, '0')}` : "",
             start_time: `${jamBuka.hour}:${jamBuka.minute}`,
             end_time: `${jamTutup.hour}:${jamTutup.minute}`,
@@ -47,6 +48,12 @@ const DashboardPage = () => {
         };
         console.log(filterData);
         navigate("/MainPagePengguna", { state: { filterData } });
+    };
+
+
+    const formatCurrency = (value) => {
+        const numericValue = value.replace(/\D/g, "");
+        return rupiah(numericValue);
     };
 
     const getCurrentPosition = () => {
@@ -124,21 +131,21 @@ const DashboardPage = () => {
                                     <div className="mb-4 w-full">
                                         <Input
                                             label="Anggaran Minimal"
-                                            type="number"
+                                            type="text"
                                             id="startBudget"
-                                            placeholder="Enter minimum budget"
+                                            placeholder="Minimal Anggaran"
                                             value={startBudget}
-                                            onChange={(e) => setStartBudget(e.target.value)}
+                                            onChange={(e) => setStartBudget(formatCurrency(e.target.value))}
                                         />
                                     </div>
                                     <div className="mb-4 w-full">
                                         <Input
                                             label="Anggaran Maksimal"
-                                            type="number"
+                                            type="text"
                                             id="endBudget"
-                                            placeholder="Enter maximum budget"
+                                            placeholder="Maksimal Anggaran"
                                             value={endBudget}
-                                            onChange={(e) => setEndBudget(e.target.value)}
+                                            onChange={(e) => setEndBudget(formatCurrency(e.target.value))}
                                         />
                                     </div>
                                 </div>

@@ -1,23 +1,25 @@
 import React, { useEffect, useState } from "react";
 import Footer from "../../components/Footer";
-import NavbarPenyediaLogin from "../../components/NavbarPenyediaLogin";
+import NavbarPenggunaLogin from "../../components/NavbarPenggunaLogin";
 import { Table, TableBody, TableCell, TableColumn, TableHeader, TableRow } from "@nextui-org/react";
-import Swal from "sweetalert2";
+import { useLocation } from "react-router-dom";
 import BASE_URL from "../../../apiConfig";
-import ChatPenyediaPage from "../../components/ChatPenyedia";
+import Swal from "sweetalert2";
 
-const UlasanPagePenyedia = () => {
-    const [dataPenyedia, setDataPenyedia] = useState([]);
+const UlasanPagePengguna = () => {
+    const location = useLocation();
+    const { id_penyedia } = location.state || {};
+    const [ulasan, setUlasan] = useState([]);
     const [sortOrder, setSortOrder] = useState("asc");
 
-    const fetchData = async () => {
+    const fetchUlasan = async () => {
         try {
             const authToken = localStorage.getItem("authToken");
-            const response = await fetch(`${BASE_URL}//api/ulasan`, {
-                method: 'GET',
+            const response = await fetch(`${BASE_URL}/api/ulasanPenyedia?id_penyedia=${id_penyedia}`, {
+                method: 'POST',
                 headers: {
                     'Accept': 'application/json',
-                    Authorization: `Bearer ${authToken}`,
+                    'Authorization': `Bearer ${authToken}`,
                 },
             });
 
@@ -26,45 +28,48 @@ const UlasanPagePenyedia = () => {
             }
 
             const result = await response.json();
-            setDataPenyedia(result.data);
-            console.log(result.data);
+            setUlasan(result.data);
         } catch (error) {
-            console.error("Error fetching data: ", error);
+            console.error("Error fetching ulasan: ", error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to fetch reviews.',
+            });
         }
     };
 
     const handleSort = () => {
         const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
-        const sortedData = [...dataPenyedia].sort((a, b) => {
-            const rateA = a.rate_ulasan ? parseInt(a.rate_ulasan, 10) : 0;
-            const rateB = b.rate_ulasan ? parseInt(b.rate_ulasan, 10) : 0;
+        const sortedUlasan = [...ulasan].sort((a, b) => {
+            const rateA = a.rate_ulasan ? parseFloat(a.rate_ulasan) : 0;
+            const rateB = b.rate_ulasan ? parseFloat(b.rate_ulasan) : 0;
             return newSortOrder === "asc" ? rateA - rateB : rateB - rateA;
         });
         setSortOrder(newSortOrder);
-        setDataPenyedia(sortedData);
+        setUlasan(sortedUlasan);
     };
 
     useEffect(() => {
-        fetchData();
-    }, []);
+        if (id_penyedia) {
+            fetchUlasan();
+        }
+    }, [id_penyedia]);
 
     return (
         <>
+            <NavbarPenggunaLogin />
             <div className="min-h-screen bg-[#FFF3E2]">
-                <NavbarPenyediaLogin />
                 <Table className="py-10 lg:py-20 lg:px-96">
                     <TableHeader>
                         <TableColumn className="text-center">Nama Pengguna</TableColumn>
-                        <TableColumn
-                            onClick={handleSort}
-                            className="cursor-pointer text-center"
-                        >
+                        <TableColumn onClick={handleSort} className="cursor-pointer text-center">
                             Rate Ulasan {sortOrder === "asc" ? "↑" : "↓"}
                         </TableColumn>
                         <TableColumn className="text-center">Isi Ulasan</TableColumn>
                     </TableHeader>
                     <TableBody>
-                        {dataPenyedia.map((row) => (
+                        {ulasan.map((row) => (
                             <TableRow key={row.id_ulasan}>
                                 <TableCell className="text-center">{row.pengguna.nama_pengguna}</TableCell>
                                 <TableCell className="text-center">{row.rate_ulasan || "-"}</TableCell>
@@ -75,9 +80,8 @@ const UlasanPagePenyedia = () => {
                 </Table>
             </div>
             <Footer />
-            <ChatPenyediaPage />
         </>
     );
 };
 
-export default UlasanPagePenyedia;
+export default UlasanPagePengguna;

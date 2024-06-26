@@ -223,7 +223,7 @@ const KuponPage = () => {
                     </Card>
                 </div>
                 <div className="flex justify-center items-center py-[2%]">
-                    <Table className="w-[60%]">
+                    <Table className="w-[70%]">
                         <TableHeader>
                             <TableColumn>Kode Kupon</TableColumn>
                             <TableColumn>Tanggal Mulai</TableColumn>
@@ -282,7 +282,7 @@ const KuponPage = () => {
                             <ModalHeader className="flex flex-col gap-1">{isEditMode ? "Edit Kupon" : "Tambah Kupon"}</ModalHeader>
                             <ModalBody>
                                 <Input
-                                    label="Kode Voucher"
+                                    label="Kode Kupon"
                                     value={formValues.kode_voucher}
                                     onChange={(e) => setFormValues({ ...formValues, kode_voucher: e.target.value })}
                                     fullWidth

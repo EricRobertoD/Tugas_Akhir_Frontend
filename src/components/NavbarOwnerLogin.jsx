@@ -70,9 +70,7 @@ export default function NavbarOwnerLogin() {
     <Navbar isBordered onMenuOpenChange={setIsMenuOpen} className="bg-white py-5" maxWidth="full">
       <NavbarContent className="hidden sm:flex gap-2">
         <NavbarBrand >
-          <Link to="/DashboardPageOwner">
             <img src={assets.logoRencara} alt="Logo" style={logoStyle} />
-          </Link>
         </NavbarBrand>
       </NavbarContent>
       <NavbarMenuToggle

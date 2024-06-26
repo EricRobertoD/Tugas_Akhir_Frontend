@@ -319,7 +319,7 @@ const ProfilePagePengguna = () => {
                                 <div className="flex flex-col px-5 pt-10 items-center">
                                     <Avatar
                                         className="w-20 h-20 text-large"
-                                        src={dataPengguna.gambar_pengguna ? "https:/tugas-akhir-backend-4aexnrp6vq-uc.a.run.app/storage/gambar/" + dataPengguna.gambar_pengguna : assets.profile}
+                                        src={dataPengguna.gambar_pengguna ? "https://storage.googleapis.com/tugasakhir_11007/gambar/" + dataPengguna.gambar_pengguna : assets.profile}
                                     />
                                     <input ref={openUpdateImage} type="file" className="hidden" onChange={updateImage} />
                                     <Button className="bg-[#FA9884] text-white my-2 " onClick={handleOpen}>Ubah Gambar</Button>
@@ -376,8 +376,8 @@ const ProfilePagePengguna = () => {
                                         </div>
                                         <div className="flex">
                                             <Input
-                                                label="Nomor Handphone"
-                                                placeholder="Masukkan Nomor Handphone"
+                                                label="Nomor Telepon"
+                                                placeholder="Masukkan Nomor Telepon"
                                                 type="number"
                                                 id="nomor_handphone"
                                                 className="w-full px-3 py-2 font-bold"

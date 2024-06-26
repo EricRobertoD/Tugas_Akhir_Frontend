@@ -5,6 +5,7 @@ import Footer from "../../components/Footer";
 import assets from "../../assets";
 import { Input, Select, SelectItem, Tab, Tabs, } from "@nextui-org/react";
 import BASE_URL from "../../../apiConfig";
+import { useNavigate } from 'react-router-dom';
 
 const RegisterPage = () => {
     const [RegisterPengguna, setRegisterPengguna] = useState({
@@ -24,8 +25,8 @@ const RegisterPage = () => {
         alamat_penyedia: "",
         nama_role: "",
     });
+    const navigate = useNavigate();
     const [selected, setSelected] = React.useState("RegisterPengguna");
-
     const handleRegister = () => {
         Swal.showLoading();
 
@@ -36,7 +37,6 @@ const RegisterPage = () => {
             nomor_telepon_pengguna: RegisterPengguna.nomor_telepon_pengguna,
             nomor_whatsapp_pengguna: RegisterPengguna.nomor_whatsapp_pengguna,
             alamat_pengguna: RegisterPengguna.alamat_pengguna,
-
         };
 
         fetch(`${BASE_URL}/api/register`, {
@@ -55,16 +55,20 @@ const RegisterPage = () => {
                         icon: 'success',
                         title: 'Registrasi Berhasil',
                         text: 'Anda telah berhasil melakukan pendaftaran.',
+                        confirmButtonText: 'OK',
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            navigate('/LoginPage');
+                            setRegisterPengguna({
+                                nama_pengguna: "",
+                                email_pengguna: "",
+                                password: "",
+                                nomor_telepon_pengguna: "",
+                                nomor_whatsapp_pengguna: "",
+                                alamat_pengguna: "",
+                            });
+                        }
                     });
-                    console.log('Registration successful');
-                    setRegisterPengguna({
-                        nama_pengguna: "",
-                        email_pengguna: "",
-                        password: "",
-                        nomor_telepon_pengguna: "",
-                        nomor_whatsapp_pengguna: "",
-                        alamat_pengguna: "",
-                    })
                 } else {
                     console.log('Registration failed');
 
@@ -89,7 +93,6 @@ const RegisterPage = () => {
                 console.error('Error:', error);
             });
     };
-
 
     const handleRegisterPenyedia = () => {
         Swal.showLoading();
@@ -121,17 +124,21 @@ const RegisterPage = () => {
                         icon: 'success',
                         title: 'Registrasi Berhasil',
                         text: 'Anda telah berhasil melakukan pendaftaran.',
+                        confirmButtonText: 'OK',
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            navigate('/LoginPage');
+                            setRegisterPengguna({
+                                nama_penyedia: "",
+                                email_penyedia: "",
+                                password: "",
+                                nomor_telepon_penyedia: "",
+                                nomor_whatsapp_penyedia: "",
+                                alamat_penyedia: "",
+                                nama_role: "",
+                            });
+                        }
                     });
-                    console.log('Registration successful');
-                    setRegisterPenyedia({
-                        nama_penyedia: "",
-                        email_penyedia: "",
-                        password: "",
-                        nomor_telepon_penyedia: "",
-                        nomor_whatsapp_penyedia: "",
-                        alamat_penyedia: "",
-                        nama_role: "",
-                    })
                 } else {
                     console.log('Registration failed');
 
@@ -170,208 +177,202 @@ const RegisterPage = () => {
                         selectedKey={selected}
                         onSelectionChange={setSelected}
                     >
-                            <Tab key="RegisterPengguna" title="Daftar Sebagai Pengguna" className="p-6">
-                                <div className="bg-white rounded shadow-md flex lg:flex-row flex-col gap-10 w-full h-full">
-                                    <div className="w-full lg:w-1/2 lg:hidden ">
-                                        <img src={assets.registerImage} className="size-full object-cover" alt="" />
-                                    </div>
-                                    <div className="w-full p-8 lg:w-1/2">
-                                        <div className="flex flex-col items-center justify-center mb-8">
-                                            <img src={assets.logoRencara} alt="" className="w-[50%]" />
-                                            <h2 className="font-bold text-lg text-center">Selamat Datang di RENCARA</h2>
-                                            <h2 className="text-lg text-center">Silahkan masukkan informasi pendaftaran Anda</h2>
-                                        </div>
-                                        <div className="flex flex-col gap-3">
-                                            <Input
-                                                label="Nama"
-                                                placeholder="Masukkan Nama"
-                                                type="text"
-                                                id="nama"
-                                                className="w-full px-3 py-2 font-bold"
-                                                value={RegisterPengguna.nama_pengguna}
-                                                onChange={(e) => setRegisterPengguna({ ...RegisterPengguna, nama_pengguna: e.target.value })}
-                                            />
-                                            <Input
-                                                label="Email"
-                                                placeholder="Masukkan Email"
-                                                type="text"
-                                                id="email"
-                                                className="w-full px-3 py-2 font-bold"
-                                                value={RegisterPengguna.email_pengguna}
-                                                onChange={(e) => setRegisterPengguna({ ...RegisterPengguna, email_pengguna: e.target.value })}
-                                            />
-                                            <Input
-                                                label="Password"
-                                                placeholder="Masukkan Password"
-                                                type="password"
-                                                id="password"
-                                                className="w-full px-3 py-2 font-bold"
-                                                value={RegisterPengguna.password}
-                                                onChange={(e) => setRegisterPengguna({ ...RegisterPengguna, password: e.target.value })}
-                                            />
-                                            <Input
-                                                label="Nomor Telepon"
-                                                placeholder="Masukkan nomor telepon"
-                                                type="number"
-                                                id="nomorTelepon"
-                                                className="w-full px-3 py-2 font-bold"
-                                                value={RegisterPengguna.nomor_telepon_pengguna}
-                                                onChange={(e) => setRegisterPengguna({ ...RegisterPengguna, nomor_telepon_pengguna: e.target.value })}
-                                            />
-                                            <Input
-                                                label="Nomor Whatsapp"
-                                                placeholder="Masukkan nomor whatsapp"
-                                                type="number"
-                                                id="nomorWhatsapp"
-                                                className="w-full px-3 py-2 font-bold"
-                                                value={RegisterPengguna.nomor_whatsapp_pengguna}
-                                                onChange={(e) => setRegisterPengguna({ ...RegisterPengguna, nomor_whatsapp_pengguna: e.target.value })}
-                                            />
-                                            <Input
-                                                label="Alamat"
-                                                placeholder="Masukkan alamat"
-                                                type="text"
-                                                id="alamat"
-                                                className="w-full px-3 py-2 font-bold"
-                                                value={RegisterPengguna.alamat_pengguna}
-                                                onChange={(e) => setRegisterPengguna({ ...RegisterPengguna, alamat_pengguna: e.target.value })}
-                                            />
-                                            <div className=" px-3 mt-7">
-                                                <button
-                                                    className="bg-[#FA9884] py-4 text-white rounded-md hover-bg-blue-600 w-full"
-                                                    onClick={handleRegister}
-                                                >
-                                                    Daftar
-                                                </button>
-                                                <p className=" flex justify-center mt-10 text-center">Anda sudah mempunyai akun?</p>
-                                                <p className=" flex justify-center text-center">Silahkan<a href="/loginPage" className="text-blue-700 pl-1 underline">masuk</a></p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="w-full lg:w-1/2 max-lg:hidden">
-                                    <img src={assets.registerImage} className="size-full object-cover" alt="" />
-                                </div>
-                                </div>
-                            </Tab>
-                            <Tab key="RegisterPenyedia" title="Daftar Sebagai Penyedia" className="p-6">
-                                <div className="bg-white rounded shadow-md flex lg:flex-row flex-col gap-10 w-full h-full">
-                                    
+                        <Tab key="RegisterPengguna" title="Daftar Sebagai Pengguna" className="p-6">
+                            <div className="bg-white rounded shadow-md flex lg:flex-row flex-col gap-10 w-full h-full">
                                 <div className="w-full lg:w-1/2 lg:hidden ">
-                                        <img src={assets.registerImage} className="size-full object-cover" alt="" />
-                                    </div>
-                                    <div className="w-full lg:w-1/2 p-8">
-                                        <div className="flex flex-col items-center justify-center mb-8">
-                                            <img src={assets.logoRencara} alt="" className="w-[50%]" />
-                                            <h2 className="font-bold text-lg text-center">Selamat Datang di RENCARA</h2>
-                                            <h2 className="text-lg text-center">Silahkan masukkan informasi pendaftaran Anda</h2>
-                                        </div>
-                                        <div className="flex flex-col gap-3">
-                                            <Input
-                                                label="Nama"
-                                                placeholder="Masukkan Nama"
-                                                type="text"
-                                                id="nama"
-                                                className="w-full px-3 py-2 font-bold"
-                                                value={RegisterPenyedia.nama_penyedia}
-                                                onChange={(e) => setRegisterPenyedia({ ...RegisterPenyedia, nama_penyedia: e.target.value })}
-                                            />
-                                            <Input
-                                                label="Email"
-                                                placeholder="Masukkan Email"
-                                                type="text"
-                                                id="email"
-                                                className="w-full px-3 py-2 font-bold"
-                                                value={RegisterPenyedia.email_penyedia}
-                                                onChange={(e) => setRegisterPenyedia({ ...RegisterPenyedia, email_penyedia: e.target.value })}
-                                            />
-                                            <Input
-                                                label="Password"
-                                                placeholder="Masukkan Password"
-                                                type="password"
-                                                id="password"
-                                                className="w-full px-3 py-2 font-bold"
-                                                value={RegisterPenyedia.password}
-                                                onChange={(e) => setRegisterPenyedia({ ...RegisterPenyedia, password: e.target.value })}
-                                            />
-                                            <Input
-                                                label="Nomor Telepon"
-                                                placeholder="Masukkan nomor telepon"
-                                                type="number"
-                                                id="nomorTelepon"
-                                                className="w-full px-3 py-2 font-bold"
-                                                value={RegisterPenyedia.nomor_telepon_penyedia}
-                                                onChange={(e) => setRegisterPenyedia({ ...RegisterPenyedia, nomor_telepon_penyedia: e.target.value })}
-                                            />
-                                            <Input
-                                                label="Nomor Whatsapp"
-                                                placeholder="Masukkan nomor whatsapp"
-                                                type="number"
-                                                id="nomorWhatsapp"
-                                                className="w-full px-3 py-2 font-bold"
-                                                value={RegisterPenyedia.nomor_whatsapp_penyedia}
-                                                onChange={(e) => setRegisterPenyedia({ ...RegisterPenyedia, nomor_whatsapp_penyedia: e.target.value })}
-                                            />
-                                            <Input
-                                                label="Alamat"
-                                                placeholder="Masukkan alamat"
-                                                type="text"
-                                                id="alamat"
-                                                className="w-full px-3 py-2 font-bold"
-                                                value={RegisterPenyedia.alamat_penedia}
-                                                onChange={(e) => setRegisterPenyedia({ ...RegisterPenyedia, alamat_penyedia: e.target.value })}
-                                            />
-                                            <Select
-                                                type="text"
-                                                label="Pilih Peran"
-                                                variant="bordered"
-                                                value={RegisterPenyedia.nama_role}
-                                                onChange={(e) => setRegisterPenyedia({ ...RegisterPenyedia, nama_role: e.target.value })}
-                                                className="w-full px-3 py-2 font-bold"
-                                            >
-                                                <SelectItem value="Pembawa Acara" key={"Pembawa Acara"}>
-                                                    Pembawa Acara
-                                                </SelectItem>
-                                                <SelectItem value="Fotografer" key={"Fotografer"}>
-                                                    Fotografer
-                                                </SelectItem>
-                                                <SelectItem value="Penyusun Acara" key={"Penyusun Acara"}>
-                                                    Penyusun Acara
-                                                </SelectItem>
-                                                <SelectItem value="Katering" key={"Katering"}>
-                                                    Katering
-                                                </SelectItem>
-                                                <SelectItem value="Dekor" key={"Dekor"}>
-                                                    Dekor
-                                                </SelectItem>
-                                                <SelectItem value="Administrasi" key={"Administrasi"}>
-                                                    Administrasi
-                                                </SelectItem>
-                                                <SelectItem value="Operasional" key={"Operasional"}>
-                                                    Operasional
-                                                </SelectItem>
-                                                <SelectItem value="Tim Event Organizer" key={"Tim Event Organizer"}>
-                                                    Tim Event Organizer
-                                                </SelectItem>
-
-                                            </Select>
-
-                                            <div className=" px-3 mt-7">
-                                                <button
-                                                    className="bg-[#FA9884] py-4 text-white rounded-md hover-bg-blue-600 w-full"
-                                                    onClick={handleRegisterPenyedia}
-                                                >
-                                                    Daftar
-                                                </button>
-                                                <p className=" flex justify-center mt-10  text-center">Anda sudah mempunyai akun?</p>
-                                                <p className=" flex justify-center  text-center">Silahkan<a href="/loginPage" className="text-blue-700 pl-1 underline">masuk</a></p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="w-full lg:w-1/2 max-lg:hidden">
                                     <img src={assets.registerImage} className="size-full object-cover" alt="" />
                                 </div>
+                                <div className="w-full p-8 lg:w-1/2">
+                                    <div className="flex flex-col items-center justify-center mb-8">
+                                        <img src={assets.logoRencara} alt="" className="w-[50%]" />
+                                        <h2 className="font-bold text-lg text-center">Selamat Datang di RENCARA</h2>
+                                        <h2 className="text-lg text-center">Silahkan masukkan informasi pendaftaran Anda</h2>
+                                    </div>
+                                    <div className="flex flex-col gap-3">
+                                        <Input
+                                            label="Nama"
+                                            placeholder="Masukkan Nama"
+                                            type="text"
+                                            id="nama"
+                                            className="w-full px-3 py-2 font-bold"
+                                            value={RegisterPengguna.nama_pengguna}
+                                            onChange={(e) => setRegisterPengguna({ ...RegisterPengguna, nama_pengguna: e.target.value })}
+                                        />
+                                        <Input
+                                            label="Email"
+                                            placeholder="Masukkan Email"
+                                            type="text"
+                                            id="email"
+                                            className="w-full px-3 py-2 font-bold"
+                                            value={RegisterPengguna.email_pengguna}
+                                            onChange={(e) => setRegisterPengguna({ ...RegisterPengguna, email_pengguna: e.target.value })}
+                                        />
+                                        <Input
+                                            label="Password"
+                                            placeholder="Masukkan Password"
+                                            type="password"
+                                            id="password"
+                                            className="w-full px-3 py-2 font-bold"
+                                            value={RegisterPengguna.password}
+                                            onChange={(e) => setRegisterPengguna({ ...RegisterPengguna, password: e.target.value })}
+                                        />
+                                        <Input
+                                            label="Nomor Telepon"
+                                            placeholder="Masukkan nomor telepon"
+                                            type="number"
+                                            id="nomorTelepon"
+                                            className="w-full px-3 py-2 font-bold"
+                                            value={RegisterPengguna.nomor_telepon_pengguna}
+                                            onChange={(e) => setRegisterPengguna({ ...RegisterPengguna, nomor_telepon_pengguna: e.target.value })}
+                                        />
+                                        <Input
+                                            label="Nomor Whatsapp"
+                                            placeholder="Masukkan nomor whatsapp"
+                                            type="number"
+                                            id="nomorWhatsapp"
+                                            className="w-full px-3 py-2 font-bold"
+                                            value={RegisterPengguna.nomor_whatsapp_pengguna}
+                                            onChange={(e) => setRegisterPengguna({ ...RegisterPengguna, nomor_whatsapp_pengguna: e.target.value })}
+                                        />
+                                        <Input
+                                            label="Alamat"
+                                            placeholder="Masukkan alamat"
+                                            type="text"
+                                            id="alamat"
+                                            className="w-full px-3 py-2 font-bold"
+                                            value={RegisterPengguna.alamat_pengguna}
+                                            onChange={(e) => setRegisterPengguna({ ...RegisterPengguna, alamat_pengguna: e.target.value })}
+                                        />
+                                        <div className=" px-3 mt-7">
+                                            <button
+                                                className="bg-[#FA9884] py-4 text-white rounded-md hover-bg-blue-600 w-full"
+                                                onClick={handleRegister}
+                                            >
+                                                Daftar
+                                            </button>
+                                            <p className=" flex justify-center mt-10 text-center">Anda sudah mempunyai akun?</p>
+                                            <p className=" flex justify-center text-center">Silahkan<a href="/loginPage" className="text-blue-700 pl-1 underline">masuk</a></p>
+                                        </div>
+                                    </div>
                                 </div>
-                            </Tab>
+                                <div className="w-full lg:w-1/2 max-lg:hidden">
+                                    <img src={assets.registerImage} className="size-full object-cover" alt="" />
+                                </div>
+                            </div>
+                        </Tab>
+                        <Tab key="RegisterPenyedia" title="Daftar Sebagai Penyedia" className="p-6">
+                            <div className="bg-white rounded shadow-md flex lg:flex-row flex-col gap-10 w-full h-full">
+
+                                <div className="w-full lg:w-1/2 lg:hidden ">
+                                    <img src={assets.registerImage} className="size-full object-cover" alt="" />
+                                </div>
+                                <div className="w-full lg:w-1/2 p-8">
+                                    <div className="flex flex-col items-center justify-center mb-8">
+                                        <img src={assets.logoRencara} alt="" className="w-[50%]" />
+                                        <h2 className="font-bold text-lg text-center">Selamat Datang di RENCARA</h2>
+                                        <h2 className="text-lg text-center">Silahkan masukkan informasi pendaftaran Anda</h2>
+                                    </div>
+                                    <div className="flex flex-col gap-3">
+                                        <Input
+                                            label="Nama"
+                                            placeholder="Masukkan Nama"
+                                            type="text"
+                                            id="nama"
+                                            className="w-full px-3 py-2 font-bold"
+                                            value={RegisterPenyedia.nama_penyedia}
+                                            onChange={(e) => setRegisterPenyedia({ ...RegisterPenyedia, nama_penyedia: e.target.value })}
+                                        />
+                                        <Input
+                                            label="Email"
+                                            placeholder="Masukkan Email"
+                                            type="text"
+                                            id="email"
+                                            className="w-full px-3 py-2 font-bold"
+                                            value={RegisterPenyedia.email_penyedia}
+                                            onChange={(e) => setRegisterPenyedia({ ...RegisterPenyedia, email_penyedia: e.target.value })}
+                                        />
+                                        <Input
+                                            label="Password"
+                                            placeholder="Masukkan Password"
+                                            type="password"
+                                            id="password"
+                                            className="w-full px-3 py-2 font-bold"
+                                            value={RegisterPenyedia.password}
+                                            onChange={(e) => setRegisterPenyedia({ ...RegisterPenyedia, password: e.target.value })}
+                                        />
+                                        <Input
+                                            label="Nomor Telepon"
+                                            placeholder="Masukkan nomor telepon"
+                                            type="number"
+                                            id="nomorTelepon"
+                                            className="w-full px-3 py-2 font-bold"
+                                            value={RegisterPenyedia.nomor_telepon_penyedia}
+                                            onChange={(e) => setRegisterPenyedia({ ...RegisterPenyedia, nomor_telepon_penyedia: e.target.value })}
+                                        />
+                                        <Input
+                                            label="Nomor Whatsapp"
+                                            placeholder="Masukkan nomor whatsapp"
+                                            type="number"
+                                            id="nomorWhatsapp"
+                                            className="w-full px-3 py-2 font-bold"
+                                            value={RegisterPenyedia.nomor_whatsapp_penyedia}
+                                            onChange={(e) => setRegisterPenyedia({ ...RegisterPenyedia, nomor_whatsapp_penyedia: e.target.value })}
+                                        />
+                                        <Input
+                                            label="Alamat"
+                                            placeholder="Masukkan alamat"
+                                            type="text"
+                                            id="alamat"
+                                            className="w-full px-3 py-2 font-bold"
+                                            value={RegisterPenyedia.alamat_penedia}
+                                            onChange={(e) => setRegisterPenyedia({ ...RegisterPenyedia, alamat_penyedia: e.target.value })}
+                                        />
+                                        <Select
+                                            type="text"
+                                            label="Pilih Peran"
+                                            variant="bordered"
+                                            value={RegisterPenyedia.nama_role}
+                                            onChange={(e) => setRegisterPenyedia({ ...RegisterPenyedia, nama_role: e.target.value })}
+                                            className="w-full px-3 py-2 font-bold"
+                                        >
+                                            <SelectItem value="Pembawa Acara" key={"Pembawa Acara"}>
+                                                Pembawa Acara
+                                            </SelectItem>
+                                            <SelectItem value="Fotografer" key={"Fotografer"}>
+                                                Fotografer
+                                            </SelectItem>
+                                            <SelectItem value="Penyusun Acara" key={"Penyusun Acara"}>
+                                                Penyusun Acara
+                                            </SelectItem>
+                                            <SelectItem value="Katering" key={"Katering"}>
+                                                Katering
+                                            </SelectItem>
+                                            <SelectItem value="Dekor" key={"Dekor"}>
+                                                Dekor
+                                            </SelectItem>
+                                            <SelectItem value="Tim Event Organizer" key={"Tim Event Organizer"}>
+                                                Tim Event Organizer
+                                            </SelectItem>
+
+                                        </Select>
+
+                                        <div className=" px-3 mt-7">
+                                            <button
+                                                className="bg-[#FA9884] py-4 text-white rounded-md hover-bg-blue-600 w-full"
+                                                onClick={handleRegisterPenyedia}
+                                            >
+                                                Daftar
+                                            </button>
+                                            <p className=" flex justify-center mt-10  text-center">Anda sudah mempunyai akun?</p>
+                                            <p className=" flex justify-center  text-center">Silahkan<a href="/loginPage" className="text-blue-700 pl-1 underline">masuk</a></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="w-full lg:w-1/2 max-lg:hidden">
+                                    <img src={assets.registerImage} className="size-full object-cover" alt="" />
+                                </div>
+                            </div>
+                        </Tab>
                     </Tabs>
                 </div>
             </div>

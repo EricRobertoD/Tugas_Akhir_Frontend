@@ -92,7 +92,7 @@ export default function NavbarPenggunaLogin() {
             <Avatar
               size="xl"
               style={{ cursor: "pointer" }}
-              src={dataPengguna.gambar_pengguna ? "https://tugas-akhir-backend-4aexnrp6vq-uc.a.run.app/storage/gambar/" + dataPengguna.gambar_pengguna : assets.profile}
+              src={dataPengguna.gambar_pengguna ? "https://storage.googleapis.com/tugasakhir_11007/gambar/" + dataPengguna.gambar_pengguna : assets.profile}
             />
           </PopoverTrigger>
           <PopoverContent>

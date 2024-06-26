@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import assets from "../../assets";
 import Footer from "../../components/Footer";
-import { Avatar, Button, Card, CardBody, CardFooter, CardHeader, DatePicker, Divider, TimeInput, Select, SelectItem, Input, Modal, ModalContent, ModalFooter, ModalHeader, ModalBody, useDisclosure,} from "@nextui-org/react";
+import { Avatar, Button, Card, CardBody, CardFooter, CardHeader, DatePicker, Divider, TimeInput, Select, SelectItem, Input, Modal, ModalContent, ModalFooter, ModalHeader, ModalBody, useDisclosure, } from "@nextui-org/react";
 import NavbarPenggunaLogin from "../../components/NavbarPenggunaLogin";
 import { Time } from "@internationalized/date";
 import BASE_URL from "../../../apiConfig";
@@ -10,6 +10,7 @@ import ChatPenggunaPage from "../../components/ChatPengguna";
 import axios from 'axios';
 import { parseDate } from "@internationalized/date";
 import Swal from 'sweetalert2';
+import { rupiah } from "../../utils/Currency";
 
 const provinces = [
     "Semua", "Aceh", "Bali", "Banten", "Bengkulu", "Gorontalo", "Jakarta", "Jambi",
@@ -22,8 +23,10 @@ const provinces = [
 ];
 
 const roles = [
-    "Semua", "Pembawa Acara", "Fotografer", "Penyusun Acara", "Katering", "Dekor", "Administrasi", "Operasional", "Tim Event Organizer"
+    "Semua", "Pembawa Acara", "Fotografer", "Penyusun Acara", "Katering", "Dekor", "Tim Event Organizer"
 ];
+
+
 
 const MainPagePengguna = () => {
     const location = useLocation();
@@ -174,6 +177,13 @@ const MainPagePengguna = () => {
                 }
             });
             setPaketOptions(response.data.data);
+
+            const firstPaket = response.data.data[0];
+            if (firstPaket?.penyedia_jasa?.nama_role === 'Katering') {
+                setFormData({ ...formData, pack: '' });
+            }
+
+            setSelectedPaket(firstPaket?.id_paket.toString());
         } catch (error) {
             console.error('Error fetching paket options:', error);
             Swal.fire({
@@ -183,6 +193,7 @@ const MainPagePengguna = () => {
             });
         }
     };
+
 
     const handleTambahKeranjang = async () => {
         try {
@@ -240,9 +251,10 @@ const MainPagePengguna = () => {
 
     const handleInputChange = (event) => {
         const { id, value } = event.target;
+        const formattedValue = value.replace(/\D/g, "");
         setFormData((prevData) => ({
             ...prevData,
-            [id]: value,
+            [id]: formattedValue,
         }));
     };
 
@@ -394,7 +406,7 @@ const MainPagePengguna = () => {
                             </div>
                             <div className="w-1/6">
                                 <Select
-                                    label="Role Penyedia"
+                                    label="Peran Penyedia"
                                     id="role_penyedia"
                                     value={formData.role_penyedia}
                                     selectedKeys={new Set([formData.role_penyedia])}
@@ -414,20 +426,20 @@ const MainPagePengguna = () => {
                             <div className="mb-4 w-full">
                                 <Input
                                     label="Anggaran Minimal"
-                                    type="number"
+                                    type="text"
                                     id="start_budget"
                                     placeholder="Enter minimum budget"
-                                    value={formData.start_budget}
+                                    value={rupiah(formData.start_budget)}
                                     onChange={handleInputChange}
                                 />
                             </div>
                             <div className="mb-4 w-full">
                                 <Input
                                     label="Anggaran Maksimal"
-                                    type="number"
+                                    type="text"
                                     id="end_budget"
                                     placeholder="Enter maximum budget"
-                                    value={formData.end_budget}
+                                    value={rupiah(formData.end_budget)}
                                     onChange={handleInputChange}
                                 />
                             </div>
@@ -468,12 +480,13 @@ const MainPagePengguna = () => {
                                     </SelectItem>
                                 ))}
                             </Select>
+                            <div className="items-center flex justify-center">
                             <Button
                                 className="bg-[#FA9884] hover:bg-red-700 text-white rounded-lg"
                                 onClick={getCurrentPosition}
                             >
-                                Get Current Position
-                            </Button>
+                                Posisi saat ini
+                            </Button></div>
                         </div>
                         <div className="w-full">
                             <Button
@@ -496,7 +509,7 @@ const MainPagePengguna = () => {
                                         <div className="flex items-center">
                                             <Avatar
                                                 className="w-16 h-16 text-large"
-                                                src={penyedia.gambar_penyedia ? "https:/tugas-akhir-backend-4aexnrp6vq-uc.a.run.app/storage/gambar/" + penyedia.gambar_penyedia : assets.profile}
+                                                src={penyedia.gambar_penyedia ? "https://storage.googleapis.com/tugasakhir_11007/gambar/" + penyedia.gambar_penyedia : assets.profile}
                                             />
                                             <div className="flex flex-col items-start justify-center px-2">
                                                 <p className="font-bold">{penyedia.nama_penyedia}</p>
@@ -569,8 +582,8 @@ const MainPagePengguna = () => {
 
                                 {paketOptions.find(paket => paket.id_paket === parseInt(selectedPaket))?.penyedia_jasa?.nama_role === 'Katering' && (
                                     <Input
-                                        label="Number of Packs"
-                                        placeholder="Enter number of packs"
+                                        label="Jumlah Pack"
+                                        placeholder="Masukkan Jumlah Pack"
                                         value={formData.pack}
                                         onChange={(e) => setFormData({ ...formData, pack: e.target.value })}
                                     />

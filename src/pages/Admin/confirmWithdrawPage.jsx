@@ -48,10 +48,10 @@ const ConfirmWithdrawPage = () => {
             });
             return;
         }
-    
+
         const formData = new FormData();
         formData.append('gambar_saldo', selectedFile);
-    
+
         try {
             const authToken = localStorage.getItem("authToken");
             const response = await fetch(`${BASE_URL}/api/confirmWithdraw/${selectedWithdrawId}`, {
@@ -61,11 +61,11 @@ const ConfirmWithdrawPage = () => {
                 },
                 body: formData,
             });
-    
+
             if (!response.ok) {
                 throw new Error("Network response was not ok");
             }
-    
+
             const result = await response.json();
             Swal.fire({
                 icon: 'success',
@@ -94,8 +94,8 @@ const ConfirmWithdrawPage = () => {
             cancelButtonColor: "#d33",
             confirmButtonText: "Ya, konfirmasi!",
             cancelButtonText: "Batal",
-        }).then(async (result) => { 
-            if (result.isConfirmed) { 
+        }).then(async (result) => {
+            if (result.isConfirmed) {
                 try {
                     const authToken = localStorage.getItem("authToken");
                     const response = await fetch(`${BASE_URL}/api/rejectWithdraw/${id}`, {
@@ -129,7 +129,7 @@ const ConfirmWithdrawPage = () => {
             }
         });
     };
-    
+
     useEffect(() => {
         fetchData();
     }, []);
@@ -138,51 +138,71 @@ const ConfirmWithdrawPage = () => {
         <>
             <div className="min-h-screen bg-[#FFF3E2]">
                 <NavbarAdminLogin />
-                <Table className="py-10 lg:py-20 lg:px-96">
+                <div className="container mx-auto my-16">
+                <Table>
                     <TableHeader>
                         <TableColumn className="text-center">Nama</TableColumn>
                         <TableColumn className="text-center">Status</TableColumn>
                         <TableColumn className="text-center">Total</TableColumn>
+                        <TableColumn className="text-center">Bukti</TableColumn>
                         <TableColumn className="text-center">Konfirmasi</TableColumn>
                         <TableColumn className="text-center">Tolak</TableColumn>
                     </TableHeader>
                     <TableBody>
                         {dataWithdraw.length > 0 ? (
-                                dataWithdraw.map((row) => (
-                                    <TableRow key={row.id_saldo}>
-                                        <TableCell className="text-center">{row.pengguna?.nama_pengguna || row.penyedia_jasa?.nama_penyedia}</TableCell>
-                                        <TableCell className="text-center">{row.status}</TableCell>
-                                        <TableCell className="text-center">{rupiah(row.total)}</TableCell>
-                                        <TableCell className="text-center">
+                            dataWithdraw.map((row) => (
+                                <TableRow key={row.id_saldo}>
+                                    <TableCell className="text-center">{row.pengguna?.nama_pengguna || row.penyedia_jasa?.nama_penyedia}</TableCell>
+                                    <TableCell className="text-center">{row.status}</TableCell>
+                                    <TableCell className="text-center">{rupiah(row.total)}</TableCell>
+                                    <TableCell className="text-center flex justify-center">
+                                        {row.gambar_saldo ? (
+                                            <a href={`https://storage.googleapis.com/tugasakhir_11007/gambar/${row.gambar_saldo}`} target="_blank" rel="noopener noreferrer">
+                                                <img
+                                                    src={`https://storage.googleapis.com/tugasakhir_11007/gambar/${row.gambar_saldo}`}
+                                                    alt="gambar saldo"
+                                                    style={{ width: '50px', height: '50px' }}
+                                                />
+                                            </a>
+                                        ) : (
+                                            '-'
+                                        )}
+                                    </TableCell>
+                                    <TableCell className="text-center">
+                                        {row.status === 'pending' && (
                                             <Button
                                                 onClick={() => handleConfirm(row.id_saldo)}
-                                                className="px-4 py-2 bg-[#00A7E1] hover:bg-blue-600 text-white rounded-lg"
+                                                className="bg-[#00A7E1] hover:bg-blue-600 text-white rounded-lg"
                                             >
                                                 Konfirmasi
                                             </Button>
-                                        </TableCell>
-                                        <TableCell>
+                                        )}
+                                    </TableCell>
+                                    <TableCell className="text-center">
+                                        {row.status === 'pending' && (
                                             <Button
                                                 onClick={() => handleReject(row.id_saldo)}
-                                                className="px-4 py-2 bg-[#FA9884] hover:bg-red-700 text-white rounded-lg"
+                                                className="bg-[#FA9884] hover:bg-red-700 text-white rounded-lg"
                                             >
                                                 Tolak
                                             </Button>
-                                        </TableCell>
-                                    </TableRow>
-                                ))
-                    ) : (
+                                        )}
+                                    </TableCell>
+                                </TableRow>
+                            ))
+                        ) : (
                             <TableRow>
-                                <TableCell colSpan={7} className="text-center">Keranjang kosong</TableCell>
-                                <TableCell colSpan={7} className="hidden text-center">Keranjang kosong</TableCell>
-                                <TableCell colSpan={7} className="hidden text-center">Keranjang kosong</TableCell>
-                                <TableCell colSpan={7} className="hidden text-center">Keranjang kosong</TableCell>
-                                <TableCell colSpan={7} className="hidden text-center">Keranjang kosong</TableCell>
-                                <TableCell colSpan={7} className="hidden text-center">Keranjang kosong</TableCell>
+                                <TableCell colSpan={6} className="text-center">Keranjang kosong</TableCell>
+                                <TableCell colSpan={6} className="hidden text-center">Keranjang kosong</TableCell>
+                                <TableCell colSpan={6} className="hidden text-center">Keranjang kosong</TableCell>
+                                <TableCell colSpan={6} className="hidden text-center">Keranjang kosong</TableCell>
+                                <TableCell colSpan={6} className="hidden text-center">Keranjang kosong</TableCell>
+                                <TableCell colSpan={6} className="hidden text-center">Keranjang kosong</TableCell>
                             </TableRow>
                         )}
                     </TableBody>
                 </Table>
+                </div>
             </div>
             <Footer />
 

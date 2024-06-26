@@ -112,7 +112,7 @@ export default function NavbarPenyediaLogin() {
             <Avatar
               size="xl"
               style={{ cursor: "pointer" }}
-              src={dataPenyedia.gambar_penyedia ? "https://tugas-akhir-backend-4aexnrp6vq-uc.a.run.app/storage/gambar/" + dataPenyedia.gambar_penyedia : assets.profile}
+              src={dataPenyedia.gambar_penyedia ? "https://storage.googleapis.com/tugasakhir_11007/gambar/" + dataPenyedia.gambar_penyedia : assets.profile}
             />
           </PopoverTrigger>
           <PopoverContent>
