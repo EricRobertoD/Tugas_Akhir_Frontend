@@ -303,7 +303,7 @@ const DetailPagePengguna = () => {
                                 <Divider className="my-4" />
                                 <div className="flex">
                                     <div className="w-full mr-8">
-                                        {penyediaData.deskripsi_penyedia
+                                        {penyediaData.deskripsi_penyedia && penyediaData.deskripsi_penyedia
                                             .split("\n")
                                             .map((line, index) => (
                                                 <p key={index} className="text-justify pb-2 font-semibold">

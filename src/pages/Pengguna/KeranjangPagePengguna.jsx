@@ -25,6 +25,7 @@ const KeranjangPagePengguna = () => {
     const [voucherDiscount, setVoucherDiscount] = useState(0);
     const [dataPengguna, setDataPengguna] = useState({});
     const [voucherId, setVoucherId] = useState(null);
+    const [voucherApplied, setVoucherApplied] = useState(false);
 
     const fetchDataPengguna = async () => {
         try {
@@ -106,6 +107,11 @@ const KeranjangPagePengguna = () => {
     };
 
     const handleApplyVoucher = async () => {
+        if (voucherApplied) {
+            toastr.error("Voucher telah diterapkan", "Error");
+            return;
+        }
+
         const authToken = localStorage.getItem("authToken");
         try {
             const response = await fetch(`${BASE_URL}/api/applyVoucher`, {
@@ -124,6 +130,7 @@ const KeranjangPagePengguna = () => {
                 const discount = result.data.persen;
                 setVoucherDiscount(discount);
                 setVoucherId(result.data.id_voucher);
+                setVoucherApplied(true);
                 toastr.success("Voucher applied successfully", "Success");
 
                 const discountedPrice = selectedTransaction.total_harga * (1 - discount / 100);
@@ -145,6 +152,7 @@ const KeranjangPagePengguna = () => {
             id: transaction.id_transaksi,
             nama_paket: transaction.paket.nama_paket,
             harga_paket: transaction.paket.harga_paket,
+            subtotal: transaction.subtotal,
         }));
         const totalHarga = detailTransaksis.reduce((total, transaction) => total + transaction.subtotal, 0);
         const discountedPrice = totalHarga * (1 - voucherDiscount / 100);
@@ -179,6 +187,8 @@ const KeranjangPagePengguna = () => {
                 fetchDetailTransaksis();
                 setSelectedTransaction(null);
                 onOpenChange(false);
+                setVoucherApplied(false);
+                setVoucherCode(""); 
             } else {
                 Swal.fire("Error", data.message || "There was an error", "error");
             }
@@ -195,8 +205,6 @@ const KeranjangPagePengguna = () => {
             Swal.fire("Error", errorMessage, "error");
         }
     };
-
-
 
     useEffect(() => {
         fetchDetailTransaksis();
@@ -299,8 +307,8 @@ const KeranjangPagePengguna = () => {
                             <div key={`${detail.id}-${index}`}>
                                 <p>Paket: {detail.nama_paket}</p>
                                 <div className="flex justify-between">
-                                    <span>Harga Paket:</span>
-                                    <span>{rupiah(detail.harga_paket)}</span>
+                                    <span>Subtotal:</span>
+                                    <span>{rupiah(detail.subtotal)}</span>
                                 </div>
                                 <Divider className="my-2" />
                             </div>
@@ -318,10 +326,12 @@ const KeranjangPagePengguna = () => {
                                 value={voucherCode}
                                 onChange={(e) => setVoucherCode(e.target.value)}
                                 placeholder="Masukkan kode kupon"
+                                disabled={voucherApplied}
                             />
                             <Button
                                 className="font-bold bg-[#FA9884] hover:bg-red-700 text-white"
                                 onClick={handleApplyVoucher}
+                                disabled={voucherApplied}
                             >
                                 Pakai Kupon
                             </Button>
@@ -349,3 +359,4 @@ const KeranjangPagePengguna = () => {
 };
 
 export default KeranjangPagePengguna;
+
