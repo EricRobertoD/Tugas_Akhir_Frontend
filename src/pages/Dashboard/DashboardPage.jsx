@@ -24,10 +24,10 @@ const provinces = [
 const DashboardPage = () => {
     usePageTitle('DashboardPage');
 
-    const [startBudget, setStartBudget] = useState("");
+    const [startBudget, setStartBudget] = useState("0"); 
     const [jamBuka, setJamBuka] = useState(new Time(9));
     const [jamTutup, setJamTutup] = useState(new Time(18));
-    const [endBudget, setEndBudget] = useState("");
+    const [endBudget, setEndBudget] = useState("0");
     const [dateTime, setDateTime] = useState(null);
     const [provinsiPenyedia, setProvinsiPenyedia] = useState("Semua");
     const [isChatOpen, setIsChatOpen] = useState(false);
@@ -52,6 +52,7 @@ const DashboardPage = () => {
 
 
     const formatCurrency = (value) => {
+        if (!value) return "0";
         const numericValue = value.replace(/\D/g, "");
         return rupiah(numericValue);
     };
