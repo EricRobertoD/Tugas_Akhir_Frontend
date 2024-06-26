@@ -85,7 +85,7 @@ export default function NavbarPenyediaLogin() {
   ];
 
   return (
-    <Navbar isBordered onMenuOpenChange={setIsMenuOpen} className="bg-white py-5" maxWidth="full">
+    <Navbar isBordered onMenuOpenChange={setIsMenuOpen} className="bg-white py-2" maxWidth="full">
       <NavbarContent className="hidden sm:flex gap-2">
         <NavbarBrand >
           <Link to="/DashboardPagePenyedia">

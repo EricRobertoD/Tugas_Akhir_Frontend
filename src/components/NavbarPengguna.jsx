@@ -20,7 +20,7 @@ export default function NavbarPage() {
   }
 
   return (
-    <Navbar isBordered className="bg-white py-5" maxWidth="full">
+    <Navbar isBordered className="bg-white py-2" maxWidth="full">
       <NavbarBrand >
         <Link to = "/">
         <img src={assets.logoRencara} alt="Logo" style={logoStyle} />
