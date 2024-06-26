@@ -304,7 +304,7 @@ const MainPagePengguna = () => {
         const lat = position.coords.latitude;
         const lng = position.coords.longitude;
         try {
-            const response = await axios.get(`https:/maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyBf8Al8Z_C2kJLnYU5DYeRFsGlBlFoDbcA`);
+            const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&language=id&key=AIzaSyBf8Al8Z_C2kJLnYU5DYeRFsGlBlFoDbcA`);
             const addressComponents = response.data.results[0].address_components;
             const provinceComponent = addressComponents.find(component => component.types.includes('administrative_area_level_1'));
             if (provinceComponent) {
@@ -332,6 +332,7 @@ const MainPagePengguna = () => {
             });
         }
     };
+    
 
     const searchData = async (event) => {
         event.preventDefault();
@@ -376,6 +377,7 @@ const MainPagePengguna = () => {
         }
     };
 
+    
     const errorCallback = (error) => {
         Swal.fire({
             icon: 'error',
@@ -383,7 +385,6 @@ const MainPagePengguna = () => {
             text: `Error occurred while retrieving your location: ${error.message}`,
         });
     };
-
     const filteredPenyedia = dataPenyedia.filter(penyedia =>
         formData.role_penyedia === "Semua" || penyedia.nama_role === formData.role_penyedia
     );
