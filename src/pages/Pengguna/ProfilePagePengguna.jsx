@@ -171,27 +171,29 @@ const ProfilePagePengguna = () => {
                 console.error('Error:', error);
             });
     };
-
+    
     const handleDeposit = async () => {
         const authToken = localStorage.getItem("authToken");
+        const inputTotal = parseInt(depositTotal.replace(/[^\d]/g, ''));
 
         try {
-            const response = await axios.post(`${BASE_URL}/api/depositMidtrans`,
-                { total: (parseInt(depositTotal.replace(/[^\d]/g, '')) * 1.10).toFixed(2) },
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${authToken}`,
-                    },
-                }
-            );
+            const response = await axios.post(`${BASE_URL}/api/depositMidtrans`, {
+                total: inputTotal, 
+            }, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${authToken}`,
+                },
+            });
 
             const { snap_token } = response.data.data;
 
             window.snap.pay(snap_token, {
                 onSuccess: async (result) => {
                     try {
-                        const confirmResponse = await axios.post(`${BASE_URL}/api/confirmDepositMidtrans/${result.order_id}`, {}, {
+                        const confirmResponse = await axios.post(`${BASE_URL}/api/confirmDepositMidtrans/${result.order_id}`, {
+                            total: inputTotal,
+                        }, {
                             headers: {
                                 "Content-Type": "application/json",
                                 "Authorization": `Bearer ${authToken}`,
