@@ -9,12 +9,11 @@ import assets from "../assets";
 import Pusher from 'pusher-js';
 import { IoMdChatbubbles } from "react-icons/io";
 
-const ChatPenyediaPage = () => {
-    const [isChatOpen, setIsChatOpen] = useState(false);
+const ChatPenyediaPage = ({ isChatOpen, setIsChatOpen, initialSelectedPengguna }) => {
     const [penggunaList, setPenggunaList] = useState([]);
     const [chatMessages, setChatMessages] = useState([]);
     const [idPenyedia, setIdPenyedia] = useState(null);
-    const [selectedPengguna, setSelectedPengguna] = useState(null);
+    const [selectedPengguna, setSelectedPengguna] = useState(initialSelectedPengguna);
 
     useEffect(() => {
         fetchIdPenyedia();
@@ -211,9 +210,11 @@ const ChatPenyediaPage = () => {
                                         />
                                     ))}
                             </MessageList>
-                            {selectedPengguna && (
-                                <MessageInput placeholder="Type message here" onSend={handleSendMessage} />
-                            )}
+                            <MessageInput 
+                                placeholder={selectPengguna ? "Type message here" : "Select a pengguna to start chatting"}
+                                onSend={handleSendMessage}
+                                disabled={!selectedPengguna}
+                            />
                         </ChatContainer>
                     </MainContainer>
                 </div>

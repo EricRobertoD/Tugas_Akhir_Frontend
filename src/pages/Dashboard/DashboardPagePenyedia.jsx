@@ -10,7 +10,9 @@ import ChatPenyediaPage from "../../components/ChatPenyedia";
 import usePageTitle from "../../usePageTitle";
 
 const DashboardPagePenyedia = () => {
-    usePageTitle('DashboardPagePenyedia');
+    usePageTitle('PagePenyedia');
+    const [isChatOpen, setIsChatOpen] = useState(false);
+
     return (
         <>
             <div className="min-h-screen bg-[#FFF3E2]">
@@ -103,7 +105,10 @@ const DashboardPagePenyedia = () => {
 
             </div>
             <Footer />
-            <ChatPenyediaPage />
+            <ChatPenyediaPage
+                isChatOpen={isChatOpen}
+                setIsChatOpen={setIsChatOpen}
+            />
         </>
 
     )

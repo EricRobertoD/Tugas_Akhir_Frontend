@@ -2,17 +2,20 @@ import React, { useEffect, useState } from "react";
 import assets from "../../assets";
 import Footer from "../../components/Footer";
 import NavbarPenyediaLogin from "../../components/NavbarPenyediaLogin";
-import { Avatar, Card, CardBody, CardHeader, Divider, Button, Chip } from "@nextui-org/react";
+import { Avatar, Card, CardBody, CardHeader, Divider, Button, Chip, useDisclosure, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from "@nextui-org/react";
 import Swal from "sweetalert2";
 import BASE_URL from "../../../apiConfig";
 import ChatPenyediaPage from "../../components/ChatPenyedia";
 import { rupiah } from "../../utils/Currency";
+import axios from "axios";
 
 const PesananPagePenyedia = () => {
     const [dataPenyedia, setDataPenyedia] = useState([]);
     const [filter, setFilter] = useState("Semua");
     const [isChatOpen, setIsChatOpen] = useState(false);
     const [selectedPengguna, setSelectedPengguna] = useState(null);
+    const { isOpen, onOpen, onClose } = useDisclosure();
+    const [modalData, setModalData] = useState(null);
 
     const fetchData = async () => {
         try {
@@ -34,6 +37,34 @@ const PesananPagePenyedia = () => {
             console.log(result.data);
         } catch (error) {
             console.error("Error fetching data: ", error);
+        }
+    };
+
+
+    const handleKontakClick = (detailTransaksi) => {
+        setModalData(detailTransaksi);
+        onOpen();
+    };
+
+    const handleFirstChat = async (pengguna) => {
+        try {
+            const authToken = localStorage.getItem('authToken');
+            const response = await axios.post(`${BASE_URL}/api/chatPenyediaFirst`, {
+                id_pengguna: pengguna.id_pengguna,
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${authToken}`
+                }
+            });
+            setSelectedPengguna(pengguna);
+            setIsChatOpen(true);
+        } catch (error) {
+            console.error('Error initiating chat:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to initiate chat.',
+            });
         }
     };
 
@@ -336,6 +367,17 @@ const PesananPagePenyedia = () => {
                                                             Selesai
                                                         </Button>
                                                     )}
+                                                    {detailTransaksi.status_penyedia_jasa === "Sedang bekerja sama dengan pelanggan" && (
+                                                        <>
+                                                            <Button
+                                                                className="font-bold bg-[#00A7E1] text-white text-md"
+                                                                onClick={() => handleKontakClick(detailTransaksi)}
+                                                            >
+                                                                Kontak
+                                                            </Button>
+                                                            <Button className="font-bold bg-[#FA9884] hover:bg-red-700 text-white mx-2" onClick={() => handleFirstChat(detailTransaksi.transaksi.pengguna)}>Chat</Button>
+                                                        </>
+                                                    )}
                                                 </div>
                                             </div>
                                         </CardBody>
@@ -346,6 +388,33 @@ const PesananPagePenyedia = () => {
                         </div>
                     ))}
                 </div>
+
+                <Modal
+                    size="md"
+                    isOpen={isOpen}
+                    onClose={onClose}
+                >
+                    <ModalContent>
+                        {modalData && (
+                            <>
+                                <ModalHeader className="flex flex-col gap-1">Kontak</ModalHeader>
+                                <Divider />
+                                <ModalBody>
+                                    <p>Nomor Whatsapp: {modalData.transaksi.pengguna.nomor_whatsapp_pengguna}</p>
+                                    <p>Nomor Telepon: {modalData.transaksi.pengguna.nomor_telepon_pengguna}</p>
+                                    <p>Email: {modalData.transaksi.pengguna.email_pengguna}</p>
+                                </ModalBody>
+                                <ModalFooter>
+                                    <Button color="danger" variant="light" onPress={onClose}>
+                                        Tutup
+                                    </Button>
+                                    <Divider />
+                                </ModalFooter>
+                            </>
+                        )}
+                    </ModalContent>
+                </Modal>
+
             </div>
             <Footer />
             <ChatPenyediaPage

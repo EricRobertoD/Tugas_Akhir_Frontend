@@ -22,7 +22,7 @@ const provinces = [
 ];
 
 const DashboardPage = () => {
-    usePageTitle('DashboardPage');
+    usePageTitle('PagePengguna', assets.logo);
 
     const [startBudget, setStartBudget] = useState("0"); 
     const [jamBuka, setJamBuka] = useState(new Time(9));

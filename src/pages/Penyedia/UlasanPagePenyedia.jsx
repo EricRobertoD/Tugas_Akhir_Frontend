@@ -9,6 +9,7 @@ import ChatPenyediaPage from "../../components/ChatPenyedia";
 const UlasanPagePenyedia = () => {
     const [dataPenyedia, setDataPenyedia] = useState([]);
     const [sortOrder, setSortOrder] = useState("asc");
+    const [isChatOpen, setIsChatOpen] = useState(false);
 
     const fetchData = async () => {
         try {
@@ -75,7 +76,10 @@ const UlasanPagePenyedia = () => {
                 </Table>
             </div>
             <Footer />
-            <ChatPenyediaPage />
+            <ChatPenyediaPage
+                isChatOpen={isChatOpen}
+                setIsChatOpen={setIsChatOpen}
+            />
         </>
     );
 };

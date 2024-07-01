@@ -13,6 +13,7 @@ const PaketPagePenyedia = () => {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const [isEditMode, setIsEditMode] = useState(false);
     const [editId, setEditId] = useState(null);
+    const [isChatOpen, setIsChatOpen] = useState(false);
     const [formData, setFormData] = useState({
         nama_paket: "",
         harga_paket: "",
@@ -283,7 +284,10 @@ const PaketPagePenyedia = () => {
                 </div>
             </div>
             <Footer />
-            <ChatPenyediaPage />
+            <ChatPenyediaPage
+                isChatOpen={isChatOpen}
+                setIsChatOpen={setIsChatOpen}
+            />
 
             <Modal
                 backdrop="opaque"

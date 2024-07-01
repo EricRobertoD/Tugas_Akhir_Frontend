@@ -9,7 +9,7 @@ import NavbarAdminLogin from "../../components/NavbarAdminLogin";
 import usePageTitle from "../../usePageTitle";
 
 const DashboardPageAdmin = () => {
-    usePageTitle('DashboardPageAdmin');
+    usePageTitle('PageAdmin');
     return (
         <>
             <div className="min-h-screen bg-[#FFF3E2]">

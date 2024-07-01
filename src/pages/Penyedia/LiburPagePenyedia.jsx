@@ -14,6 +14,7 @@ const LiburPagePenyedia = () => {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const [isEditMode, setIsEditMode] = useState(false);
     const [editId, setEditId] = useState(null);
+    const [isChatOpen, setIsChatOpen] = useState(false);
     const [tanggalRange, setTanggalRange] = useState({ start: null, end: null });
 
     const fetchData = async () => {
@@ -271,7 +272,10 @@ const LiburPagePenyedia = () => {
                 </div>
             </div>
             <Footer />
-            <ChatPenyediaPage />
+            <ChatPenyediaPage
+                isChatOpen={isChatOpen}
+                setIsChatOpen={setIsChatOpen}
+            />
 
             <Modal 
                 backdrop="opaque" 

@@ -17,6 +17,7 @@ const JadwalPagePenyedia = () => {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const [isEditMode, setIsEditMode] = useState(false);
     const [editId, setEditId] = useState(null);
+    const [isChatOpen, setIsChatOpen] = useState(false);
 
     const [hari, setHari] = useState("");
     const [jamBuka, setJamBuka] = useState(new Time(0o0));
@@ -377,7 +378,10 @@ const JadwalPagePenyedia = () => {
                 </div>
             </div>
             <Footer />
-            <ChatPenyediaPage />
+            <ChatPenyediaPage
+                isChatOpen={isChatOpen}
+                setIsChatOpen={setIsChatOpen}
+            />
 
             <Modal
                 backdrop="opaque"

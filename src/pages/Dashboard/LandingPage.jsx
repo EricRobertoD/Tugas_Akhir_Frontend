@@ -5,9 +5,11 @@ import Footer from "../../components/Footer";
 import { Scrollbar } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Navigation } from 'swiper/modules';
+import usePageTitle from "../../usePageTitle";
 import { Card, CardBody, CardHeader, Divider, Image } from "@nextui-org/react";
 
 const LandingPage = () => {
+    usePageTitle('Rencara');
     return (
         <>
             <div className="min-h-screen bg-[#FFF3E2]">

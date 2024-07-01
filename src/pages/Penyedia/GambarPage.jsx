@@ -13,6 +13,7 @@ const GambarPage = () => {
     const [dataPenyedia, setDataPenyedia] = useState({});
     const openImage = useRef(null);
     const openUpdateImage = useRef(null);
+    const [isChatOpen, setIsChatOpen] = useState(false);
     const selectedGambarId = useRef(null);
 
     const fetchData = async () => {
@@ -71,14 +72,14 @@ const GambarPage = () => {
             console.log(error);
         });
     };
-    
+
     const updateImage = async (e) => {
         const formData = new FormData();
         formData.append('gambar', e.target.files[0]);
-    
+
         const authToken = localStorage.getItem("authToken");
         const gambarId = selectedGambarId.current;
-    
+
         axios.post(`${BASE_URL}/api/gambar/${gambarId}`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
@@ -92,7 +93,7 @@ const GambarPage = () => {
             console.log(error);
         });
     };
-    
+
 
     const handleCardClick = (gambarId) => {
         selectedGambarId.current = gambarId;
@@ -154,7 +155,10 @@ const GambarPage = () => {
                 </div>
             </div>
             <Footer />
-            <ChatPenyediaPage />
+            <ChatPenyediaPage
+                isChatOpen={isChatOpen}
+                setIsChatOpen={setIsChatOpen}
+            />
         </>
 
     )
