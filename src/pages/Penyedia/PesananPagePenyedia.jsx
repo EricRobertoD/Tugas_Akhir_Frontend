@@ -359,7 +359,7 @@ const PesananPagePenyedia = () => {
                                                         </>
                                                     )}
                                                     {detailTransaksi.status_penyedia_jasa === "Sedang bekerja sama dengan pelanggan" && (
-                                                        new Date() >= new Date(`${detailTransaksi.tanggal_pelaksanaan}T${detailTransaksi.jam_selesai}`) &&
+                                                        new Date() <= new Date(`${detailTransaksi.tanggal_pelaksanaan}T${detailTransaksi.jam_selesai}`) &&
                                                         <Button
                                                             className="font-bold bg-[#FA9884] hover:bg-red-700 text-white mx-auto"
                                                             onClick={() => handleUpdateStatus(detailTransaksi.id_detail_transaksi, "Selesai")}
@@ -369,12 +369,6 @@ const PesananPagePenyedia = () => {
                                                     )}
                                                     {detailTransaksi.status_penyedia_jasa === "Sedang bekerja sama dengan pelanggan" && (
                                                         <>
-                                                            <Button
-                                                                className="font-bold bg-[#00A7E1] text-white text-md"
-                                                                onClick={() => handleKontakClick(detailTransaksi)}
-                                                            >
-                                                                Kontak
-                                                            </Button>
                                                             <Button className="font-bold bg-[#FA9884] hover:bg-red-700 text-white mx-2" onClick={() => handleFirstChat(detailTransaksi.transaksi.pengguna)}>Chat</Button>
                                                         </>
                                                     )}
