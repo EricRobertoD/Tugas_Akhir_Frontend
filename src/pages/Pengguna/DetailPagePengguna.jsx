@@ -155,7 +155,7 @@ const DetailPagePengguna = () => {
             Swal.fire({
                 icon: "success",
                 title: "Success",
-                text: "Added to cart successfully.",
+                text: "Berhasil tambah keranjang.",
             });
             onOpenChange(false);
         } catch (error) {

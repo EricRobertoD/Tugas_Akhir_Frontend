@@ -183,7 +183,7 @@ const KeranjangPagePengguna = () => {
             const data = await response.json();
 
             if (response.status === 200) {
-                Swal.fire("Success", "Transaksi updated successfully", "success");
+                Swal.fire("Success", "Transaksi berhasil ditambahkan", "success");
                 fetchDetailTransaksis();
                 setSelectedTransaction(null);
                 onOpenChange(false);
