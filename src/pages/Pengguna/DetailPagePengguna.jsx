@@ -303,15 +303,21 @@ const DetailPagePengguna = () => {
                                 <Divider className="my-4" />
                                 <div className="flex">
                                     <div className="w-full mr-8">
-                                        {penyediaData.deskripsi_penyedia && penyediaData.deskripsi_penyedia
-                                            .split("\n")
-                                            .map((line, index) => (
-                                                <p key={index} className="text-justify pb-2 font-semibold">
-                                                    {line}
-                                                </p>
-                                            ))}
+                                        <Image
+                                            shadow="sm"
+                                            radius="lg"
+                                            alt={assets.ppland1}
+                                            className="w-full object-cover"
+                                            src={`https://storage.googleapis.com/tugasakhir_11007/dokumen/${penyediaData.dokumen}`}
+                                        />
                                     </div>
-                                    <div className="w-full">
+                                    <div className=" w-full">
+                                            <video controls>
+                                                <source src={`https://storage.googleapis.com/tugasakhir_11007/video/${penyediaData.video}`} type="video/mp4" />
+                                                Your browser does not support the video tag.
+                                            </video>
+                                            
+                                    <div className="w-full mt-12">
                                         <Accordion variant="shadow">
                                             {penyediaData?.paket?.map((paket, index) => (
                                                 <AccordionItem key={index} title={paket.nama_paket}>
@@ -328,6 +334,19 @@ const DetailPagePengguna = () => {
                                                 </AccordionItem>
                                             ))}
                                         </Accordion>
+                                    </div>
+                                    </div>
+                                </div>
+                                <Divider className="my-4" />
+                                <div className="flex">
+                                    <div className="w-full mr-8">
+                                        {penyediaData.deskripsi_penyedia && penyediaData.deskripsi_penyedia
+                                            .split("\n")
+                                            .map((line, index) => (
+                                                <p key={index} className="text-justify pb-2 font-semibold">
+                                                    {line}
+                                                </p>
+                                            ))}
                                     </div>
                                 </div>
                                 <div className="flex justify-end py-4">

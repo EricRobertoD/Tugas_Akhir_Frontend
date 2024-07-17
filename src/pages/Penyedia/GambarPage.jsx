@@ -11,6 +11,7 @@ import ChatPenyediaPage from "../../components/ChatPenyedia";
 const GambarPage = () => {
 
     const [dataPenyedia, setDataPenyedia] = useState({});
+    const [isLoading, setIsLoading] = useState(false);
     const openImage = useRef(null);
     const openUpdateImage = useRef(null);
     const openVideo = useRef(null);
@@ -53,15 +54,7 @@ const GambarPage = () => {
     };
 
     const handleOpenVideo = () => {
-        if (!dataPenyedia.video) {
-            openVideo.current.click();
-        } else {
-            Swal.fire({
-                icon: 'info',
-                title: 'Limit Reached',
-                text: 'Anda sudah mengunggah video.',
-            });
-        }
+        openVideo.current.click();
     };
 
     const storeImage = async (e) => {
@@ -113,6 +106,7 @@ const GambarPage = () => {
 
         const authToken = localStorage.getItem("authToken");
 
+        setIsLoading(true);
         axios.post(`${BASE_URL}/api/uploadVideo`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
@@ -124,6 +118,8 @@ const GambarPage = () => {
             console.log(response);
         }).catch((error) => {
             console.log(error);
+        }).finally(() => {
+            setIsLoading(false);
         });
     };
 
@@ -155,7 +151,9 @@ const GambarPage = () => {
                             </div>
                             <div className="mr-10 flex flex-col">
                                 <button className="bg-[#FA9884] text-white rounded-lg px-3 py-1 mb-2" onClick={handleOpen}>Unggah Gambar</button>
-                                <button className="bg-[#FA9884] text-white rounded-lg px-3 py-1" onClick={handleOpenVideo}>Unggah Video</button>
+                                <button className="bg-[#FA9884] text-white rounded-lg px-3 py-1" onClick={handleOpenVideo}>
+                                    {dataPenyedia.video ? "Ganti Video" : "Unggah Video"}
+                                </button>
                                 <input ref={openImage} type="file" className="hidden" onChange={storeImage} />
                                 <input ref={openUpdateImage} type="file" className="hidden" onChange={updateImage} />
                                 <input ref={openVideo} type="file" className="hidden" onChange={storeVideo} />
@@ -163,6 +161,12 @@ const GambarPage = () => {
                         </CardHeader>
                         <Divider className="my-5" />
                         <CardBody className="mb-10 mt-5">
+                            {isLoading && (
+                                <div className="flex justify-center items-center mb-5">
+                                    <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full text-blue-600" role="status">
+                                    </div>
+                                </div>
+                            )}
                             <div className="grid grid-cols-3 gap-4">
                                 {dataPenyedia && dataPenyedia.gambar_porto && dataPenyedia.gambar_porto.map((penyedia, index) => (
                                     <Card key={index} className="" isPressable onClick={() => handleCardClick(penyedia.id_porto)}>
