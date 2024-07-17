@@ -362,7 +362,7 @@ const RegisterPage = () => {
                                             </SelectItem>
 
                                         </Select>
-                                        <div className="flex items-center px-3 py-2 border">
+                                        <div className="flex items-center px-3 py-2">
                                             <button
                                                 className="bg-[#FA9884] text-white rounded-lg"
                                                 onClick={() => fileInputRef.current.click()}
