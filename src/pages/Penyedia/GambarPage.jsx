@@ -13,6 +13,7 @@ const GambarPage = () => {
     const [dataPenyedia, setDataPenyedia] = useState({});
     const openImage = useRef(null);
     const openUpdateImage = useRef(null);
+    const openVideo = useRef(null);
     const [isChatOpen, setIsChatOpen] = useState(false);
     const selectedGambarId = useRef(null);
 
@@ -47,6 +48,18 @@ const GambarPage = () => {
                 icon: 'info',
                 title: 'Limit Reached',
                 text: 'Anda sudah mencapai batas maksimal unggah gambar.',
+            });
+        }
+    };
+
+    const handleOpenVideo = () => {
+        if (!dataPenyedia.video) {
+            openVideo.current.click();
+        } else {
+            Swal.fire({
+                icon: 'info',
+                title: 'Limit Reached',
+                text: 'Anda sudah mengunggah video.',
             });
         }
     };
@@ -94,6 +107,25 @@ const GambarPage = () => {
         });
     };
 
+    const storeVideo = async (e) => {
+        const formData = new FormData();
+        formData.append('video', e.target.files[0]);
+
+        const authToken = localStorage.getItem("authToken");
+
+        axios.post(`${BASE_URL}/api/uploadVideo`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                Authorization: `Bearer ${authToken}`,
+            }
+        }).then((response) => {
+            fetchData();
+            openVideo.current.value = null;
+            console.log(response);
+        }).catch((error) => {
+            console.log(error);
+        });
+    };
 
     const handleCardClick = (gambarId) => {
         selectedGambarId.current = gambarId;
@@ -107,7 +139,7 @@ const GambarPage = () => {
     return (
         <>
             <div className="min-h-screen bg-[#FFF3E2]">
-                <NavbarPenyediaLogin></NavbarPenyediaLogin>
+                <NavbarPenyediaLogin />
                 <div className="flex justify-center items-center py-[6%]">
                     <Card className="w-[60%] bg-white">
                         <CardHeader className="flex gap-3 justify-between">
@@ -121,10 +153,12 @@ const GambarPage = () => {
                                     <p className="text-small text-default-500">{dataPenyedia.nama_role}</p>
                                 </div>
                             </div>
-                            <div className="mr-10">
-                                <button className="bg-[#FA9884] text-white rounded-lg px-3 py-1" onClick={handleOpen}>Unggah</button>
+                            <div className="mr-10 flex flex-col">
+                                <button className="bg-[#FA9884] text-white rounded-lg px-3 py-1 mb-2" onClick={handleOpen}>Unggah Gambar</button>
+                                <button className="bg-[#FA9884] text-white rounded-lg px-3 py-1" onClick={handleOpenVideo}>Unggah Video</button>
                                 <input ref={openImage} type="file" className="hidden" onChange={storeImage} />
                                 <input ref={openUpdateImage} type="file" className="hidden" onChange={updateImage} />
+                                <input ref={openVideo} type="file" className="hidden" onChange={storeVideo} />
                             </div>
                         </CardHeader>
                         <Divider className="my-5" />
@@ -148,10 +182,20 @@ const GambarPage = () => {
                                     </Card>
                                 ))}
                             </div>
+                            <div className="mt-10">
+                                {dataPenyedia.video && (
+                                    <Card className="w-full bg-white">
+                                        <CardBody>
+                                            <video controls className="w-full">
+                                                <source src={`https://storage.googleapis.com/tugasakhir_11007/video/${dataPenyedia.video}`} type="video/mp4" />
+                                                Your browser does not support the video tag.
+                                            </video>
+                                        </CardBody>
+                                    </Card>
+                                )}
+                            </div>
                         </CardBody>
-
                     </Card>
-
                 </div>
             </div>
             <Footer />
@@ -160,7 +204,6 @@ const GambarPage = () => {
                 setIsChatOpen={setIsChatOpen}
             />
         </>
-
     )
 };
 

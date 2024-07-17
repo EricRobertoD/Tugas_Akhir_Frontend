@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import Swal from 'sweetalert2';
 import NavbarPengguna from "../../components/NavbarPengguna";
 import Footer from "../../components/Footer";
@@ -6,6 +6,7 @@ import assets from "../../assets";
 import { Input, Select, SelectItem, Tab, Tabs, } from "@nextui-org/react";
 import BASE_URL from "../../../apiConfig";
 import { useNavigate } from 'react-router-dom';
+import axios from "axios";
 
 const RegisterPage = () => {
     const [RegisterPengguna, setRegisterPengguna] = useState({
@@ -24,9 +25,14 @@ const RegisterPage = () => {
         nomor_whatsapp_penyedia: "",
         alamat_penyedia: "",
         nama_role: "",
+        dokumen: null,
     });
+
+    const [selectedFileName, setSelectedFileName] = useState("Dokumen belum diunggah");
+    const fileInputRef = useRef(null);
     const navigate = useNavigate();
     const [selected, setSelected] = React.useState("RegisterPengguna");
+
     const handleRegister = () => {
         Swal.showLoading();
 
@@ -97,29 +103,21 @@ const RegisterPage = () => {
     const handleRegisterPenyedia = () => {
         Swal.showLoading();
 
-        const registerData = {
-            nama_penyedia: RegisterPenyedia.nama_penyedia,
-            email_penyedia: RegisterPenyedia.email_penyedia,
-            password: RegisterPenyedia.password,
-            nomor_telepon_penyedia: RegisterPenyedia.nomor_telepon_penyedia,
-            nomor_whatsapp_penyedia: RegisterPenyedia.nomor_whatsapp_penyedia,
-            alamat_penyedia: RegisterPenyedia.alamat_penyedia,
-            nama_role: RegisterPenyedia.nama_role,
+        const formData = new FormData();
+        formData.append('nama_penyedia', RegisterPenyedia.nama_penyedia);
+        formData.append('email_penyedia', RegisterPenyedia.email_penyedia);
+        formData.append('password', RegisterPenyedia.password);
+        formData.append('nomor_telepon_penyedia', RegisterPenyedia.nomor_telepon_penyedia);
+        formData.append('nomor_whatsapp_penyedia', RegisterPenyedia.nomor_whatsapp_penyedia);
+        formData.append('alamat_penyedia', RegisterPenyedia.alamat_penyedia);
+        formData.append('nama_role', RegisterPenyedia.nama_role);
+        formData.append('dokumen', RegisterPenyedia.dokumen);
 
-        };
-
-        fetch(`${BASE_URL}/api/registerPenyedia`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(registerData),
-        })
-            .then((response) => response.json())
-            .then((data) => {
+        axios.post(`${BASE_URL}/api/registerPenyedia`, formData)
+            .then((response) => {
                 Swal.close();
 
-                if (data.status === 'success') {
+                if (response.data.status === 'success') {
                     Swal.fire({
                         icon: 'success',
                         title: 'Registrasi Berhasil',
@@ -128,7 +126,7 @@ const RegisterPage = () => {
                     }).then((result) => {
                         if (result.isConfirmed) {
                             navigate('/LoginPage');
-                            setRegisterPengguna({
+                            setRegisterPenyedia({
                                 nama_penyedia: "",
                                 email_penyedia: "",
                                 password: "",
@@ -136,14 +134,16 @@ const RegisterPage = () => {
                                 nomor_whatsapp_penyedia: "",
                                 alamat_penyedia: "",
                                 nama_role: "",
+                                dokumen: null,
                             });
+                            setSelectedFileName("Dokumen belum diunggah");
                         }
                     });
                 } else {
                     console.log('Registration failed');
 
-                    if (data.errors) {
-                        const errorMessages = Object.values(data.errors).join('\n');
+                    if (response.data.errors) {
+                        const errorMessages = Object.values(response.data.errors).join('\n');
                         Swal.fire({
                             icon: 'error',
                             title: 'Registrasi Gagal',
@@ -163,6 +163,13 @@ const RegisterPage = () => {
                 console.error('Error:', error);
             });
     };
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        setRegisterPenyedia({ ...RegisterPenyedia, dokumen: file });
+        setSelectedFileName(file ? file.name : "Dokumen belum diunggah");
+    };
+
 
     return (
         <>
@@ -355,6 +362,21 @@ const RegisterPage = () => {
                                             </SelectItem>
 
                                         </Select>
+                                        <div className="flex items-center px-3 py-2 border">
+                                            <button
+                                                className="bg-[#FA9884] text-white rounded-lg"
+                                                onClick={() => fileInputRef.current.click()}
+                                            >
+                                                Unggah Dokumen
+                                            </button>
+                                            <input
+                                                type="file"
+                                                className="hidden"
+                                                ref={fileInputRef}
+                                                onChange={handleFileChange}
+                                            />
+                                            <span className="ml-3">{selectedFileName}</span>
+                                        </div>
 
                                         <div className=" px-3 mt-7">
                                             <button
